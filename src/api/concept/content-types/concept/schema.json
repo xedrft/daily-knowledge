@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "concepts",
+  "info": {
+    "singularName": "concept",
+    "pluralName": "concepts",
+    "displayName": "concept"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "category": {
+      "type": "json",
+      "required": true
+    },
+    "content": {
+      "type": "richtext",
+      "required": true
+    },
+    "problems": {
+      "type": "json",
+      "required": true
+    },
+    "creationDate": {
+      "type": "date"
+    },
+    "user_progresses": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::user-progress.user-progress",
+      "mappedBy": "concepts"
+    }
+  }
+}

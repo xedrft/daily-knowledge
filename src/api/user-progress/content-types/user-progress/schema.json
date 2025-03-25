@@ -1,0 +1,34 @@
+{
+  "kind": "collectionType",
+  "collectionName": "user_progresses",
+  "info": {
+    "singularName": "user-progress",
+    "pluralName": "user-progresses",
+    "displayName": "User Progress",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "userProgress": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "userId"
+    },
+    "currentField": {
+      "type": "string",
+      "required": true
+    },
+    "pastFields": {
+      "type": "json"
+    },
+    "concepts": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::concept.concept",
+      "inversedBy": "user_progresses"
+    }
+  }
+}
