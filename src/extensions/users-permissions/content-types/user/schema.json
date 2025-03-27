@@ -65,11 +65,11 @@
       "inversedBy": "users",
       "configurable": false
     },
-    "userId": {
+    "userProgress": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::user-progress.user-progress",
-      "mappedBy": "userProgress"
+      "mappedBy": "userId"
     }
   }
 }

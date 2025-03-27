@@ -436,7 +436,7 @@ export interface ApiUserProgressUserProgress
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    userProgress: Schema.Attribute.Relation<
+    userId: Schema.Attribute.Relation<
       'manyToOne',
       'plugin::users-permissions.user'
     >;
@@ -932,16 +932,16 @@ export interface PluginUsersPermissionsUser
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    userId: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::user-progress.user-progress'
-    >;
     username: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.Unique &
       Schema.Attribute.SetMinMaxLength<{
         minLength: 3;
       }>;
+    userProgress: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::user-progress.user-progress'
+    >;
   };
 }
 

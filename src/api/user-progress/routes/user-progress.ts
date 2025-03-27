@@ -2,6 +2,15 @@
  * user-progress router
  */
 
-import { factories } from '@strapi/strapi';
-
-export default factories.createCoreRouter('api::user-progress.user-progress');
+module.exports = {
+    routes: [
+        {
+            method: "GET",
+            path: "/get-concept",
+            handler: "user-progress.getConcept",
+            config: {
+                auth: false,
+            },
+        },
+    ]
+};

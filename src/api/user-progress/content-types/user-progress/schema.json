@@ -11,11 +11,11 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "userProgress": {
+    "userId": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "userId"
+      "inversedBy": "userProgress"
     },
     "currentField": {
       "type": "string",
