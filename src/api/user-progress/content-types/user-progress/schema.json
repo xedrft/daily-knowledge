@@ -11,9 +11,9 @@
     "draftAndPublish": true
   },
   "attributes": {
-    "userId": {
+    "user_id": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "oneToOne",
       "target": "plugin::users-permissions.user",
       "inversedBy": "userProgress"
     },

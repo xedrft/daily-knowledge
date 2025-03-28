@@ -5,7 +5,7 @@
 module.exports = {
     routes: [
         {
-            method: "GET",
+            method: "POST",
             path: "/get-concept",
             handler: "user-progress.getConcept",
             config: {

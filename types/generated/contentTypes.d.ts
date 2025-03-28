@@ -436,8 +436,8 @@ export interface ApiUserProgressUserProgress
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    userId: Schema.Attribute.Relation<
-      'manyToOne',
+    user_id: Schema.Attribute.Relation<
+      'oneToOne',
       'plugin::users-permissions.user'
     >;
   };
@@ -939,7 +939,7 @@ export interface PluginUsersPermissionsUser
         minLength: 3;
       }>;
     userProgress: Schema.Attribute.Relation<
-      'oneToMany',
+      'oneToOne',
       'api::user-progress.user-progress'
     >;
   };
