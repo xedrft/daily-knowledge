@@ -10,7 +10,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
         try {
             await this.validateQuery(ctx);
             const userId = ctx.request.body["userId"];
-            const pastData = await strapi.documents("api::user-progress.user-progress").findMany({
+            const pastData = await strapi.documents("api::user-progress.user-progress").findFirst({
                 filters : {
                     user_id : {
                         id : userId
@@ -18,12 +18,8 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 },
                 populate : ["concepts"]
             });
-            const pastConcepts = pastData.flatMap(entry => entry.concepts);
+            const pastConcepts = pastData["concepts"];
             const pastTitles = pastConcepts.map(concept => concept.title);
-
-
-            
-
 
             const client = new OpenAI({
                 apiKey: process.env['OPENAI_API_KEY']
@@ -35,9 +31,8 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 input: `${pastTitles}\n${pastData["currentField"]}`
             })
             
-            
-            console.log(res["output_text"]);
-            ctx.response.body = res["output_text"];
+            const currConcept = res["output_text"];
+            console.log(currConcept);
 
 
         }
