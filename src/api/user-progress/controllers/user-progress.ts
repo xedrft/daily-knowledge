@@ -61,8 +61,13 @@ export default factories.createCoreController('api::user-progress.user-progress'
                     instructions : prompts.content,
                     input : currConcept
                 });
-                ctx.response.body = contentRes["output_text"];
-                console.log(contentRes["output_text"]);
+                try {
+                    content = JSON.parse(String.raw`${contentRes["output_text"]}`);
+                }
+                catch(err){
+                    ctx.response.body = contentRes["output_text"];
+                    console.log(err);
+                }
 
 
             }
