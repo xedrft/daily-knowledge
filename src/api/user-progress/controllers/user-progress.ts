@@ -33,7 +33,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             });
             
             const currConcept = conceptRes["output_text"];
-            const content = await strapi.documents("api::concept.concept").findFirst({
+            let content = await strapi.documents("api::concept.concept").findFirst({
                 filters : {
                     title : currConcept
                 }
@@ -56,9 +56,18 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 });
             }
             else {
+                const contentRes = await client.responses.create({
+                    model : "gpt-4o-mini",
+                    instructions : prompts.content,
+                    input : currConcept
+                });
+                ctx.response.body = contentRes["output_text"];
+                console.log(contentRes["output_text"]);
+
 
             }
-            console.log(content);
+            
+            
 
 
         }
