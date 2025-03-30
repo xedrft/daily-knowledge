@@ -3,6 +3,7 @@
  */
 
 import { factories } from '@strapi/strapi'
+import * as prompts from "../../../../ai-prompts"
 import OpenAI from "openai"
 
 export default factories.createCoreController('api::user-progress.user-progress', ({ strapi }) => ({
@@ -27,7 +28,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             
             const conceptRes = await client.responses.create({
                 model : "gpt-4o-mini",
-                instructions: "You are a knowledgeable and engaging science tutor specializing in picking fitting complex concepts to teach to the user. Your goal is to suggest highly specific scientific concepts (such as theorems, axioms, laws, theories, etc.) to the user based on past concepts (which you should base off as example and never repeat) and the field the user is interested in. You will be given two values, seperated by a new line, the first being a list of past concepts, and the second being the current field. Choose an appropriate concept that the user would be interested in, and output only the name of the concept.",
+                instructions: prompts.concept,
                 input: `${pastTitles}\n${pastData["currentField"]}`
             });
             
@@ -53,8 +54,8 @@ export default factories.createCoreController('api::user-progress.user-progress'
                     },
                     status : "published"
                 });
-
-
+            }
+            else {
 
             }
             console.log(content);
