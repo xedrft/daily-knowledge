@@ -23,16 +23,25 @@ export default factories.createCoreController('api::user-progress.user-progress'
             const pastTitles = pastConcepts.map(concept => concept.title);
 
             const client = new OpenAI({
-                apiKey: process.env['OPENAI_API_KEY'],
+                apiKey: process.env['DEEPSEEK_API_KEY'],
+                baseURL: "https://api.deepseek.com"
               });
             
-            const conceptRes = await client.responses.create({
-                model : "gpt-4o-mini",
-                instructions: prompts.concept,
-                input: `${pastTitles}\n${pastData["currentField"]}`
+              const conceptRes = await client.chat.completions.create({
+                model : "deepseek-chat",
+                messages : [
+                    {
+                        role : "system",
+                        content : prompts.concept
+                    },
+                    {
+                        role : "user",
+                        content : `${pastTitles}\n${pastData["currentField"]}`
+                    }
+                ]
             });
             
-            const currConcept = conceptRes["output_text"];
+            const currConcept = conceptRes.choices[0].message.content;
             let content = await strapi.documents("api::concept.concept").findFirst({
                 filters : {
                     title : currConcept
@@ -56,21 +65,29 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 });
             }
             else {
-                const contentRes = await client.responses.create({
-                    model : "gpt-4o-mini",
-                    instructions : prompts.content,
-                    input : currConcept,
+                const contentRes = await client.chat.completions.create({
+                    model : "deepseek-chat",
+                    messages : [
+                        {
+                            role : "system",
+                            content : prompts.content
+                        },
+                        {
+                            role : "user",
+                            content : currConcept
+                        }
+                    ],
                     temperature : 0,
                 });
-                const output = contentRes["output_text"];
+                const output = contentRes.choices[0].message.content;
                 try {
                     content = JSON.parse(output);
-                    ctx.response.body = contentRes["output_text"];
+                    ctx.response.body = output;
                     console.log("Success");
                 }
                 catch(err){
                     console.log(output);
-                    ctx.response.body = contentRes["output_text"];
+                    ctx.response.body = output;
                     console.log(err);
                 }
 
