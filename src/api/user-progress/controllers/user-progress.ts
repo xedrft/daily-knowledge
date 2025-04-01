@@ -23,7 +23,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             const pastTitles = pastConcepts.map(concept => concept.title);
 
             const client = new OpenAI({
-                apiKey: process.env['OPENAI_API_KEY']
+                apiKey: process.env['OPENAI_API_KEY'],
               });
             
             const conceptRes = await client.responses.create({
@@ -59,12 +59,17 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 const contentRes = await client.responses.create({
                     model : "gpt-4o-mini",
                     instructions : prompts.content,
-                    input : currConcept
+                    input : currConcept,
+                    temperature : 0,
                 });
+                const output = contentRes["output_text"];
                 try {
-                    content = JSON.parse(String.raw`${contentRes["output_text"]}`);
+                    content = JSON.parse(output);
+                    ctx.response.body = contentRes["output_text"];
+                    console.log("Success");
                 }
                 catch(err){
+                    console.log(output);
                     ctx.response.body = contentRes["output_text"];
                     console.log(err);
                 }
