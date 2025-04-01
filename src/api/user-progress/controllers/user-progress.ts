@@ -38,7 +38,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
                         role : "user",
                         content : `${pastTitles}\n${pastData["currentField"]}`
                     }
-                ]
+                ],
             });
             
             const currConcept = conceptRes.choices[0].message.content;
@@ -78,6 +78,9 @@ export default factories.createCoreController('api::user-progress.user-progress'
                         }
                     ],
                     temperature : 0,
+                    response_format : {
+                        'type': 'json_object'
+                    }
                 });
                 const output = contentRes.choices[0].message.content;
                 try {
