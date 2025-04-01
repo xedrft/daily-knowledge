@@ -60,7 +60,57 @@ export default factories.createCoreController('api::user-progress.user-progress'
                     model : "gpt-4o-mini",
                     instructions : prompts.content,
                     input : currConcept,
-                    temperature : 0,
+                    temperature : 0.4,
+                    text : {
+                        format : {
+                            "type": "json_schema",
+                            "name": "science_response",
+                            "strict": true,
+                            "schema": {
+                              "type": "object",
+                              "properties": {
+                                "content": {
+                                  "type": "string"
+                                },
+                                "problemset": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "properties": {
+                                      "problem": {
+                                        "type": "string"
+                                      },
+                                      "solution": {
+                                        "type": "string"
+                                      },
+                                      "answer": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "solution",
+                                      "problem",
+                                      "answer"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                },
+                                "fields": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  }
+                                }
+                              },
+                              "required": [
+                                "content",
+                                "problemset",
+                                "fields"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                    }
                 });
                 const output = contentRes["output_text"];
                 try {
