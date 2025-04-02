@@ -29,7 +29,9 @@ export default factories.createCoreController('api::user-progress.user-progress'
             const conceptRes = await client.responses.create({
                 model : "gpt-4o-mini",
                 instructions: prompts.concept,
-                input: `${pastTitles}\n${pastData["currentField"]}`
+                input: `${pastTitles}\n${pastData["currentField"]}`,
+                temperature : 0.4,
+                top_p : 0.3
             });
             
             const currConcept = conceptRes["output_text"];
@@ -61,6 +63,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
                     instructions : prompts.content,
                     input : currConcept,
                     temperature : 0.4,
+                    top_p : 0.8,
                     text : {
                         format : {
                             "type": "json_schema",
@@ -126,9 +129,6 @@ export default factories.createCoreController('api::user-progress.user-progress'
 
             }
             
-            
-
-
         }
         catch(err) {
             ctx.internalServerError("An error occurred", err);
