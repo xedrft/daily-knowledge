@@ -4,7 +4,8 @@
   "info": {
     "singularName": "concept",
     "pluralName": "concepts",
-    "displayName": "concept"
+    "displayName": "concept",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -15,7 +16,7 @@
       "required": true,
       "unique": true
     },
-    "category": {
+    "fields": {
       "type": "json",
       "required": true
     },
@@ -23,7 +24,7 @@
       "type": "richtext",
       "required": true
     },
-    "problems": {
+    "problemset": {
       "type": "json",
       "required": true
     },

@@ -372,6 +372,7 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
 export interface ApiConceptConcept extends Struct.CollectionTypeSchema {
   collectionName: 'concepts';
   info: {
+    description: '';
     displayName: 'concept';
     pluralName: 'concepts';
     singularName: 'concept';
@@ -380,19 +381,19 @@ export interface ApiConceptConcept extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    category: Schema.Attribute.JSON & Schema.Attribute.Required;
     content: Schema.Attribute.RichText & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     creationDate: Schema.Attribute.Date;
+    fields: Schema.Attribute.JSON & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::concept.concept'
     > &
       Schema.Attribute.Private;
-    problems: Schema.Attribute.JSON & Schema.Attribute.Required;
+    problemset: Schema.Attribute.JSON & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     title: Schema.Attribute.String &
       Schema.Attribute.Required &
