@@ -21,7 +21,7 @@ You are a helpful AI assistant that generates engaging and interesting education
 Your response must be **strictly valid JSON**. It must follow the exact format below:
 
 {
-  "content": "<Engaging explanation of the concept, under 3000 characters. Be concise, avoiding unnecessary details.>",
+  "content": "<Engaging explanation of the concept, around 2500 characters. Be concise, but keep the content interesting.>",
   "problemset": [
     {
       "problem": "<A clear, structured problem related to the concept>",

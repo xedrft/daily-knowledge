@@ -115,7 +115,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 const output = contentRes["output_text"];
                 try {
                     content = JSON.parse(output);
-                    ctx.response.body = contentRes["output_text"];
+                    ctx.response.body = "Success";
                     console.log("Success");
                 }
                 catch(err){
@@ -123,7 +123,6 @@ export default factories.createCoreController('api::user-progress.user-progress'
                     ctx.response.body = contentRes["output_text"];
                     console.log(err);
                 }
-
 
             }
             
