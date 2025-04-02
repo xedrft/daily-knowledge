@@ -31,6 +31,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 instructions: prompts.concept,
                 input: `${pastTitles}\n${pastData["currentField"]}`,
                 temperature : 0.4,
+                top_p : 0.5
             });
             
             const currConcept = conceptRes["output_text"];
@@ -62,6 +63,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
                     instructions : prompts.content,
                     input : currConcept,
                     temperature : 0.4,
+                    top_p : 0.8,
                     text : {
                         format : {
                             "type": "json_schema",
