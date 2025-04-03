@@ -46,16 +46,6 @@ export default factories.createCoreController('api::user-progress.user-progress'
                     content : content["content"],
                     problems : content["problems"]
                 }
-
-
-                pastConcepts.push(content);
-                await strapi.documents("api::user-progress.user-progress").update({
-                    documentId : pastData["documentId"],
-                    data : {
-                        concepts : pastConcepts
-                    },
-                    status : "published"
-                });
             }
             else {
                 const contentRes = await client.responses.create({
@@ -116,18 +106,34 @@ export default factories.createCoreController('api::user-progress.user-progress'
                     }
                 });
                 const output = contentRes["output_text"];
-                try {
-                    content = JSON.parse(output);
-                    ctx.response.body = "Success";
-                    console.log("Success");
-                }
-                catch(err){
-                    console.log(output);
-                    ctx.response.body = contentRes["output_text"];
-                    console.log(err);
-                }
+                content = JSON.parse(output);
+                ctx.response.body = content;
 
+                content["title"] = currConcept;
+                await strapi.documents("api::concept.concept").create({
+                    data : {
+                        title : currConcept,
+                        content : content["content"],
+                        problemset: content["problemset"],
+                        fields : content["fields"],
+                        creationDate : new Date()
+                    },
+                    status : "published"
+                });
             }
+            content = await strapi.documents("api::concept.concept").findFirst({
+              filters : {
+                  title : currConcept
+              }
+          });
+            pastConcepts.push(content);
+            await strapi.documents("api::user-progress.user-progress").update({
+                documentId : pastData["documentId"],
+                data : {
+                    concepts : pastConcepts
+                },
+                status : "published"
+            });
             
         }
         catch(err) {
