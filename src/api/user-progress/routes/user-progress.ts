@@ -7,7 +7,7 @@ module.exports = {
         {
             method: "POST",
             path: "/get-concept",
-            handler: "user-progress.getConcept",
+            handler: "get-concept.getConcept",
             config: {
                 auth: false,
             },
