@@ -29,6 +29,10 @@
       "relation": "manyToMany",
       "target": "api::concept.concept",
       "inversedBy": "user_progresses"
+    },
+    "current_level": {
+      "type": "float",
+      "required": false
     }
   }
 }

@@ -13,7 +13,8 @@
     "noEmitOnError": true,
     "noImplicitThis": true,
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "baseUrl": "."
   },
   "include": [
     // Include root files
@@ -32,6 +33,7 @@
     "dist/",
     ".cache/",
     ".tmp/",
+    "test.py",
 
     // Do not include admin files in the server compilation
     "src/admin/",

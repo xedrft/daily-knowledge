@@ -5,6 +5,7 @@
 import { factories } from '@strapi/strapi'
 import * as prompts from "../../../../ai-prompts"
 import OpenAI from "openai"
+import init_difficulty from '../../../../functions/init-difficulty';
 
 export default factories.createCoreController('api::user-progress.user-progress', ({ strapi }) => ({
     async getConcept(ctx){
@@ -116,6 +117,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
                         content : content["content"],
                         problemset: content["problemset"],
                         fields : content["fields"],
+                        difficulty : init_difficulty(content),
                         creationDate : new Date()
                     },
                     status : "published"
