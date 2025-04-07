@@ -39,5 +39,7 @@ Your response must be **strictly valid JSON**. It must follow the exact format b
 `
 
 export const difficulty = `
+Output only a numerical value (not neccessarily integer) rating the content in the input on a scale from 1-15, being the number of years of education since 5th grade.
 
+For example, a 7th grader would be 2 , a high school senior would be 7, and a college sophomore would be 10.
 `

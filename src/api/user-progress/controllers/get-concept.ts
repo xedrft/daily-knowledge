@@ -117,7 +117,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
                         content : content["content"],
                         problemset: content["problemset"],
                         fields : content["fields"],
-                        difficulty : await init_difficulty(content),
+                        difficulty : await init_difficulty(content["content"]),
                         creationDate : new Date()
                     },
                     status : "published"
@@ -140,6 +140,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
         }
         catch(err) {
             ctx.internalServerError("An error occurred", err);
+            console.log(err);
         }
     }
 }));
