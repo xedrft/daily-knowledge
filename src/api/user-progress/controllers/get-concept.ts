@@ -117,7 +117,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
                         content : content["content"],
                         problemset: content["problemset"],
                         fields : content["fields"],
-                        difficulty : init_difficulty(content),
+                        difficulty : await init_difficulty(content),
                         creationDate : new Date()
                     },
                     status : "published"
