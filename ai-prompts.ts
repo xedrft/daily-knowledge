@@ -37,3 +37,7 @@ Your response must be **strictly valid JSON**. It must follow the exact format b
   "fields": ["<Relevant Field 1>", "<Relevant Field 2>"]
 }
 `
+
+export const difficulty = `
+
+`
