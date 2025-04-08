@@ -22,6 +22,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             });
             const pastConcepts = pastData["concepts"];
             const pastTitles = pastConcepts.map(concept => concept.title);
+            const currLevel = pastData["current_level"];
 
             const client = new OpenAI({
                 apiKey: process.env['OPENAI_API_KEY'],
@@ -30,7 +31,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             const conceptRes = await client.responses.create({
                 model : "gpt-4o-mini",
                 instructions: prompts.concept,
-                input: `${pastTitles}\n${pastData["currentField"]}`,
+                input: `${pastTitles}\n${pastData["currentField"]}\n${currLevel}`,
                 top_p : 0.75
             });
             
@@ -51,7 +52,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             else {
                 const contentRes = await client.responses.create({
                     model : "gpt-4o-mini",
-                    instructions : prompts.content,
+                    instructions : `${prompts.content}\n${currLevel}`,
                     input : currConcept,
                     temperature : 0.4,
                     top_p : 0.8,
