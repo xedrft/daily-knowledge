@@ -19,9 +19,10 @@ export default async function(content){
                     schema: {
                         type: "object",
                         properties: {
+                        cot: { type: "string" },
                         num: { type: "number" }
                         },
-                    required: ["num"],
+                    required: ["cot","num"],
                     additionalProperties: false
                     }
                 }
