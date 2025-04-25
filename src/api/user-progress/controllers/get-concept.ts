@@ -29,7 +29,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
               });
             
             const conceptRes = await client.responses.create({
-                model : "gpt-4o-mini",
+                model : "gpt-4.1-mini",
                 instructions: prompts.concept,
                 input: `${pastTitles}\n${pastData["currentField"]}\n${currLevel}`,
                 top_p : 0.75
@@ -51,7 +51,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             }
             else {
                 const contentRes = await client.responses.create({
-                    model : "gpt-4o-mini",
+                    model : "gpt-4.1-mini",
                     instructions : `${prompts.content}\n${currLevel}`,
                     input : currConcept,
                     temperature : 0.4,
