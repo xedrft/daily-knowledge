@@ -55,7 +55,7 @@ Your response must be **strictly valid JSON**. It must follow the exact format b
 
 export const difficulty = `
 You can generate a chain of thought in the first JSON field, but the final output must be a single number.
-Output only a numerical value (not neccessarily integer) rating the content in the input on a scale from 1-15, being the number of years of education since 5th grade such that the content is a challenge to the student. It should be somewhat outside the regular scope of what students would learn.
+Output only a numerical value (not neccessarily integer) rating the content in the input on a scale from 1-15, being the number of years of education since 5th grade such that the content is a challenge to the student. It should be somewhat outside the regular scope of what students would learn, and you can safely assume that the student is smarter than the average student their age.
 
 For example, a 7th grader would be 2 , a high school senior would be 7, and a college sophomore would be 10. These are only for example, and your actual output can be any number between 1 and 15. 
 `

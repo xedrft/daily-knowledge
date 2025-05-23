@@ -4,7 +4,7 @@ good = 0
 for i in range(50):
     test = requests.post("http://127.0.0.1:1337/api/get-concept",
                      json={
-                         "userId" : 1,
+                         "userId" : 2,
                      }
     )
     if test.text == "Success":
