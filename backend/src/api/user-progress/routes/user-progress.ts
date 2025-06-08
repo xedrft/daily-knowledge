@@ -12,5 +12,13 @@ module.exports = {
                 auth: false,
             },
         },
+        {
+            method: "POST",
+            path: "/register",
+            handler: "user-login.register",
+            config: {
+                auth: false,
+            },
+        }
     ]
 };
