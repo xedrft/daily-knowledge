@@ -2,6 +2,8 @@
  * user-progress router
  */
 
+import path from "path";
+
 module.exports = {
     routes: [
         {
@@ -16,6 +18,14 @@ module.exports = {
             method: "POST",
             path: "/register",
             handler: "user-login.register",
+            config: {
+                auth: false,
+            },
+        },
+        {
+            method: "POST",
+            path: "/signin",
+            handler: "user-login.signin",
             config: {
                 auth: false,
             },

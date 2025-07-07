@@ -24,14 +24,46 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'lax',
-                maxAge: 1000 * 60 * 60 * 24 * 100
+                maxAge: 1000 * 60 * 60 * 24 * 100 // days
             });
 
-
+            console.log('User registered successfully:', response.data.user);
         } catch (error) {
             console.log('An error occurred:', error.response?.data || error);
             ctx.response.body = { error: "An error occurred during registration. Please try again." };
             ctx.response.status = 400;
         }
+    },
+
+
+    signin: async (ctx) => {
+        try {
+            // identifier can be username or email
+            const response = await axios.post('http://localhost:1337/api/auth/local', {
+                identifier: ctx.request.body["identifier"],
+                password: ctx.request.body["password"],
+            });
+
+            ctx.cookies.set('jwt', response.data.jwt, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                maxAge: 1000 * 60 * 60 * 24 * 100 // 100 days
+            });
+
+            ctx.response.body = {
+                message: "Successfully signed in!",
+                user: response.data.user,
+                jwt: response.data.jwt
+            };
+
+            console.log('User signed in successfully:', response.data.user);
+
+        } catch (error) {
+            console.log('An error occurred:', error.response?.data || error);
+            ctx.response.body = { error: "An error occurred during sign in. Please try again." };
+            ctx.response.status = 400;
+        }
     }
+
 }));
