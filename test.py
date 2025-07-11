@@ -17,3 +17,7 @@ print("Cookies after login:", session.cookies.get_dict())  # Should include JWT
 # 2. Now test an authenticated route (cookie automatically included)
 res2 = session.get("http://127.0.0.1:1337/api/get-concept")  # or your custom route
 print("Protected route response:", res2.json())
+
+res3 = session.post("http://127.0.0.1:1337/api/change-field", json = {
+    "field": "Physics"})
+print("Change field response:", res3.json())

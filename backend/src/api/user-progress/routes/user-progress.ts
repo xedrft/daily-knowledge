@@ -29,6 +29,14 @@ module.exports = {
             config: {
                 auth: false,
             },
+        },
+        {
+            method: "POST",
+            path : "/change-field",
+            handler: "change-field.changeField",
+            config: {
+                auth: false,
+            },
         }
     ]
 };
