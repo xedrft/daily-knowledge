@@ -6,6 +6,7 @@ import { factories } from '@strapi/strapi'
 import * as prompts from "../../../../ai-prompts"
 import OpenAI from "openai"
 import init_difficulty from '../../../../functions/init-difficulty';
+import contentCall from '../../../../functions/content_call';
 
 export default factories.createCoreController('api::user-progress.user-progress', ({ strapi }) => ({
     async getConcept(ctx){
@@ -57,63 +58,8 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 }
             }
             else {
-                const contentRes = await client.responses.create({
-                    model : "gpt-4.1-mini",
-                    instructions : `${prompts.content}\n${currLevel}`,
-                    input : currConcept,
-                    temperature : 0.4,
-                    top_p : 0.8,
-                    text : {
-                        format : {
-                            "type": "json_schema",
-                            "name": "science_response",
-                            "strict": true,
-                            "schema": {
-                              "type": "object",
-                              "properties": {
-                                "content": {
-                                  "type": "string"
-                                },
-                                "problemset": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "problem": {
-                                        "type": "string"
-                                      },
-                                      "solution": {
-                                        "type": "string"
-                                      },
-                                      "answer": {
-                                        "type": "string"
-                                      }
-                                    },
-                                    "required": [
-                                      "solution",
-                                      "problem",
-                                      "answer"
-                                    ],
-                                    "additionalProperties": false
-                                  }
-                                },
-                                "fields": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "string"
-                                  }
-                                }
-                              },
-                              "required": [
-                                "content",
-                                "problemset",
-                                "fields"
-                              ],
-                              "additionalProperties": false
-                            }
-                          },
-                    }
-                });
+                const contentRes = await contentCall(currConcept, currLevel);
+                
                 const output = contentRes["output_text"];
                 content = JSON.parse(output);
                 ctx.response.body = content;
@@ -135,7 +81,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
               filters : {
                   title : currConcept
               }
-          });
+            });
             pastConcepts.push(content);
             await strapi.documents("api::user-progress.user-progress").update({
                 documentId : pastData["documentId"],
