@@ -1,35 +1,88 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Button, Field, Input, Stack } from "@chakra-ui/react"
+import { PasswordInput } from "@/components/ui/password-input"
+import { useForm } from "react-hook-form"
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface FormValues {
+  email: string
+  password: string
 }
 
-export default App
+export const App = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>()
+
+  async function onSubmit(data: FormValues) {
+    try {
+      const loginRes = await fetch("http://127.0.0.1:1337/api/signin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", 
+        body: JSON.stringify({
+          identifier: data.email,
+          password: data.password,
+        }),
+      });
+      const loginJson = await loginRes.json();
+      console.log("Login response:", loginJson);
+
+      const conceptRes = await fetch("http://127.0.0.1:1337/api/get-concept", {
+        credentials: "include",
+      });
+      const conceptJson = await conceptRes.json();
+      console.log("Protected route response:", conceptJson);
+
+      const changeFieldRes = await fetch("http://127.0.0.1:1337/api/change-field", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ field: "Physics" }),
+      });
+      const changeFieldJson = await changeFieldRes.json();
+      console.log("Change field response:", changeFieldJson);
+
+    } catch (err) {
+      console.error("Error:", err);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Stack gap="4" align="flex-start" maxW="sm">
+        <Field.Root invalid={!!errors.email}>
+          <Field.Label>Email</Field.Label>
+          <Input
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Invalid email address",
+              },
+            })}
+            type="email"
+          />
+          <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
+        </Field.Root>
+
+        <Field.Root invalid={!!errors.password}>
+          <Field.Label>Password</Field.Label>
+          <PasswordInput
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
+            type="password"
+          />
+          <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
+        </Field.Root>
+
+        <Button type="submit">Submit</Button>
+      </Stack>
+    </form>
+  )
+}
