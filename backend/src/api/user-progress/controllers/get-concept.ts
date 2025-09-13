@@ -12,18 +12,18 @@ export default factories.createCoreController('api::user-progress.user-progress'
     async getConcept(ctx){
         try {
             await this.validateQuery(ctx);
-            const jwt = ctx.cookies.get("jwt");
-
-            if (!jwt) {
-              return ctx.unauthorized("No token found");
+            const user = ctx.state.user;
+            console.log(user);
+            if (!user) {
+                return ctx.unauthorized("No token found or invalid token");
             }
 
-            const decoded = await strapi.plugins['users-permissions'].services.jwt.verify(jwt);
-            const userId = decoded.id;
+
+
             const pastData = await strapi.documents("api::user-progress.user-progress").findFirst({
                 filters : {
                     user_id : {
-                        id : userId
+                        id : user.id
                     }
                 },
                 populate : ["concepts"]

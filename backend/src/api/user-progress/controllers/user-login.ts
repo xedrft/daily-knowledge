@@ -20,12 +20,6 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 jwt : response.data.jwt
             };
 
-            ctx.cookies.set('jwt', response.data.jwt, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 1000 * 60 * 60 * 24 * 100 // days
-            });
 
             console.log('User registered successfully:', response.data.user);
         } catch (error) {
@@ -44,12 +38,6 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 password: ctx.request.body["password"],
             });
 
-            ctx.cookies.set('jwt', response.data.jwt, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 1000 * 60 * 60 * 24 * 100 // 100 days
-            });
 
             ctx.response.body = {
                 message: "Successfully signed in!",
