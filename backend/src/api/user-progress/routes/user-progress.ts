@@ -10,9 +10,7 @@ module.exports = {
             method: "GET",
             path: "/get-concept",
             handler: "get-concept.getConcept",
-            config: {
-                auth: false,
-            },
+
         },
         {
             method: "POST",

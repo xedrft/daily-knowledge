@@ -15,7 +15,7 @@ export const App = () => {
     formState: { errors },
   } = useForm<FormValues>()
   
-  const [data, setData] = useState<string | null>(null);
+  const [res, setRes] = useState<object>({});
 
   async function onSubmit(data: FormValues) {
     try {
@@ -40,7 +40,8 @@ export const App = () => {
       });
       const conceptJson = await conceptRes.json();
       console.log("Protected route response:", conceptJson);
-      setData(conceptJson);
+      setRes(conceptJson);
+      console.log("Data: ", res);
 
     } catch (err) {
       console.error("Error:", err);
@@ -86,7 +87,7 @@ export const App = () => {
     </form>
     <div>
       <h2> Result </h2>
-      <p>{data}</p>
+      <p>{res.content}</p>
     </div>
     </>
   )

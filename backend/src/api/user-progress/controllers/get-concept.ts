@@ -18,8 +18,6 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 return ctx.unauthorized("No token found or invalid token");
             }
 
-
-
             const pastData = await strapi.documents("api::user-progress.user-progress").findFirst({
                 filters : {
                     user_id : {
