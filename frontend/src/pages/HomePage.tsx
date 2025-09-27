@@ -1,9 +1,11 @@
 import { Button, Stack, Text, Heading } from "@chakra-ui/react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 const HomePage = () => {
+  const navigate = useNavigate()
+
   return (
-    <Stack spacing={8} align="center" justify="center" minH="100vh" p={8}>
+    <Stack gap={8} align="center" justify="center" minH="100vh" p={8}>
       <Heading size="2xl" textAlign="center">
         Daily Knowledge
       </Heading>
@@ -13,18 +15,22 @@ const HomePage = () => {
         Discover new concepts and test your knowledge daily.
       </Text>
 
-      <Stack direction="row" spacing={4}>
-        <Button as={Link} to="/signin" colorScheme="blue" size="lg">
-          Get Started
-        </Button>
-        <Button as={Link} to="/questions" variant="outline" size="lg">
-          Browse Questions
-        </Button>
+      <Stack direction="row" gap={4}>
+        <Link to="/signin" style={{ textDecoration: "none" }}>
+          <Button colorScheme="blue" size="lg">
+            Get Started
+          </Button>
+        </Link>
+        <Link to="/questions" style={{ textDecoration: "none" }}>
+          <Button variant="outline" size="lg">
+            Browse Questions
+          </Button>
+        </Link>
       </Stack>
 
-      <Stack spacing={4} align="center" mt={12}>
+      <Stack gap={4} align="center" mt={12}>
         <Heading size="md">Features</Heading>
-        <Stack spacing={2} textAlign="center">
+        <Stack gap={2} textAlign="center">
           <Text>📚 AI-generated educational content</Text>
           <Text>🎯 Personalized learning paths</Text>
           <Text>💡 Daily knowledge challenges</Text>

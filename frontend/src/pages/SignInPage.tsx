@@ -5,7 +5,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
 interface FormValues {
-  email: string
+  identifier: string
   password: string
 }
 
@@ -30,7 +30,7 @@ const SignInPage = () => {
         headers: { "Content-Type": "application/json" },
         credentials: "include", 
         body: JSON.stringify({
-          identifier: data.email,
+          identifier: data.identifier,
           password: data.password,
         }),
       });
@@ -52,10 +52,14 @@ const SignInPage = () => {
       setIsLoading(false)
     }
   }
+  
+  if (localStorage.getItem("jwt")) {
+    navigate("/questions")
+  }
 
   return (
-    <Stack spacing={8} align="center" justify="center" minH="100vh" p={8}>
-      <Stack spacing={4} align="center">
+    <Stack gap={8} align="center" justify="center" minH="100vh" p={8}>
+      <Stack gap={4} align="center">
         <Heading size="xl">Welcome Back</Heading>
         <Text color="gray.600">Sign in to continue your learning journey</Text>
       </Stack>
@@ -66,19 +70,15 @@ const SignInPage = () => {
             <Text color="red.500" fontSize="sm">{error}</Text>
           )}
           
-          <Field.Root invalid={!!errors.email}>
-            <Field.Label>Email</Field.Label>
+          <Field.Root invalid={!!errors.identifier}>
+            <Field.Label>Email or Username</Field.Label>
             <Input
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: "Invalid email address",
-                },
+              {...register("identifier", {
+                required: "Identifier is required",
               })}
-              type="email"
+
             />
-            <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
+            <Field.ErrorText>{errors.identifier?.message}</Field.ErrorText>
           </Field.Root>
 
           <Field.Root invalid={!!errors.password}>
@@ -86,22 +86,18 @@ const SignInPage = () => {
             <PasswordInput
               {...register("password", {
                 required: "Password is required",
-                minLength: {
-                  value: 6,
-                  message: "Password must be at least 6 characters",
-                },
               })}
             />
             <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
           </Field.Root>
 
-          <Button type="submit" w="full" isLoading={isLoading}>
+          <Button type="submit" w="full" loading={isLoading}>
             Sign In
           </Button>
         </Stack>
       </form>
 
-      <Stack spacing={2} align="center">
+      <Stack gap={2} align="center">
         <Text fontSize="sm">
           Don't have an account? <Link to="/register">Sign up</Link>
         </Text>

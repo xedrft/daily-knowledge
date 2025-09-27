@@ -1,6 +1,7 @@
-import { Button, Stack, Heading, Text, Box, Spinner } from "@chakra-ui/react"
-import { useState, useEffect } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Button, Stack, Heading, Text, Box } from "@chakra-ui/react"
+import { useColorModeValue } from "@/components/ui/color-mode"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 const QuestionsPage = () => {
   const [concept, setConcept] = useState<any>(null)
@@ -36,7 +37,7 @@ const QuestionsPage = () => {
           navigate("/signin")
         }
       }
-
+      console.log(conceptJson);
     } catch (err) {
       console.error("Error:", err);
       setError("Network error. Please try again.");
@@ -50,40 +51,53 @@ const QuestionsPage = () => {
     navigate("/")
   }
 
-  useEffect(() => {
-    fetchConcept()
-  }, [])
+  // fetchConcept is called only when the user clicks a button now
+
+  const navBorder = useColorModeValue("gray.200", "gray.700")
+  const navShadow = useColorModeValue("0 2px 6px rgba(15, 23, 42, 0.04)", "0 2px 10px rgba(2,6,23,0.6)")
 
   return (
-    <Stack spacing={6} p={8} maxW="4xl" mx="auto">
-      {/* Header */}
-      <Stack direction="row" justify="space-between" align="center">
-        <Heading size="lg">Daily Knowledge</Heading>
-        <Stack direction="row" spacing={2}>
-          <Button variant="outline" onClick={() => navigate("/")}>
-            Home
-          </Button>
-          <Button variant="outline" onClick={handleSignOut}>
-            Sign Out
-          </Button>
-        </Stack>
-      </Stack>
-
-      {/* Main Content */}
-      <Stack spacing={6}>
-        <Stack spacing={2}>
+    <>
+      {/* Full-bleed nav (line/shadow spans viewport) */}
+      <Box
+        as="nav"
+        w="100%"
+        borderBottomWidth="1px"
+        borderBottomColor={navBorder}
+        boxShadow={navShadow}
+      >
+        {/* keep nav content centered */}
+        <Box maxW="4xl" mx="auto" px={8} py={4}>
+          <Stack direction="row" justify="space-between" align="center">
+            <Heading size="lg">Daily Knowledge</Heading>
+            <Stack direction="row" gap={2}>
+              <Button variant="outline" onClick={() => navigate("/")}>
+                Home
+              </Button>
+              <Button variant="outline" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </Stack>
+          </Stack>
+        </Box>
+      </Box>
+      
+      {/* Page container */}
+      <Stack gap={6} p={8} maxW="4xl" mx="auto">
+        <Stack gap={2}>
           <Heading size="md">Today's Concept</Heading>
           <Text color="gray.600">
             Learn something new and expand your knowledge
           </Text>
+          {!concept && !isLoading ? (
+            <Button onClick={fetchConcept} colorPalette="cyan">
+              Get Concept
+            </Button>
+          ) : !concept &&
+          <Button colorPalette="cyan" loading loadingText="Fetching concept...">
+            Get Concept 
+          </Button>}
         </Stack>
-
-        {isLoading && (
-          <Box textAlign="center" py={8}>
-            <Spinner size="lg" />
-            <Text mt={4}>Loading your concept...</Text>
-          </Box>
-        )}
 
         {error && (
           <Box bg="red.50" p={4} borderRadius="md" border="1px solid" borderColor="red.200">
@@ -96,18 +110,16 @@ const QuestionsPage = () => {
 
         {concept && !isLoading && (
           <Box bg="#2E2E2E" p={6} borderRadius="md">
-            <Stack spacing={4}>
-              <Heading size="sm">Content:</Heading>
+            <Stack gap={4}>
+              <Heading size="2xl" >Content:</Heading>
               <Text whiteSpace="pre-line">
                 {concept.content || "No content available"}
               </Text>
-              
-              {concept.problems && (
+
+              {concept.problemset && (
                 <>
-                  <Heading size="sm">Practice Problems:</Heading>
-                  <Text whiteSpace="pre-line">
-                    {concept.problems}
-                  </Text>
+                  <Heading size="2xl">Practice Problems: </Heading>
+                  <Text whiteSpace="pre-line">{concept.problemset.map((item, idx) => (`${idx+1}: ${item.problem} \n Answer: ${item.answer}\n \n Solution: ${item.solution}\n\n`))}</Text>
                 </>
               )}
             </Stack>
@@ -115,17 +127,15 @@ const QuestionsPage = () => {
         )}
 
         {concept && (
-          <Stack direction="row" spacing={4}>
+          <Stack direction="row" gap={4}>
             <Button onClick={fetchConcept} colorScheme="blue">
               Get New Concept
             </Button>
-            <Button variant="outline">
-              Mark as Completed
-            </Button>
+            <Button variant="outline">Mark as Completed</Button>
           </Stack>
         )}
       </Stack>
-    </Stack>
+    </>
   )
 }
 
