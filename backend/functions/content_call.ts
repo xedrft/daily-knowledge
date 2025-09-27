@@ -7,8 +7,8 @@ export default async function contentCall(currConcept, currLevel){
     });
     const contentRes = await client.responses.create({
         model : "gpt-4o-mini",
-        instructions : `${content}\n${currLevel}`,
-        input : currConcept,
+        instructions : `${content}`,
+        input : `${currConcept}\n${currLevel}`,
         temperature : 0.4,
         top_p : 0.8,
         text : {

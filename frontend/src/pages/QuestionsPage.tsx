@@ -70,7 +70,7 @@ const QuestionsPage = () => {
         boxShadow={navShadow}
       >
         {/* keep nav content centered */}
-        <Box maxW="4xl" mx="auto" px={8} py={4}>
+        <Box maxW="8xl" mx="auto" px={8} py={4}>
           <Stack direction="row" justify="space-between" align="center">
             <Heading size="lg">Daily Knowledge</Heading>
             <Stack direction="row" gap={2}>
@@ -86,7 +86,7 @@ const QuestionsPage = () => {
       </Box>
       
       {/* Page container */}
-      <Stack gap={6} p={8} maxW="4xl" mx="auto">
+      <Stack gap={6} p={8} maxW="8xl" mx="auto">
         <Stack gap={2}>
           <Heading size="md">Today's Concept</Heading>
           <Text color="gray.600">
@@ -139,6 +139,7 @@ const QuestionsPage = () => {
             Get New Concept
           </Button>
         )}
+
       </Stack>
     </>
   )
