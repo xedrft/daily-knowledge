@@ -6,6 +6,7 @@ export default function latexFormatter(input: string): ReactElement[] {
   // Regex patterns for inline and block LaTeX
   const inlinePattern = /\\\((.+?)\\\)/g; // Matches \(...\)
   const blockPattern = /\\\[(.+?)\\\]/gs; // Matches \[...\] with dotall flag
+  const boldPattern = /\*\*(.+?)\*\*/g; // Matches **text**
 
   const elements: ReactElement[] = [];
   let lastIndex = 0;
@@ -46,9 +47,33 @@ export default function latexFormatter(input: string): ReactElement[] {
     }
   }
 
+  // Handle bold text, avoiding math regions
+  let boldMatch;
+  const boldMatches: { start: number; end: number; text: string }[] = [];
+  
+  // Reset regex lastIndex to ensure proper matching
+  boldPattern.lastIndex = 0;
+  while ((boldMatch = boldPattern.exec(input)) !== null) {
+    // Check if this bold match is inside a math match
+    const isInsideMath = [...blockMatches, ...inlineMatches].some(mathMatch => 
+      boldMatch!.index >= mathMatch.start && boldMatch!.index < mathMatch.end
+    );
+    
+    if (!isInsideMath) {
+      boldMatches.push({
+        start: boldMatch.index,
+        end: boldMatch.index + boldMatch[0].length,
+        text: boldMatch[1]
+      });
+    }
+  }
+
   // Combine and sort all matches
-  const allMatches = [...blockMatches.map(m => ({ ...m, type: 'block' })), ...inlineMatches.map(m => ({ ...m, type: 'inline' }))]
-    .sort((a, b) => a.start - b.start);
+  const allMatches = [
+    ...blockMatches.map(m => ({ ...m, type: 'block' })), 
+    ...inlineMatches.map(m => ({ ...m, type: 'inline' })),
+    ...boldMatches.map(m => ({ ...m, type: 'bold' }))
+  ].sort((a, b) => a.start - b.start);
 
   // Process the string with matches
   for (const match of allMatches) {
@@ -69,11 +94,13 @@ export default function latexFormatter(input: string): ReactElement[] {
       }
     }
 
-    // Add the math component
+    // Add the math or bold component
     if (match.type === 'block') {
-      elements.push(<BlockMath key={key++} math={match.latex} />);
-    } else {
-      elements.push(<InlineMath key={key++} math={match.latex} />);
+      elements.push(<BlockMath key={key++} math={(match as any).latex} />);
+    } else if (match.type === 'inline') {
+      elements.push(<InlineMath key={key++} math={(match as any).latex} />);
+    } else if (match.type === 'bold') {
+      elements.push(<strong key={key++}>{(match as any).text}</strong>);
     }
 
     lastIndex = match.end;

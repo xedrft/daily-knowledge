@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import latexFormatter from "@/functions/latexFormatter"
 import "@/styles/math.css"
+import ProblemSet from "@/components/ProblemSet"
 
 const QuestionsPage = () => {
   const [concept, setConcept] = useState<any>(null)
@@ -121,35 +122,7 @@ const QuestionsPage = () => {
               </Box>
 
               {concept.problemset && (
-                <>
-                  <Heading size="2xl">Practice Problems: </Heading>
-                  <Stack gap={6}>
-                    {concept.problemset.map((item: any, idx: number) => (
-                      <Box key={idx} p={4} bg="#3A3A3A" borderRadius="md">
-                        <Stack gap={3}>
-                          <Box>
-                            <Heading size="md" mb={2}>Problem {idx + 1}:</Heading>
-                            <Box className="math-container">
-                              {latexFormatter(item.problem)}
-                            </Box>
-                          </Box>
-                          <Box>
-                            <Heading size="md" mb={2}>Answer:</Heading>
-                            <Box className="math-container">
-                              {latexFormatter(item.answer)}
-                            </Box>
-                          </Box>
-                          <Box>
-                            <Heading size="md" mb={2}>Solution:</Heading>
-                            <Box className="math-container">
-                              {latexFormatter(item.solution)}
-                            </Box>
-                          </Box>
-                        </Stack>
-                      </Box>
-                    ))}
-                  </Stack>
-                </>
+                <ProblemSet problemset={concept.problemset} />
               )}
             </Stack>
           </Box>

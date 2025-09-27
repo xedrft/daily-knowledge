@@ -1,42 +1,41 @@
-import { Button, Stack, Text, Heading } from "@chakra-ui/react"
-import { Link, useNavigate } from "react-router-dom"
+import { Button, Stack, Heading } from "@chakra-ui/react"
+import { Link } from "react-router-dom"
+import { useState, useEffect } from "react"
 
 const HomePage = () => {
-  const navigate = useNavigate()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
+  useEffect(() => {
+    const jwt = localStorage.getItem("jwt")
+    setIsLoggedIn(!!jwt)
+  }, [])
   return (
     <Stack gap={8} align="center" justify="center" minH="100vh" p={8}>
-      <Heading size="2xl" textAlign="center">
+      <Heading size="5xl" textAlign="center">
         Daily Knowledge
       </Heading>
       
-      <Text fontSize="lg" textAlign="center" maxW="md">
-        Educate yourself with AI-powered learning. 
-        Discover new concepts and test your knowledge daily.
-      </Text>
 
-      <Stack direction="row" gap={4}>
-        <Link to="/signin" style={{ textDecoration: "none" }}>
-          <Button colorScheme="blue" size="lg">
-            Get Started
-          </Button>
-        </Link>
-        <Link to="/questions" style={{ textDecoration: "none" }}>
-          <Button variant="outline" size="lg">
+      <Stack direction={isLoggedIn ? "column" : "row"} gap={4} w={isLoggedIn ? "full" : "auto"} maxW="md">
+        {!isLoggedIn && (
+          <Link to="/signin" style={{ textDecoration: "none" }}>
+            <Button colorPalette="cyan" size="lg">
+              Get Started
+            </Button>
+          </Link>
+        )}
+        <Link to="/questions" style={{ textDecoration: "none", width: isLoggedIn ? "100%" : "auto" }}>
+          <Button 
+            variant={isLoggedIn ? "solid" : "outline"} 
+            colorPalette={isLoggedIn ? "cyan" : undefined}
+            size="lg"
+            w={isLoggedIn ? "full" : "auto"}
+          >
             Browse Questions
           </Button>
         </Link>
       </Stack>
 
-      <Stack gap={4} align="center" mt={12}>
-        <Heading size="md">Features</Heading>
-        <Stack gap={2} textAlign="center">
-          <Text>📚 AI-generated educational content</Text>
-          <Text>🎯 Personalized learning paths</Text>
-          <Text>💡 Daily knowledge challenges</Text>
-          <Text>📊 Track your progress</Text>
-        </Stack>
-      </Stack>
     </Stack>
   )
 }
