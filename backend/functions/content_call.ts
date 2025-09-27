@@ -6,7 +6,7 @@ export default async function contentCall(currConcept, currLevel){
         apiKey: process.env['OPENAI_API_KEY'],
     });
     const contentRes = await client.responses.create({
-        model : "gpt-4.1-mini",
+        model : "gpt-4o-mini",
         instructions : `${content}\n${currLevel}`,
         input : currConcept,
         temperature : 0.4,
