@@ -3,6 +3,7 @@ import { useColorModeValue } from "@/components/ui/color-mode"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import latexFormatter from "@/functions/latexFormatter"
+import "@/styles/math.css"
 
 const QuestionsPage = () => {
   const [concept, setConcept] = useState<any>(null)
@@ -113,7 +114,9 @@ const QuestionsPage = () => {
           <Box bg="#2E2E2E" p={6} borderRadius="md">
             <Stack gap={4}>
               <Heading size="2xl" >Content:</Heading>
-              <Box whiteSpace="pre-line">
+              <Box 
+                className="math-content-container"
+              >
                 {latexFormatter(concept.content || "No content available")}
               </Box>
 
@@ -126,15 +129,21 @@ const QuestionsPage = () => {
                         <Stack gap={3}>
                           <Box>
                             <Heading size="md" mb={2}>Problem {idx + 1}:</Heading>
-                            <Box>{latexFormatter(item.problem)}</Box>
+                            <Box className="math-container">
+                              {latexFormatter(item.problem)}
+                            </Box>
                           </Box>
                           <Box>
                             <Heading size="md" mb={2}>Answer:</Heading>
-                            <Box>{latexFormatter(item.answer)}</Box>
+                            <Box className="math-container">
+                              {latexFormatter(item.answer)}
+                            </Box>
                           </Box>
                           <Box>
                             <Heading size="md" mb={2}>Solution:</Heading>
-                            <Box>{latexFormatter(item.solution)}</Box>
+                            <Box className="math-container">
+                              {latexFormatter(item.solution)}
+                            </Box>
                           </Box>
                         </Stack>
                       </Box>
@@ -146,13 +155,16 @@ const QuestionsPage = () => {
           </Box>
         )}
 
-        {concept && (
-          <Stack direction="row" gap={4}>
-            <Button onClick={fetchConcept} colorScheme="blue">
+        {concept && !isLoading ?(
+          <Stack gap={4}>
+            <Button onClick={fetchConcept} colorPalette="cyan">
               Get New Concept
             </Button>
-            <Button variant="outline">Mark as Completed</Button>
           </Stack>
+        ) : concept && (
+          <Button colorPalette="cyan" loading loadingText="Fetching new concept...">
+            Get New Concept
+          </Button>
         )}
       </Stack>
     </>

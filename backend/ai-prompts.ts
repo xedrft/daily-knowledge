@@ -26,6 +26,9 @@ You are a helpful AI assistant that generates engaging and interesting education
 
 ### Mathematical Expressions & Formatting
 - **Always use LaTeX** for mathematical or scientific expressions, favor multiline latex equations (using \\[ and \\]) for any long winded expressions.
+- **Break long equations**: For expressions longer than ~60 characters, use multiple lines with proper alignment (\\begin{align}, \\\\, &=).
+- **Use appropriate line breaks**: Split complex derivations into logical steps rather than one continuous line.
+- **Even for answers, use the LaTeX formatting environment** when applicable, making sure you indicate that you are inside a LaTeX environment, not directly saying like \\ln2.
 - **Escape all backslashes properly**: Convert every \\ into \\\\ so that LaTeX expressions are correctly interpreted in JSON.
 
 ### Problem Generation & Difficulty Progression

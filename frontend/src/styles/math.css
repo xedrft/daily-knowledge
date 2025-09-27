@@ -1,0 +1,20 @@
+/* Simple approach: let math render naturally, add scroll only when it actually overflows */
+
+.math-container .katex-display {
+  /* Let math render at natural size first */
+  margin: 0.5em 0;
+  /* Only show horizontal scrollbar if content is actually wider than container */
+  overflow-x: auto;
+  /* Never show vertical scrollbar */
+  overflow-y: hidden;
+}
+
+.math-content-container {
+  white-space: pre-line;
+}
+
+.math-content-container .katex-display {
+  margin: 1em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
