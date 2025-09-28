@@ -36,23 +36,29 @@ const SignInPage = () => {
       });
       
       const loginJson = await loginRes.json();
+      console.log("Raw response:", loginRes.status, loginJson); // Debug the actual response
       
       if (loginRes.ok) {
         localStorage.setItem("jwt", loginJson.jwt);
         console.log("Login successful:", loginJson);
         navigate("/questions"); // Redirect to questions page
       } else {
-        setError(loginJson.error || "Login failed");
+        // Handle nested error structure from Strapi
+        console.log("Error response structure:", JSON.stringify(loginJson, null, 2)); // Debug error structure
+        const errorMessage = loginJson.error || "Login failed";
+        console.log("Extracted error message:", errorMessage); // Debug extracted message
+        setError(errorMessage);
+        console.error("Login error:", loginJson); // Add logging to debug
       }
 
     } catch (err) {
-      console.error("Error:", err);
-      setError("Network error. Please try again.");
+      console.error("Network/parsing error:", err);
+      setError("Network error. Please check your connection and try again.");
     } finally {
       setIsLoading(false)
     }
   }
-  
+
   if (localStorage.getItem("jwt")) {
     navigate("/questions")
   }

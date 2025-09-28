@@ -114,7 +114,7 @@ const QuestionsPage = () => {
         {concept && !isLoading && (
           <Box bg="#2E2E2E" p={6} borderRadius="md">
             <Stack gap={4}>
-              <Heading size="2xl" >Content:</Heading>
+              <Heading size="3xl" color="cyan.500">{concept.title}</Heading>
               <Box 
                 className="math-content-container"
               >

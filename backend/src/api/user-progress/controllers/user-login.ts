@@ -49,8 +49,13 @@ export default factories.createCoreController('api::user-progress.user-progress'
 
         } catch (error) {
             console.log('An error occurred:', error.response?.data || error);
-            ctx.response.body = { error: "An error occurred during sign in. Please try again." };
-            ctx.response.status = 400;
+            
+            // Pass through the actual error message from Strapi auth
+            const errorData = error.response?.data;
+            const errorMessage = errorData?.error?.message || errorData?.message || "An error occurred during sign in. Please try again.";
+            
+            ctx.response.body = { error: errorMessage };
+            ctx.response.status = error.response?.status || 400;
         }
     }
 
