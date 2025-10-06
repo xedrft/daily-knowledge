@@ -30,11 +30,18 @@ module.exports = {
         },
         {
             method: "POST",
+            path: "/get-field-suggestions",
+            handler: "change-field.getSuggestedFields",
+        },
+        {
+            method: "POST",
             path : "/change-field",
             handler: "change-field.changeField",
-            config: {
-                auth: false,
-            },
+        },
+        {
+            method: "GET",
+            path: "/check-field",
+            handler: "change-field.checkUserField",
         }
     ]
 };

@@ -133,6 +133,13 @@ const QuestionsPage = () => {
             <Button onClick={fetchConcept} colorPalette="cyan">
               Get New Concept
             </Button>
+            <Button 
+              onClick={() => navigate("/change-field")} 
+              variant="outline" 
+              colorPalette="cyan"
+            >
+              Change Field of Study
+            </Button>
           </Stack>
         ) : concept && (
           <Button colorPalette="cyan" loading loadingText="Fetching new concept...">

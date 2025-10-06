@@ -45,6 +45,14 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 jwt: response.data.jwt
             };
 
+            // Set JWT as an HTTP-only cookie for secure authentication
+            ctx.cookies.set("jwt", response.data.jwt, {
+                httpOnly: true,
+                secure: false, // Set to true in production with HTTPS
+                sameSite: 'lax',
+                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+            });
+
             console.log('User signed in successfully:', response.data.user);
 
         } catch (error) {

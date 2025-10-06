@@ -24,7 +24,7 @@ const HomePage = () => {
             </Button>
           </Link>
         )}
-        <Link to="/questions" style={{ textDecoration: "none", width: isLoggedIn ? "100%" : "auto" }}>
+        <Link to={isLoggedIn ? "/questions" : "/signin"} style={{ textDecoration: "none", width: isLoggedIn ? "100%" : "auto" }}>
           <Button 
             variant={isLoggedIn ? "solid" : "outline"} 
             colorPalette={isLoggedIn ? "cyan" : undefined}
@@ -34,6 +34,18 @@ const HomePage = () => {
             Browse Questions
           </Button>
         </Link>
+        {isLoggedIn && (
+          <Link to="/change-field" style={{ textDecoration: "none", width: "100%" }}>
+            <Button 
+              variant="outline" 
+              colorPalette="cyan"
+              size="lg"
+              w="full"
+            >
+              Change Field of Study
+            </Button>
+          </Link>
+        )}
       </Stack>
 
     </Stack>

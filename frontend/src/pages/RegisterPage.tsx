@@ -42,10 +42,10 @@ const RegisterPage = () => {
       const registerJson = await registerRes.json();
       
       if (registerRes.ok) {
-        setSuccess("Account created successfully! You can now sign in.");
+        setSuccess("Account created successfully! Redirecting to sign in...");
         setTimeout(() => {
           navigate("/signin");
-        }, 2000);
+        }, 1000);
       } else {
         setError(registerJson.error || "Registration failed");
       }

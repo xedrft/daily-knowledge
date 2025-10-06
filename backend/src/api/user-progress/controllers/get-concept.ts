@@ -37,7 +37,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             const conceptRes = await client.responses.create({
                 model : "gpt-4o-mini",
                 instructions: prompts.concept,
-                input: `${pastTitles}\n${pastData["currentField"]}\n${currLevel}`,
+                input: `${pastData["currentField"]}\n${pastTitles}\n${currLevel}`,
                 top_p : 0.75
             });
             
