@@ -1,5 +1,4 @@
 import { factories } from '@strapi/strapi';
-import axios from 'axios';
 import { OpenAI } from 'openai';
 import {field} from "../../../../ai-prompts";
 
@@ -32,16 +31,24 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 return;
             }
 
+            const currentFieldConcepts = Array.isArray(userProgress.currentFieldConcepts) ? userProgress.currentFieldConcepts : [];
+            const allPastConcepts = Array.isArray(userProgress.allPastConcepts) ? userProgress.allPastConcepts : [];
+
             ctx.response.body = {
                 hasField: !!userProgress.currentField,
                 currentField: userProgress.currentField,
-                pastFields: userProgress.pastFields || []
+                pastFields: userProgress.pastFields || [],
+                currentFieldConcepts: currentFieldConcepts,
+                allPastConcepts: allPastConcepts,
+                conceptStats: {
+                    currentFieldCount: currentFieldConcepts.length,
+                    totalConceptsCount: allPastConcepts.length + currentFieldConcepts.length
+                }
             };
 
         } catch (error) {
             console.error('Error checking user field:', error);
-            ctx.response.body = { error: "An error occurred while checking field. Please try again." };
-            ctx.response.status = 400;
+            return ctx.badRequest("An error occurred while checking field. Please try again.");
         }
     },
 
@@ -68,8 +75,8 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 return ctx.badRequest("User progress not found");
             }
 
-            const current_field = userProgress.currentField;
-            const past_fields = Array.isArray(userProgress.pastFields) ? userProgress.pastFields : [];
+            const currentField = userProgress.currentField;
+            const pastFields = Array.isArray(userProgress.pastFields) ? userProgress.pastFields : [];
             const generalArea = ctx.request.body["generalArea"];
 
             if (!generalArea) {
@@ -80,11 +87,10 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 apiKey: process.env['OPENAI_API_KEY'],
             });
 
-
             const fieldRes = await client.responses.create({
                 model: "gpt-4o-mini",
                 instructions: field,
-                input : `General Area: ${generalArea}\nCurrent Field: ${current_field || "None"}\nPast Fields: ${past_fields.length > 0 ? past_fields.join(", ") : "None"}`,
+                input : `General Area: ${generalArea}\nCurrent Field: ${currentField || "None"}\nPast Fields: ${pastFields.length > 0 ? pastFields.join(", ") : "None"}`,
                 top_p: 0.75,
                 text : {
                     format : {
@@ -115,8 +121,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
 
         } catch (error) {
             console.error('Error getting field suggestions:', error);
-            ctx.response.body = { error: "An error occurred while getting suggestions. Please try again." };
-            ctx.response.status = 400;
+            return ctx.badRequest("An error occurred while getting suggestions. Please try again.");
         }
     },
 
@@ -151,28 +156,35 @@ export default factories.createCoreController('api::user-progress.user-progress'
             // Update user's field
             const currentField = userProgress.currentField;
             const pastFields = Array.isArray(userProgress.pastFields) ? userProgress.pastFields : [];
+            const currentFieldConcepts = Array.isArray(userProgress.currentFieldConcepts) ? userProgress.currentFieldConcepts : [];
+            const allPastConcepts = Array.isArray(userProgress.allPastConcepts) ? userProgress.allPastConcepts : [];
 
             // Add current field to past fields if it exists
             const updatedPastFields = currentField ? [...pastFields, currentField] : pastFields;
+            
+            // Move current field concepts to all past concepts and reset current field concepts
+            const updatedAllPastConcepts = [...allPastConcepts, ...currentFieldConcepts];
 
             await strapi.documents("api::user-progress.user-progress").update({
                 documentId: userProgress.documentId,
                 data: {
                     currentField: selectedField,
-                    pastFields: updatedPastFields
+                    pastFields: updatedPastFields,
+                    currentFieldConcepts: [], // Reset for new field
+                    allPastConcepts: updatedAllPastConcepts
                 }
             });
 
             ctx.response.body = {
                 message: "Field changed successfully!",
                 newField: selectedField,
-                pastFields: updatedPastFields
+                pastFields: updatedPastFields,
+                conceptsMovedToPast: currentFieldConcepts.length
             };
 
         } catch (error) {
             console.error('Error changing field:', error);
-            ctx.response.body = { error: "An error occurred while changing field. Please try again." };
-            ctx.response.status = 400;
+            return ctx.badRequest("An error occurred while changing field. Please try again.");
         }
     }
 }));

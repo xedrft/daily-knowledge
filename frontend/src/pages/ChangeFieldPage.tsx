@@ -15,6 +15,12 @@ interface UserFieldData {
   hasField: boolean
   currentField: string | null
   pastFields: string[]
+  currentFieldConcepts: string[]
+  allPastConcepts: string[]
+  conceptStats: {
+    currentFieldCount: number
+    totalConceptsCount: number
+  }
 }
 
 interface FieldSuggestions {
@@ -33,8 +39,6 @@ const ChangeFieldPage = () => {
     register: registerFieldSelection,
     handleSubmit: handleSubmitFieldSelection,
     formState: { errors: fieldSelectionErrors },
-    setValue: setFieldValue,
-    watch: watchField,
   } = useForm<SelectFieldValues>()
   
   const [isLoading, setIsLoading] = useState(false)
@@ -186,14 +190,31 @@ const ChangeFieldPage = () => {
 
       {userFieldData && (
         <Box bg="#1a1a1a" border="1px solid #4A4A4A" p={6} borderRadius="md" maxW="md" w="full">
-          <Stack gap={3}>
+          <Stack gap={4}>
             <Text fontWeight="bold">Current Status:</Text>
             {userFieldData.hasField ? (
               <>
-                <Text><strong>Current Field:</strong> <span style={{color: "#7dd3fc"}}>{userFieldData.currentField}</span></Text>
+                <Box>
+                  <Text><strong>Current Field:</strong> <span style={{color: "#7dd3fc"}}>{userFieldData.currentField}</span></Text>
+                  <Text fontSize="sm" color="gray.400">
+                    {userFieldData.conceptStats.currentFieldCount} concepts learned in this field
+                  </Text>
+                </Box>
+                
                 {userFieldData.pastFields.length > 0 && (
-                  <Text><strong>Past Fields:</strong> <span style={{color: "#d1d5db"}}>{userFieldData.pastFields.join(", ")}</span></Text>
+                  <Box>
+                    <Text><strong>Past Fields:</strong> <span style={{color: "#d1d5db"}}>{userFieldData.pastFields.join(", ")}</span></Text>
+                    <Text fontSize="sm" color="gray.400">
+                      {userFieldData.conceptStats.totalConceptsCount - userFieldData.conceptStats.currentFieldCount} concepts from past fields
+                    </Text>
+                  </Box>
                 )}
+                
+                <Box pt={2} borderTop="1px solid #4A4A4A">
+                  <Text fontSize="sm" color="cyan.300">
+                    <strong>Total Learning Progress:</strong> {userFieldData.conceptStats.totalConceptsCount} concepts explored
+                  </Text>
+                </Box>
               </>
             ) : (
               <Text color="orange.400">No field selected yet</Text>
@@ -242,19 +263,29 @@ const ChangeFieldPage = () => {
 
             <Field.Root invalid={!!fieldSelectionErrors.selectedField}>
               <Field.Label>Choose Your Field of Study</Field.Label>
-              <Stack gap={2}>
+              <Stack gap={3}>
                 {fieldSuggestions?.suggestions.map((field, index) => (
-                  <label key={index} style={{ cursor: 'pointer' }}>
-                    <input
-                      type="radio"
-                      {...registerFieldSelection("selectedField", {
-                        required: "Please select a field"
-                      })}
-                      value={field}
-                      style={{ marginRight: '8px' }}
-                    />
-                    <Text as="span" color="white">{field}</Text>
-                  </label>
+                  <Box 
+                    key={index} 
+                    p={3} 
+                    bg="#1a1a1a" 
+                    border="1px solid #4A4A4A" 
+                    borderRadius="md"
+                    cursor="pointer"
+                    _hover={{ bg: "#2a2a2a" }}
+                  >
+                    <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                      <input
+                        type="radio"
+                        {...registerFieldSelection("selectedField", {
+                          required: "Please select a field"
+                        })}
+                        value={field}
+                        style={{ marginRight: '12px', accentColor: '#7dd3fc' }}
+                      />
+                      <Text color="white">{field}</Text>
+                    </label>
+                  </Box>
                 ))}
               </Stack>
               <Field.ErrorText>{fieldSelectionErrors.selectedField?.message}</Field.ErrorText>

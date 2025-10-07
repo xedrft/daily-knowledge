@@ -422,12 +422,15 @@ export interface ApiUserProgressUserProgress
     draftAndPublish: true;
   };
   attributes: {
+    allPastConcepts: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<[]>;
     concepts: Schema.Attribute.Relation<'manyToMany', 'api::concept.concept'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     current_level: Schema.Attribute.Float;
     currentField: Schema.Attribute.String & Schema.Attribute.Required;
+    currentFieldConcepts: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<[]>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

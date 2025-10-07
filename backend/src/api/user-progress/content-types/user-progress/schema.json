@@ -24,6 +24,14 @@
     "pastFields": {
       "type": "json"
     },
+    "currentFieldConcepts": {
+      "type": "json",
+      "default": []
+    },
+    "allPastConcepts": {
+      "type": "json",
+      "default": []
+    },
     "concepts": {
       "type": "relation",
       "relation": "manyToMany",

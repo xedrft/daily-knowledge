@@ -26,8 +26,19 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 },
                 populate : ["concepts"]
             });
-            const pastConcepts = pastData["concepts"];
-            const pastTitles = pastConcepts.map(concept => concept.title);
+            
+            // Get current field concepts and all past concepts
+            const currentFieldConcepts = Array.isArray(pastData["currentFieldConcepts"]) ? pastData["currentFieldConcepts"] : [];
+            const allPastConcepts = Array.isArray(pastData["allPastConcepts"]) ? pastData["allPastConcepts"] : [];
+            
+            // Use current field concepts for AI prompt (field-specific learning progression)
+            const pastTitles = currentFieldConcepts.map(concept => {
+                if (typeof concept === 'string') return concept;
+                if (concept && typeof concept === 'object' && 'title' in concept) {
+                    return (concept as any).title;
+                }
+                return '';
+            }).filter(Boolean);
             const currLevel = pastData["current_level"];
 
             const client = new OpenAI({
@@ -80,11 +91,21 @@ export default factories.createCoreController('api::user-progress.user-progress'
                   title : currConcept
               }
             });
+            
+            // Add to current field concepts and all past concepts
+            const updatedCurrentFieldConcepts = [...currentFieldConcepts, currConcept];
+            const updatedAllPastConcepts = [...allPastConcepts, currConcept];
+            
+            // Also update the old concepts relation for backward compatibility
+            const pastConcepts = pastData["concepts"] || [];
             pastConcepts.push(content);
+            
             await strapi.documents("api::user-progress.user-progress").update({
                 documentId : pastData["documentId"],
                 data : {
-                    concepts : pastConcepts
+                    concepts : pastConcepts,
+                    currentFieldConcepts: updatedCurrentFieldConcepts,
+                    allPastConcepts: updatedAllPastConcepts
                 },
                 status : "published"
             });

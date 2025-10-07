@@ -2,8 +2,6 @@
  * user-progress router
  */
 
-import path from "path";
-
 module.exports = {
     routes: [
         {
