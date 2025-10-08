@@ -2,12 +2,13 @@ import 'katex/dist/katex.min.css';
 // @ts-ignore: no type definitions for react-katex
 import { BlockMath, InlineMath } from 'react-katex';
 import type { ReactElement } from 'react';
+import { Heading } from '@chakra-ui/react';
 
 export default function latexFormatter(input: string): ReactElement[] {
   // Regex patterns for inline and block LaTeX
   const inlinePattern = /\\\((.+?)\\\)/g; // Matches \(...\)
   const blockPattern = /\\\[(.+?)\\\]/gs; // Matches \[...\] with dotall flag
-  const boldPattern = /\*\*(.+?)\*\*/g; // Matches **text**
+  // Bold will be processed inline during plain text handling now
 
   const elements: ReactElement[] = [];
   let lastIndex = 0;
@@ -48,51 +49,64 @@ export default function latexFormatter(input: string): ReactElement[] {
     }
   }
 
-  // Handle bold text, avoiding math regions
-  let boldMatch;
-  const boldMatches: { start: number; end: number; text: string }[] = [];
-  
-  // Reset regex lastIndex to ensure proper matching
-  boldPattern.lastIndex = 0;
-  while ((boldMatch = boldPattern.exec(input)) !== null) {
-    // Check if this bold match is inside a math match
-    const isInsideMath = [...blockMatches, ...inlineMatches].some(mathMatch => 
-      boldMatch!.index >= mathMatch.start && boldMatch!.index < mathMatch.end
-    );
-    
-    if (!isInsideMath) {
-      boldMatches.push({
-        start: boldMatch.index,
-        end: boldMatch.index + boldMatch[0].length,
-        text: boldMatch[1]
-      });
-    }
-  }
-
   // Combine and sort all matches
   const allMatches = [
     ...blockMatches.map(m => ({ ...m, type: 'block' })), 
-    ...inlineMatches.map(m => ({ ...m, type: 'inline' })),
-    ...boldMatches.map(m => ({ ...m, type: 'bold' }))
+    ...inlineMatches.map(m => ({ ...m, type: 'inline' }))
   ].sort((a, b) => a.start - b.start);
+
+  // Helper to push plain text with markdown heading support
+  const pushPlainText = (text: string) => {
+    if (!text) return;
+    const lines = text.split('\n');
+    lines.forEach((line, lineIdx) => {
+      if (line.trim().length === 0) {
+        // blank line -> just a break (unless it's the very first element)
+        if (elements.length && (lineIdx < lines.length - 1)) {
+          elements.push(<br key={key++} />);
+        }
+        return;
+      }
+
+      // Detect markdown headings ###, ##, # at start of line (not inside math because this is plain text phase)
+      const h3 = /^###\s+(.+)/.exec(line);
+      const h2 = /^##\s+(.+)/.exec(line);
+      const h1 = /^#\s+(.+)/.exec(line);
+      if (h3) {
+        elements.push(<Heading as="h3" size="md" key={key++}>{h3[1]}</Heading>);
+      } else if (h2) {
+        elements.push(<Heading as="h2" size="lg" key={key++}>{h2[1]}</Heading>);
+      } else if (h1) {
+        elements.push(<Heading as="h1" size="xl" key={key++}>{h1[1]}</Heading>);
+      } else {
+        // Inline bold parsing: split by **...** while preserving order
+        const parts: ReactElement[] = [];
+        const boldRegex = /\*\*([^*]+)\*\*/g;
+        let last = 0;
+        let m: RegExpExecArray | null;
+        while ((m = boldRegex.exec(line)) !== null) {
+          if (m.index > last) {
+            parts.push(<span key={key++}>{line.slice(last, m.index)}</span>);
+          }
+            parts.push(<strong key={key++}>{m[1]}</strong>);
+          last = m.index + m[0].length;
+        }
+        if (last < line.length) {
+          parts.push(<span key={key++}>{line.slice(last)}</span>);
+        }
+        // Wrap line fragment group
+        elements.push(<span key={key++}>{parts}</span>);
+      }
+      if (lineIdx < lines.length - 1) elements.push(<br key={key++} />);
+    });
+  };
 
   // Process the string with matches
   for (const match of allMatches) {
     // Add text before the match
     if (lastIndex < match.start) {
       const textBefore = input.substring(lastIndex, match.start);
-      if (textBefore) {
-        // Split text by newlines and create proper line breaks
-        const lines = textBefore.split('\n');
-        lines.forEach((line, index) => {
-          if (line || index === 0) { // Include empty lines except leading ones
-            elements.push(<span key={key++}>{line}</span>);
-          }
-          if (index < lines.length - 1) {
-            elements.push(<br key={key++} />);
-          }
-        });
-      }
+      pushPlainText(textBefore);
     }
 
     // Add the math or bold component
@@ -100,8 +114,6 @@ export default function latexFormatter(input: string): ReactElement[] {
       elements.push(<BlockMath key={key++} math={(match as any).latex} />);
     } else if (match.type === 'inline') {
       elements.push(<InlineMath key={key++} math={(match as any).latex} />);
-    } else if (match.type === 'bold') {
-      elements.push(<strong key={key++}>{(match as any).text}</strong>);
     }
 
     lastIndex = match.end;
@@ -109,19 +121,7 @@ export default function latexFormatter(input: string): ReactElement[] {
 
   // Add remaining text
   if (lastIndex < input.length) {
-    const remainingText = input.substring(lastIndex);
-    if (remainingText) {
-      // Split remaining text by newlines and create proper line breaks
-      const lines = remainingText.split('\n');
-      lines.forEach((line, index) => {
-        if (line || index === 0) { // Include empty lines except leading ones
-          elements.push(<span key={key++}>{line}</span>);
-        }
-        if (index < lines.length - 1) {
-          elements.push(<br key={key++} />);
-        }
-      });
-    }
+    pushPlainText(input.substring(lastIndex));
   }
 
   return elements;
