@@ -1,4 +1,5 @@
 import 'katex/dist/katex.min.css';
+// @ts-ignore: no type definitions for react-katex
 import { BlockMath, InlineMath } from 'react-katex';
 import type { ReactElement } from 'react';
 
