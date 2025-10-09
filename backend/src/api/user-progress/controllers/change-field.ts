@@ -35,7 +35,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             const allPastConcepts = Array.isArray(userProgress.allPastConcepts) ? userProgress.allPastConcepts : [];
 
             ctx.response.body = {
-                hasField: !!userProgress.currentField,
+                hasField: userProgress.currentField == "None" ? false : true,
                 currentField: userProgress.currentField,
                 pastFields: userProgress.pastFields || [],
                 currentFieldConcepts: currentFieldConcepts,

@@ -1,6 +1,6 @@
 import { Button, Stack, Heading, Text, Box } from "@chakra-ui/react"
 import { useColorModeValue } from "@/components/ui/color-mode"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import latexFormatter from "@/functions/latexFormatter"
 import "@/styles/math.css"
@@ -12,11 +12,51 @@ const QuestionsPage = () => {
   const [error, setError] = useState<string>("")
   const navigate = useNavigate()
 
+  // NEW: unified auth + field presence gate
+  const redirectCheck = async (): Promise<boolean> => {
+    const jwt = localStorage.getItem("jwt")
+    if (!jwt) {
+      navigate("/signin")
+      return false
+    }
+    try {
+      const resp = await fetch("http://127.0.0.1:1337/api/check-field", {
+        method: "GET",
+        credentials: "include",
+        headers: { Authorization: `Bearer ${jwt}` }
+      })
+      if (!resp.ok) {
+        if (resp.status === 401 || resp.status === 403) {
+          navigate("/signin")
+          return false
+        }
+        // backend error: silently stop
+        return false
+      }
+      const data = await resp.json()
+      if (data.hasField === false) {
+        navigate("/change-field")
+        return false
+      }
+      return true
+    } catch (e) {
+      console.error("Field check failed:", e)
+      return false
+    }
+  }
+
+  useEffect(() => {
+    redirectCheck()
+  }, [])
+
   const fetchConcept = async () => {
     setIsLoading(true)
     setError("")
-    
     try {
+      // Re-use the unified gate; abort if redirect happened
+      const ok = await redirectCheck()
+      if (!ok) return
+
       const jwt = localStorage.getItem("jwt")
       if (!jwt) {
         navigate("/signin")
@@ -25,25 +65,18 @@ const QuestionsPage = () => {
 
       const conceptRes = await fetch("http://127.0.0.1:1337/api/get-concept", {
         credentials: "include",
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      });
-      
-      const conceptJson = await conceptRes.json();
-      
+        headers: { Authorization: `Bearer ${jwt}` }
+      })
+      const conceptJson = await conceptRes.json()
       if (conceptRes.ok) {
-        setConcept(conceptJson);
+        setConcept(conceptJson)
       } else {
-        setError(conceptJson.error || "Failed to fetch concept");
-        if (conceptRes.status === 401 || conceptRes.status === 403) {
-          navigate("/signin")
-        }
+        setError(conceptJson.error || "Failed to fetch concept")
+        if (conceptRes.status === 401 || conceptRes.status === 403) navigate("/signin")
       }
-      console.log(conceptJson);
     } catch (err) {
-      console.error("Error:", err);
-      setError("Network error. Please try again.");
+      console.error("Error:", err)
+      setError("Network error. Please try again.")
     } finally {
       setIsLoading(false)
     }

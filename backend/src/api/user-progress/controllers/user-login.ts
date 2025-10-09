@@ -14,14 +14,36 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 password: ctx.request.body["password"],
             });
 
+            const user = response.data.user;
+            const jwt = response.data.jwt;
+
+            // Initialize user progress record
+            let progressInitError: string | null = null;
+            try {
+                await strapi.documents('api::user-progress.user-progress').create({
+                    data: {
+                        user_id: user.id,
+                        currentField: 'None', // initial placeholder; can be changed later
+                        pastFields: [],
+                        currentFieldConcepts: [],
+                        allPastConcepts: [],
+                        current_level: 7 // midpoint (approx 12th grade) — adjust as needed
+                    },
+                    status: 'published'
+                });
+            } catch (e) {
+                progressInitError = 'User created but progress initialization failed.';
+                console.error('Progress init error:', e);
+            }
+
             ctx.response.body = {
                 message: "Successfully registered user!",
-                user: response.data.user,
-                jwt : response.data.jwt
+                user,
+                jwt,
+                ...(progressInitError ? { warning: progressInitError } : {})
             };
 
-
-            console.log('User registered successfully:', response.data.user);
+            console.log('User registered successfully:', user);
         } catch (error) {
             console.log('An error occurred:', error.response?.data || error);
             ctx.response.body = { error: "An error occurred during registration. Please try again." };
