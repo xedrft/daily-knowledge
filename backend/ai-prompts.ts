@@ -78,11 +78,12 @@ PROBLEMSET RULES:
 
 OUTPUT JSON SCHEMA:
 {
+  "cot": string // internal reasoning chain: focus on pedagogical sequencing and LaTeX formatting integrity.
   "content": string,            // 1800-2500 chars (not counting markup escapes)
   "problemset": [
      { "problem": string, "solution": string, "answer": string }, ... 3-4 items
   ],
-  "fields": [ string, string, (optional third) ]
+  "fields": [ string, string, ... ],  
 }
 
 DISALLOWED:
@@ -97,6 +98,7 @@ SELF-CHECK BEFORE RESPONDING (DO NOT OUTPUT THIS LIST):
 3. No raw (x^2) or [E=...] patterns?
 4. JSON parses? Keys spelled correctly?
 5. Problem count 3-4? Each has problem+solution+answer?
+6. "cot" present and well thought out
 If any fail: silently fix, THEN output final JSON only.
 `
 

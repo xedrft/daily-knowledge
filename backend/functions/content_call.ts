@@ -19,6 +19,9 @@ export default async function contentCall(currConcept, currLevel){
                 "schema": {
                     "type": "object",
                     "properties": {
+                    "cot": {
+                        "type": "string"
+                    },
                     "content": {
                         "type": "string"
                     },
@@ -53,6 +56,7 @@ export default async function contentCall(currConcept, currLevel){
                     }
                     },
                     "required": [
+                    "cot",
                     "content",
                     "problemset",
                     "fields"

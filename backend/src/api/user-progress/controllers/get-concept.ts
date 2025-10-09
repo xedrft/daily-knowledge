@@ -62,16 +62,23 @@ export default factories.createCoreController('api::user-progress.user-progress'
 
             if (content){
                 ctx.response.body = {
+                    title: currConcept,
                     content : content["content"],
-                    problems : content["problems"]
+                    problemset : content["problemset"],
+                    fields: content["fields"],
+                    difficulty: content["difficulty"]
                 }
-            }
-            else {
+            } else {
                 const contentRes = await contentCall(currConcept, currLevel);
                 
                 const output = contentRes["output_text"];
                 content = JSON.parse(output);
-                ctx.response.body = content;
+                ctx.response.body = {
+                  title: currConcept,
+                  content: content.content,
+                  problemset: content.problemset,
+                  fields: content.fields,
+                };
 
                 content["title"] = currConcept;
                 await strapi.documents("api::concept.concept").create({
