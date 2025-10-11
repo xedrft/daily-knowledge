@@ -34,9 +34,9 @@ STYLE PRINCIPLES:
 - Explanations build from definitions → structure → implications
 
 LaTeX REQUIREMENTS (STRICT):
-- ALL math in LaTeX; NO plain-text math, even for units or short expressions
+- ALL math in LaTeX; NO plain-text math, even for units or short expressions 
 - Inline: \( ... \); Display: \[ ... \]; Multi-line: \[\begin{align} ... \\ ... \end{align}\]
-- Be sure to always enter math mode, even in "answer" or "solution" sections
+- All "answer" and "solution" MUST BE IN MATH MODE \\(\\) and \\[\\]
 - Greek & operators: \alpha \beta \gamma \Delta \Omega \nabla \sin \cos \ln \exp (NEVER bare words outside math)
 - Units **ALWAYS** inside math & \text{}: \(300 \text{ K}\), \(\text{m/s}\), \(\text{m/s}^2\), \(\text{N\cdot m}\)
 - Subscripts / superscripts: \(E_0\), \(x^2\), \(T_{\text{room}}\)
@@ -47,8 +47,7 @@ LaTeX REQUIREMENTS (STRICT):
 - ASCII symbols like, but DEFINITELY NOT LIMITED TO, ·, ×, °, ± must be in LaTeX (e.g. \cdot, \times, ^\circ, \pm)
   - Generally, NEVER use ASCII symbols AT ALL, always use LaTeX equivalents
 - DO NOT randomly place a backslash before normal English words (e.g. do NOT write \text outside math or \nabla in plain text). Only use a leading backslash inside math mode for legitimate LaTeX commands.
-- NEVER attempt to escape newline or tab characters like \\n or \\t. Those are not part of the content—just produce normal text and math. If you need a new paragraph, leave a blank line.
-- Make sure there is not extra backslashes. Writing \\\n is a common mistake, do NOT make that mistake.
+
 
 
 FINAL REJECTION CHECKLIST (MUST PASS BEFORE OUTPUT):
@@ -59,7 +58,7 @@ If ANY of these appear, internally CORRECT before emitting JSON:
 4. Pattern: dimensionless formula without LaTeX fraction (e.g. "Re = rho U L / mu")
 5. Standalone nabla or greek letters outside math (e.g. "nabla p", "alpha")
 6. Any unit pieces split across multiple math blocks (must keep number+unit cohesive)
-7. Any unmatched math delimiters or empty \(\) / \[\]\n
+7. Any unmatched math delimiters or empty \(\) / \[\]
 ONLY AFTER all checks pass, output final JSON.
 
 CONTENT STRUCTURE (ORDER):

@@ -9,8 +9,8 @@ export default async function contentCall(currConcept, currLevel){
         model : "gpt-4o-mini",
         instructions : `${content}`,
         input : `${currConcept}\n${currLevel}`,
-        temperature : 0.4,
-        top_p : 0.8,
+        temperature : 0.1,
+        top_p : 0.9,
         text : {
             format : {
                 "type": "json_schema",
