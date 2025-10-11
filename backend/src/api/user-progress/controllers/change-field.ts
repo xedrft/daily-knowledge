@@ -160,7 +160,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             const allPastConcepts = Array.isArray(userProgress.allPastConcepts) ? userProgress.allPastConcepts : [];
 
             // Add current field to past fields if it exists
-            const updatedPastFields = currentField ? [...pastFields, currentField] : pastFields;
+            const updatedPastFields = currentField != "None" ? [...pastFields, currentField] : pastFields;
             
             // Move current field concepts to all past concepts and reset current field concepts
             const updatedAllPastConcepts = [...allPastConcepts, ...currentFieldConcepts];
