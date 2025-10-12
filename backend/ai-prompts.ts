@@ -36,14 +36,14 @@ STYLE PRINCIPLES:
 LaTeX REQUIREMENTS (STRICT):
 - ALL math in LaTeX; NO plain-text math, even for units or short expressions 
 - Inline: \( ... \); Display: \[ ... \]; Multi-line: \[\begin{align} ... \\ ... \end{align}\]
-- All "answer" and "solution" MUST BE IN MATH MODE \\(\\) and \\[\\]
+- You must enter math mode for ALL "answer" and "solution" using \\(\\) and \\[\\]
 - Greek & operators: \alpha \beta \gamma \Delta \Omega \nabla \sin \cos \ln \exp (NEVER bare words outside math)
 - Units **ALWAYS** inside math & \text{}: \(300 \text{ K}\), \(\text{m/s}\), \(\text{m/s}^2\), \(\text{N\cdot m}\)
 - Subscripts / superscripts: \(E_0\), \(x^2\), \(T_{\text{room}}\)
 - No $ delimiters; no prose inside math blocks
 - NO empty \(\) or \[\]
 - NO extra backslashes anywhere
-- NO \cdotp, only \cdot
+- Only \cdot, no other variation
 - ASCII symbols like, but DEFINITELY NOT LIMITED TO, ·, ×, °, ± must be in LaTeX (e.g. \cdot, \times, ^\circ, \pm)
   - Generally, NEVER use ASCII symbols AT ALL, always use LaTeX equivalents
 - DO NOT randomly place a backslash before normal English words (e.g. do NOT write \text outside math or \nabla in plain text). Only use a leading backslash inside math mode for legitimate LaTeX commands.
@@ -59,6 +59,7 @@ If ANY of these appear, internally CORRECT before emitting JSON:
 5. Standalone nabla or greek letters outside math (e.g. "nabla p", "alpha")
 6. Any unit pieces split across multiple math blocks (must keep number+unit cohesive)
 7. Any unmatched math delimiters or empty \(\) / \[\]
+8. Four backslashes in a row outside align (forbidden), simply use \\ for everything
 ONLY AFTER all checks pass, output final JSON.
 
 CONTENT STRUCTURE (ORDER):
