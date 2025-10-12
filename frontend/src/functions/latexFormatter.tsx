@@ -3,6 +3,7 @@ import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 import type { ReactElement } from 'react';
 import { Heading } from '@chakra-ui/react';
+import sanitizeLatexBackslashes from './latexSanitizer';
 
 export default function latexFormatter(input: string): ReactElement[] {
   // Regex patterns for inline and block LaTeX
@@ -14,13 +15,16 @@ export default function latexFormatter(input: string): ReactElement[] {
   let lastIndex = 0;
   let key = 0;
 
+  // Preprocess the string to collapse stray quadruple backslashes per our rules
+  const source = sanitizeLatexBackslashes(input);
+
   // First, handle block math
   let blockMatch;
   const blockMatches: { start: number; end: number; latex: string }[] = [];
   
   // Reset regex lastIndex to ensure proper matching
   blockPattern.lastIndex = 0;
-  while ((blockMatch = blockPattern.exec(input)) !== null) {
+  while ((blockMatch = blockPattern.exec(source)) !== null) {
     blockMatches.push({
       start: blockMatch.index,
       end: blockMatch.index + blockMatch[0].length,
@@ -34,7 +38,7 @@ export default function latexFormatter(input: string): ReactElement[] {
   
   // Reset regex lastIndex to ensure proper matching
   inlinePattern.lastIndex = 0;
-  while ((inlineMatch = inlinePattern.exec(input)) !== null) {
+  while ((inlineMatch = inlinePattern.exec(source)) !== null) {
     // Check if this inline match is inside a block match
     const isInsideBlock = blockMatches.some(block => 
       inlineMatch!.index >= block.start && inlineMatch!.index < block.end
@@ -105,7 +109,7 @@ export default function latexFormatter(input: string): ReactElement[] {
   for (const match of allMatches) {
     // Add text before the match
     if (lastIndex < match.start) {
-      const textBefore = input.substring(lastIndex, match.start);
+      const textBefore = source.substring(lastIndex, match.start);
       pushPlainText(textBefore);
     }
 
@@ -120,8 +124,8 @@ export default function latexFormatter(input: string): ReactElement[] {
   }
 
   // Add remaining text
-  if (lastIndex < input.length) {
-    pushPlainText(input.substring(lastIndex));
+  if (lastIndex < source.length) {
+    pushPlainText(source.substring(lastIndex));
   }
 
   return elements;
