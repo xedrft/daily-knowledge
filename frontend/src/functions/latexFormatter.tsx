@@ -18,6 +18,7 @@ export default function latexFormatter(input: string): ReactElement[] {
   // Preprocess the string to collapse stray quadruple backslashes per our rules
   const source = sanitizeLatexBackslashes(input);
 
+
   // First, handle block math
   let blockMatch;
   const blockMatches: { start: number; end: number; latex: string }[] = [];
