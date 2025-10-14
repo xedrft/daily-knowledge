@@ -27,6 +27,10 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 populate : ["concepts"]
             });
             
+            if (!pastData) {
+                return ctx.badRequest("User progress not found. Please select a field first.");
+            }
+            
             // Get current field concepts and all past concepts
             const currentFieldConcepts = Array.isArray(pastData["currentFieldConcepts"]) ? pastData["currentFieldConcepts"] : [];
             const allPastConcepts = Array.isArray(pastData["allPastConcepts"]) ? pastData["allPastConcepts"] : [];
@@ -45,10 +49,15 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 apiKey: process.env['OPENAI_API_KEY'],
               });
             
+            // Format input properly: field, then array of past concepts, then difficulty
+            const formattedInput = `Current field: ${pastData["currentField"]}
+Past concepts: [${pastTitles.map(t => `"${t}"`).join(', ')}]
+Difficulty level: ${currLevel}`;
+            
             const conceptRes = await client.responses.create({
                 model : "gpt-4o-mini",
                 instructions: prompts.concept,
-                input: `${pastData["currentField"]}\n${pastTitles}\n${currLevel}`,
+                input: formattedInput,
                 top_p : 0.75
             });
             

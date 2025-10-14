@@ -87,10 +87,15 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 apiKey: process.env['OPENAI_API_KEY'],
             });
 
+            // Format input clearly for the AI
+            const formattedInput = `General area of science: ${generalArea}
+Current field: ${currentField || "None"}
+Past fields: [${pastFields.length > 0 ? pastFields.map(f => `"${f}"`).join(", ") : ''}]`;
+
             const fieldRes = await client.responses.create({
                 model: "gpt-4o-mini",
                 instructions: field,
-                input : `General Area: ${generalArea}\nCurrent Field: ${currentField || "None"}\nPast Fields: ${pastFields.length > 0 ? pastFields.join(", ") : "None"}`,
+                input : formattedInput,
                 top_p: 0.75,
                 text : {
                     format : {

@@ -5,6 +5,7 @@
 const COMMANDS_TO_FIX = [
   { escaped: '\t', command: 'text' },      // tab character
   { escaped: '\t', command: 'times' },
+  { escaped: '\b', command: 'beta' },
   { escaped: '\n', command: 'nabla' },     // newline character (if \nabla exists)
   // Add more if needed: \r → \rho, etc.
 ];

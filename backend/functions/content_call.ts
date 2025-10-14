@@ -5,10 +5,15 @@ export default async function contentCall(currConcept, currLevel){
     const client = new OpenAI({
         apiKey: process.env['OPENAI_API_KEY'],
     });
+    
+    // Format input clearly for the AI
+    const formattedInput = `Concept name: ${currConcept}
+Difficulty level: ${currLevel}`;
+    
     const contentRes = await client.responses.create({
         model : "gpt-4o-mini",
         instructions : `${content}`,
-        input : `${currConcept}\n${currLevel}`,
+        input : formattedInput,
         temperature : 0.1,
         top_p : 0.9,
         text : {
