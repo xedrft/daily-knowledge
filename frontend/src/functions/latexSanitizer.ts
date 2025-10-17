@@ -13,7 +13,9 @@ export function sanitizeLatexBackslashes(input: string): string {
   
   let result = input;
 
-  result = result.replace(/\\{2,}(?=[A-Za-z()\[,])/g, '\\'); // change to all characters
+  // Replace multiple backslashes with single backslash when NOT followed by whitespace
+  // Using negative lookahead (?!...) to check it's not followed by whitespace
+  result = result.replace(/\\{2,}(?!\s)/g, '\\');
   
   // Step 2: Fix escape sequence corruption
   for (const { escaped, command } of COMMANDS_TO_FIX) {
