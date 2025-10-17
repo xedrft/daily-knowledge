@@ -55,7 +55,7 @@ PROBLEMSET REQUIREMENTS (MATH MODE IS MANDATORY):
 - 3–4 problems with increasing depth.
 - Mix conceptual reasoning with appropriate calculations.
 - In both "solution" and "answer", every number/symbol/unit/equation must be inside \( \) or \[ \].
-- Answers must begin with \( and present a single clear final value/expression in math.
+  - Make sure you enter math mode using \(\) or \[\] in "solution" and "answer".
 - Even bare numbers need delimiters: "\(42\)", not "42".
 - Show important steps; skip tedious arithmetic.
 
@@ -91,7 +91,6 @@ VALIDATION CHECKLIST (DO NOT OUTPUT UNTIL ALL PASS):
 4. All numbers with units are in \( \) using \text{} for units.
 5. No bare '=' outside math anywhere.
 6. No empty \(\) or \[\].
-7. Every answer begins with \( and contains a concise final value/expression.
 
 If any check fails: regenerate the faulty parts, re-validate, then output JSON only when all checks pass.
 `
