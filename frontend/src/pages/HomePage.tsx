@@ -1,6 +1,7 @@
 import { Button, Stack, Heading } from "@chakra-ui/react"
 import { Link } from "react-router-dom"
 import { useState, useEffect } from "react"
+import Navbar from "../components/Navbar"
 
 const HomePage = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -10,6 +11,8 @@ const HomePage = () => {
     setIsLoggedIn(!!jwt)
   }, [])
   return (
+    <>
+    <Navbar />
     <Stack gap={8} align="center" justify="center" minH="100vh" p={8}>
       <Heading size="5xl" textAlign="center">
         Daily Knowledge
@@ -35,20 +38,33 @@ const HomePage = () => {
           </Button>
         </Link>
         {isLoggedIn && (
-          <Link to="/change-field" style={{ textDecoration: "none", width: "100%" }}>
-            <Button 
-              variant="outline" 
-              colorPalette="cyan"
-              size="lg"
-              w="full"
-            >
-              Change Field of Study
-            </Button>
-          </Link>
+          <>
+            <Link to="/library" style={{ textDecoration: "none", width: "100%" }}>
+              <Button 
+                variant="outline" 
+                colorPalette="cyan"
+                size="lg"
+                w="full"
+              >
+                Concept Library
+              </Button>
+            </Link>
+            <Link to="/change-field" style={{ textDecoration: "none", width: "100%" }}>
+              <Button 
+                variant="outline" 
+                colorPalette="cyan"
+                size="lg"
+                w="full"
+              >
+                Change Field of Study
+              </Button>
+            </Link>
+          </>
         )}
       </Stack>
 
     </Stack>
+    </>
   )
 }
 

@@ -40,6 +40,11 @@ module.exports = {
             method: "GET",
             path: "/check-field",
             handler: "change-field.checkUserField",
+        },
+        {
+            method: "GET",
+            path: "/list-concepts",
+            handler: "list-concepts.listConcepts",
         }
     ]
 };

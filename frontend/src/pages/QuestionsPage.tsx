@@ -1,10 +1,10 @@
 import { Button, Stack, Heading, Text, Box } from "@chakra-ui/react"
-import { useColorModeValue } from "@/components/ui/color-mode"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import latexFormatter from "@/functions/latexFormatter"
 import "@/styles/math.css"
 import ProblemSet from "@/components/ProblemSet"
+import Navbar from "@/components/Navbar"
 
 const QuestionsPage = () => {
   const [concept, setConcept] = useState<any>(null)
@@ -82,41 +82,9 @@ const QuestionsPage = () => {
     }
   }
 
-  const handleSignOut = () => {
-    localStorage.removeItem("jwt")
-    navigate("/")
-  }
-
-  // fetchConcept is called only when the user clicks a button now
-
-  const navBorder = useColorModeValue("gray.200", "gray.700")
-  const navShadow = useColorModeValue("0 2px 6px rgba(15, 23, 42, 0.04)", "0 2px 10px rgba(2,6,23,0.6)")
-
   return (
     <>
-      {/* Full-bleed nav (line/shadow spans viewport) */}
-      <Box
-        as="nav"
-        w="100%"
-        borderBottomWidth="1px"
-        borderBottomColor={navBorder}
-        boxShadow={navShadow}
-      >
-        {/* keep nav content centered */}
-        <Box maxW="8xl" mx="auto" px={8} py={4}>
-          <Stack direction="row" justify="space-between" align="center">
-            <Heading size="lg">Daily Knowledge</Heading>
-            <Stack direction="row" gap={2}>
-              <Button variant="outline" onClick={() => navigate("/")}>
-                Home
-              </Button>
-              <Button variant="outline" onClick={handleSignOut}>
-                Sign Out
-              </Button>
-            </Stack>
-          </Stack>
-        </Box>
-      </Box>
+      <Navbar />
       
       {/* Page container */}
       <Stack gap={6} p={8} maxW="8xl" mx="auto">

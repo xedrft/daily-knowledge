@@ -7,12 +7,15 @@ export default factories.createCoreController('api::user-progress.user-progress'
         try {
             await this.validateQuery(ctx);
             const user = ctx.state.user;
-            console.log(user);
+            console.log("[checkUserField] ctx.state.user:", user);
+            console.log("[checkUserField] Authorization header:", ctx.request.headers.authorization);
             if (!user) {
+                console.log("[checkUserField] No user in ctx.state, returning unauthorized");
                 return ctx.unauthorized("No token found or invalid token");
             }
 
             const userId = user.id;
+            console.log("[checkUserField] User ID:", userId);
 
             const userProgress = await strapi.documents("api::user-progress.user-progress").findFirst({
                 filters: {
