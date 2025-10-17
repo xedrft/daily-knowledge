@@ -46,14 +46,16 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 limit: 1000, // Adjust if you have more concepts
             });
 
-            // Map concepts to include learned status
-            const conceptsWithProgress = allConcepts.map(concept => ({
-                documentId: concept.documentId,
-                title: concept.title,
-                difficulty: concept.difficulty || 7,
-                fields: Array.isArray(concept.fields) ? concept.fields : [],
-                learned: learnedConcepts.has(concept.title)
-            }));
+            // Map concepts to include learned status, and ONLY include learned concepts
+            const conceptsWithProgress = allConcepts
+                .filter(concept => learnedConcepts.has(concept.title)) // Only show learned concepts
+                .map(concept => ({
+                    documentId: concept.documentId,
+                    title: concept.title,
+                    difficulty: concept.difficulty || 7,
+                    fields: Array.isArray(concept.fields) ? concept.fields : [],
+                    learned: true // All concepts here are learned
+                }));
 
             // Sort by title
             conceptsWithProgress.sort((a, b) => a.title.localeCompare(b.title));

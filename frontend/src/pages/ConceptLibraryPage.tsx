@@ -22,7 +22,6 @@ const ConceptLibraryPage = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedField, setSelectedField] = useState<string>("all")
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all")
-  const [learnedFilter, setLearnedFilter] = useState<string>("all") // all, learned, unlearned
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1)
@@ -145,16 +144,9 @@ const ConceptLibraryPage = () => {
       )
     }
 
-    // Learned filter
-    if (learnedFilter === "learned") {
-      result = result.filter(c => c.learned === true)
-    } else if (learnedFilter === "unlearned") {
-      result = result.filter(c => c.learned !== true)
-    }
-
     setFilteredConcepts(result)
     setCurrentPage(1) // Reset to first page when filters change
-  }, [concepts, searchTerm, selectedField, selectedDifficulty, learnedFilter])
+  }, [concepts, searchTerm, selectedField, selectedDifficulty])
 
   // Paginate
   const totalPages = Math.ceil(filteredConcepts.length / itemsPerPage)
@@ -186,9 +178,9 @@ const ConceptLibraryPage = () => {
       <Box maxW="8xl" mx="auto" px={8} py={6}>
         <Stack gap={6}>
           <Stack gap={2}>
-            <Heading size="2xl">Concept Library</Heading>
+            <Heading size="2xl">My Learned Concepts</Heading>
             <Text color="gray.600">
-              Browse all {filteredConcepts.length} concepts in the library
+              Browse all {filteredConcepts.length} concepts you've learned
             </Text>
           </Stack>
 
@@ -201,11 +193,11 @@ const ConceptLibraryPage = () => {
           {/* Filters */}
           <Box p={6} bg="gray.50" borderRadius="lg" border="1px solid" borderColor="gray.200">
             <Stack gap={4}>
-              <Heading size="md">Filters</Heading>
+              <Heading size="md" color="gray.800">Filters</Heading>
 
               {/* Search */}
               <Box>
-                <Text fontSize="sm" fontWeight="bold" mb={2}>Search</Text>
+                <Text fontSize="sm" fontWeight="bold" mb={2} color="gray.800">Search</Text>
                 <Input
                   placeholder="Search concepts..."
                   value={searchTerm}
@@ -216,7 +208,7 @@ const ConceptLibraryPage = () => {
 
               {/* Field Filter */}
               <Box>
-                <Text fontSize="sm" fontWeight="bold" mb={2}>Field</Text>
+                <Text fontSize="sm" fontWeight="bold" mb={2} color="gray.800">Field</Text>
                 <select
                   value={selectedField}
                   onChange={(e) => setSelectedField(e.target.value)}
@@ -225,7 +217,8 @@ const ConceptLibraryPage = () => {
                     padding: "8px 12px",
                     borderRadius: "6px",
                     border: "1px solid #d1d5db",
-                    backgroundColor: "white"
+                    backgroundColor: "white",
+                    color: "#1f2937"
                   }}
                 >
                   <option value="all">All Fields</option>
@@ -237,7 +230,7 @@ const ConceptLibraryPage = () => {
 
               {/* Difficulty Filter */}
               <Box>
-                <Text fontSize="sm" fontWeight="bold" mb={2}>Difficulty</Text>
+                <Text fontSize="sm" fontWeight="bold" mb={2} color="gray.800">Difficulty</Text>
                 <select
                   value={selectedDifficulty}
                   onChange={(e) => setSelectedDifficulty(e.target.value)}
@@ -246,35 +239,16 @@ const ConceptLibraryPage = () => {
                     padding: "8px 12px",
                     borderRadius: "6px",
                     border: "1px solid #d1d5db",
-                    backgroundColor: "white"
+                    backgroundColor: "white",
+                    color: "#1f2937"
                   }}
                 >
                   <option value="all">All Levels</option>
-                  <option value="1-3">Elementary (1-3)</option>
-                  <option value="4-6">Middle School (4-6)</option>
-                  <option value="7-9">High School (7-9)</option>
-                  <option value="10-12">Undergraduate (10-12)</option>
+                  <option value="1-3">Middle School (1-3)</option>
+                  <option value="4-6">High School (4-6)</option>
+                  <option value="7-9">Undergraduate (7-9)</option>
+                  <option value="10-12">Graduate (10-12)</option>
                   <option value="13-15">Graduate+ (13-15)</option>
-                </select>
-              </Box>
-
-              {/* Learned Filter */}
-              <Box>
-                <Text fontSize="sm" fontWeight="bold" mb={2}>Progress</Text>
-                <select
-                  value={learnedFilter}
-                  onChange={(e) => setLearnedFilter(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                    border: "1px solid #d1d5db",
-                    backgroundColor: "white"
-                  }}
-                >
-                  <option value="all">All Concepts</option>
-                  <option value="learned">Learned</option>
-                  <option value="unlearned">Not Learned</option>
                 </select>
               </Box>
 
@@ -285,8 +259,8 @@ const ConceptLibraryPage = () => {
                   setSearchTerm("")
                   setSelectedField("all")
                   setSelectedDifficulty("all")
-                  setLearnedFilter("all")
                 }}
+                
               >
                 Clear Filters
               </Button>
@@ -325,13 +299,6 @@ const ConceptLibraryPage = () => {
                     transition="all 0.2s"
                   >
                     <Stack gap={3}>
-                      {/* Learned Badge */}
-                      {concept.learned && (
-                        <Badge colorPalette="green" alignSelf="flex-start">
-                          ✓ Learned
-                        </Badge>
-                      )}
-
                       {/* Title */}
                       <Heading size="sm" color="gray.800" minH="48px">
                         {concept.title}

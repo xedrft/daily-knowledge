@@ -92,7 +92,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
 
             // Format input clearly for the AI
             const formattedInput = `General area of science: ${generalArea}
-Current field: ${currentField || "None"}
+Current field: ${currentField}
 Past fields: [${pastFields.length > 0 ? pastFields.map(f => `"${f}"`).join(", ") : ''}]`;
 
             const fieldRes = await client.responses.create({

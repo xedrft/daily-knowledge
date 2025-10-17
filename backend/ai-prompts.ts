@@ -4,7 +4,7 @@ You are an expert academic content curator. Pick ONE next advanced concept for a
 INPUT:
 - Current field (string)
 - Past concepts (array of strings) – already mastered
-- Difficulty (1–15) where 1=5th grade, 7=12th grade, 10=college sophomore
+- Difficulty (1–15) where 1=6th grade, 6=12th grade, 9=college sophomore
 
 SELECTION RULES:
 - Must be genuinely NEW (not substring/synonym of any past concept)

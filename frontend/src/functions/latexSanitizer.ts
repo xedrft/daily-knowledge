@@ -13,7 +13,7 @@ export function sanitizeLatexBackslashes(input: string): string {
   
   let result = input;
 
-  result = result.replace(/\\{2,}(?=[A-Za-z()\[])/g, '\\');
+  result = result.replace(/\\{2,}(?=[A-Za-z()\[,])/g, '\\'); // change to all characters
   
   // Step 2: Fix escape sequence corruption
   for (const { escaped, command } of COMMANDS_TO_FIX) {
