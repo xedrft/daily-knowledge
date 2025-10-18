@@ -8,7 +8,7 @@ const customConfig = defineConfig({
         body: { value: `'Inter', sans-serif` },
       },
       colors: {
-        emerald: {
+        sage: {
           50: { value: "#f0f4f1" },
           100: { value: "#dce6de" },
           200: { value: "#b8cdbf" },
@@ -25,47 +25,47 @@ const customConfig = defineConfig({
     },
     semanticTokens: {
       colors: {
-        emerald: {
+        sage: {
           solid: { 
             value: { 
-              _light: "{colors.emerald.500}", 
-              _dark: "{colors.emerald.400}" 
+              _light: "{colors.sage.500}", 
+              _dark: "{colors.sage.400}" 
             } 
           },
           contrast: { 
             value: { 
               _light: "white", 
-              _dark: "{colors.emerald.950}" 
+              _dark: "{colors.sage.950}" 
             } 
           },
           fg: { 
             value: { 
-              _light: "{colors.emerald.700}", 
-              _dark: "{colors.emerald.300}" 
+              _light: "{colors.sage.700}", 
+              _dark: "{colors.sage.300}" 
             } 
           },
           muted: { 
             value: { 
-              _light: "{colors.emerald.100}", 
-              _dark: "{colors.emerald.900}" 
+              _light: "{colors.sage.100}", 
+              _dark: "{colors.sage.900}" 
             } 
           },
           subtle: { 
             value: { 
-              _light: "{colors.emerald.200}", 
-              _dark: "{colors.emerald.800}" 
+              _light: "{colors.sage.200}", 
+              _dark: "{colors.sage.800}" 
             } 
           },
           emphasized: { 
             value: { 
-              _light: "{colors.emerald.300}", 
-              _dark: "{colors.emerald.600}" 
+              _light: "{colors.sage.300}", 
+              _dark: "{colors.sage.600}" 
             } 
           },
           focusRing: { 
             value: { 
-              _light: "{colors.emerald.500}", 
-              _dark: "{colors.emerald.400}" 
+              _light: "{colors.sage.500}", 
+              _dark: "{colors.sage.400}" 
             } 
           },
         },

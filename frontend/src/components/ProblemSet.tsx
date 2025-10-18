@@ -40,7 +40,7 @@ const ProblemSet = ({ problemset }: ProblemSetProps) => {
               {/* Problem */}
               <Box pb={3}>
                 <Heading size="lg" mb={3} color="emerald.300">
-                  Problem {index + 1}
+                  Problem {idx + 1}
                 </Heading>
 
                 {latexFormatter(item.problem)}

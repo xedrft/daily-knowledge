@@ -90,7 +90,7 @@ const SettingsPage = () => {
                   <Heading size="md" color="gray.800">Current Field of Study</Heading>
                   {userData.hasField ? (
                     <>
-                      <Text fontSize="lg" fontWeight="bold" color="emerald.600">
+                      <Text fontSize="lg" fontWeight="bold" color="sage.600">
                         {userData.currentField}
                       </Text>
                       <Text fontSize="sm" color="gray.600">
@@ -103,7 +103,7 @@ const SettingsPage = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    colorPalette="emerald"
+                    colorPalette="sage"
                     onClick={() => navigate("/change-field")}
                     alignSelf="flex-start"
                   >
@@ -119,7 +119,7 @@ const SettingsPage = () => {
                   <Stack gap={2}>
                     <Box>
                       <Text fontSize="sm" fontWeight="bold" color="gray.600">Total Concepts Learned</Text>
-                      <Text fontSize="2xl" fontWeight="bold" color="emerald.600">
+                      <Text fontSize="2xl" fontWeight="bold" color="sage.600">
                         {userData.conceptStats.totalConceptsCount}
                       </Text>
                     </Box>

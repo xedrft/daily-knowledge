@@ -294,7 +294,7 @@ const ConceptLibraryPage = () => {
                     borderRadius="lg"
                     border="1px solid"
                     borderColor="gray.200"
-                    _hover={{ boxShadow: "md", borderColor: "emerald.400" }}
+                    _hover={{ boxShadow: "md", borderColor: "sage.400" }}
                     cursor="pointer"
                     transition="all 0.2s"
                   >

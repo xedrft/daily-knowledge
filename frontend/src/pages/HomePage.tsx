@@ -23,7 +23,7 @@ const HomePage = () => {
       <Stack direction={isLoggedIn ? "column" : "row"} gap={4} w={isLoggedIn ? "full" : "auto"} maxW="md">
         {!isLoggedIn && (
           <Link to="/signin" style={{ textDecoration: "none" }}>
-            <Button colorPalette="emerald" size="lg">
+            <Button colorPalette="sage" size="lg">
               Get Started
             </Button>
           </Link>
@@ -31,7 +31,7 @@ const HomePage = () => {
         <Link to={isLoggedIn ? "/questions" : "/signin"} style={{ textDecoration: "none", width: isLoggedIn ? "100%" : "auto" }}>
           <Button 
             variant={isLoggedIn ? "solid" : "outline"} 
-            colorPalette={isLoggedIn ? "emerald" : undefined}
+            colorPalette={isLoggedIn ? "sage" : undefined}
             size="lg"
             w={isLoggedIn ? "full" : "auto"}
           >
@@ -43,7 +43,7 @@ const HomePage = () => {
             <Link to="/library" style={{ textDecoration: "none", width: "100%" }}>
               <Button 
                 variant="outline" 
-                colorPalette="emerald"
+                colorPalette="sage"
                 size="lg"
                 w="full"
               >
@@ -53,7 +53,7 @@ const HomePage = () => {
             <Link to="/change-field" style={{ textDecoration: "none", width: "100%" }}>
               <Button 
                 variant="outline" 
-                colorPalette="emerald"
+                colorPalette="sage"
                 size="lg"
                 w="full"
               >
