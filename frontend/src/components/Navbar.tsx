@@ -7,10 +7,7 @@ const Navbar = () => {
   const navBorder = useColorModeValue("gray.200", "gray.700")
   const navShadow = useColorModeValue("0 2px 6px rgba(15, 23, 42, 0.04)", "0 2px 10px rgba(2,6,23,0.6)")
 
-  const handleSignOut = () => {
-    localStorage.removeItem("jwt")
-    navigate("/")
-  }
+  const isLoggedIn = !!localStorage.getItem("jwt")
 
   return (
     <Box
@@ -35,8 +32,8 @@ const Navbar = () => {
             <Button variant="outline" onClick={() => navigate("/library")}>
               Library
             </Button>
-            <Button variant="outline" onClick={() => localStorage.getItem("jwt") ? handleSignOut() : navigate("/signin")}>
-              {localStorage.getItem("jwt") ? "Sign Out" : "Sign In"}
+            <Button variant="outline" onClick={() => navigate(isLoggedIn ? "/settings" : "/signin")}>
+              {isLoggedIn ? "Settings" : "Sign In"}
             </Button>
           </Stack>
         </Stack>

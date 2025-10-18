@@ -10,6 +10,7 @@ const HomePage = () => {
     const jwt = localStorage.getItem("jwt")
     setIsLoggedIn(!!jwt)
   }, [])
+
   return (
     <>
     <Navbar />
