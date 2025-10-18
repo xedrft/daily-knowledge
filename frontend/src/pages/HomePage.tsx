@@ -13,8 +13,8 @@ const HomePage = () => {
 
   return (
     <>
-    <Navbar />
-    <Stack gap={8} align="center" justify="center" minH="100vh" p={8}>
+      <Navbar />
+      <Stack gap={8} align="center" justify="center" minH="100vh" p={8}>
       <Heading size="5xl" textAlign="center">
         Daily Knowledge
       </Heading>

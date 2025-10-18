@@ -35,7 +35,7 @@ const ProblemSet = ({ problemset }: ProblemSetProps) => {
       <Heading size="2xl">Practice Problems: </Heading>
       <Stack gap={6}>
         {problemset.map((item, idx) => (
-          <Box key={idx} p={6} bg="#3A3A3A" borderRadius="lg" border="1px solid #4A4A4A">
+          <Box key={idx} p={6} bg="subtle" borderRadius="lg" border="1px solid muted">
             <Stack gap={4}>
               {/* Problem */}
               <Box pb={3}>

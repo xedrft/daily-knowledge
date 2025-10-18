@@ -113,7 +113,7 @@ const QuestionsPage = () => {
         )}
 
         {concept && !isLoading && (
-          <Box bg="#2E2E2E" p={6} borderRadius="md">
+          <Box bg="panel" p={6} borderRadius="md">
             <Stack gap={4}>
               <Heading size="3xl" color="sage.400">{concept.title}</Heading>
               <Box 
