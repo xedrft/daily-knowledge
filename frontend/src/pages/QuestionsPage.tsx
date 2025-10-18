@@ -94,11 +94,11 @@ const QuestionsPage = () => {
             Learn something new and expand your knowledge
           </Text>
           {!concept && !isLoading ? (
-            <Button onClick={fetchConcept} colorPalette="cyan">
+            <Button onClick={fetchConcept} colorPalette="emerald">
               Get Concept
             </Button>
           ) : !concept &&
-          <Button colorPalette="cyan" loading loadingText="Fetching concept...">
+          <Button colorPalette="emerald" loading loadingText="Fetching concept...">
             Get Concept 
           </Button>}
         </Stack>
@@ -115,7 +115,7 @@ const QuestionsPage = () => {
         {concept && !isLoading && (
           <Box bg="#2E2E2E" p={6} borderRadius="md">
             <Stack gap={4}>
-              <Heading size="3xl" color="cyan.500">{concept.title}</Heading>
+              <Heading size="3xl" color="emerald.400">{concept.title}</Heading>
               <Box 
                 className="math-content-container"
               >
@@ -131,19 +131,19 @@ const QuestionsPage = () => {
 
         {concept && !isLoading ?(
           <Stack gap={4}>
-            <Button onClick={fetchConcept} colorPalette="cyan">
+            <Button onClick={fetchConcept} colorPalette="emerald">
               Get New Concept
             </Button>
             <Button 
               onClick={() => navigate("/change-field")} 
               variant="outline" 
-              colorPalette="cyan"
+              colorPalette="emerald"
             >
               Change Field of Study
             </Button>
           </Stack>
         ) : concept && (
-          <Button colorPalette="cyan" loading loadingText="Fetching new concept...">
+          <Button colorPalette="emerald" loading loadingText="Fetching new concept...">
             Get New Concept
           </Button>
         )}

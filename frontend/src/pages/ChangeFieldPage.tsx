@@ -211,7 +211,7 @@ const ChangeFieldPage = () => {
                 )}
                 
                 <Box pt={2} borderTop="1px solid #4A4A4A">
-                  <Text fontSize="sm" color="cyan.300">
+                  <Text fontSize="sm" color="emerald.300">
                     <strong>Total Learning Progress:</strong> {userFieldData.conceptStats.totalConceptsCount} concepts explored
                   </Text>
                 </Box>
@@ -245,7 +245,7 @@ const ChangeFieldPage = () => {
               </Field.HelperText>
             </Field.Root>
 
-            <Button type="submit" w="full" loading={isLoading} colorPalette="cyan">
+            <Button type="submit" w="full" loading={isLoading} colorPalette="emerald">
               Get Field Suggestions
             </Button>
           </Stack>
@@ -303,7 +303,7 @@ const ChangeFieldPage = () => {
               >
                 Back
               </Button>
-              <Button type="submit" w="full" loading={isLoading} colorPalette="cyan">
+              <Button type="submit" w="full" loading={isLoading} colorPalette="emerald">
                 Change Field
               </Button>
             </Stack>

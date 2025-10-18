@@ -39,8 +39,8 @@ const ProblemSet = ({ problemset }: ProblemSetProps) => {
             <Stack gap={4}>
               {/* Problem */}
               <Box pb={3}>
-                <Heading size="lg" mb={3} color="cyan.300">
-                  Problem {idx + 1}
+                <Heading size="lg" mb={3} color="emerald.300">
+                  Problem {index + 1}
                 </Heading>
 
                 {latexFormatter(item.problem)}
