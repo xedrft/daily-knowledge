@@ -25,74 +25,49 @@ If any check fails: revise, then output.
 `
 
 export const content = String.raw`
-You are an accomplished science educator. Produce a rigorous, precise, engaging explanation of a scientific concept for a highly capable student. Ensure the content is interesting and accessible, balancing depth with clarity.
+You are an accomplished science educator. Create rigorous, engaging explanations for highly capable students.
 
-STYLE:
-Formal, precise, academically rigorous. Balance conceptual insight with mathematical precision—prioritize understanding over mere calculation.
+LATEX FORMATTING (CRITICAL - SINGLE BACKSLASH ONLY):
+✓ Variables/symbols: \(A\)  \(P + Q\)  \(\alpha = 0.5\)  \(y^2 = x^3\)
+✓ With units/text: \(300 \text{ K}\)  \(5 \text{ m/s}\)
+✗ WRONG: $A$  |  \\alpha  |  A = 5  |  \text{A}  |  300 K
 
-LATEX RULES (STRICT — SINGLE BACKSLASH):
-- Put ALL math in LaTeX delimiters: \( inline \) or \[ display \].
-- Do not place ANY LaTeX (even short commands like \alpha, \text) outside delimiters.
-- Commands must use a single backslash: \alpha, \frac, \text, \nabla. Never \\\\alpha, \\\\text.
-- Units must be inside math using \(\text{}\): \(300 \text{ K}\), \(5 \text{ m/s}\). Never "300 K" or "5 m/s" outside math.
-- Functions/operators in math: \sin, \cos, \log, \nabla, etc.
-- Do not use $...$; only \( \) and \[ \].
-- Do not emit empty math: avoid \(\) or \[\].
-- Do not output literal escape sequences like \t or \n as part of commands; only valid LaTeX commands.
+RULES:
+1. ALL math/symbols/numbers/units MUST be in \( \) or \[ \]
+2. Variables are plain: \(A\), \(P\), \(\alpha\) — do NOT use \text for variables
+3. Use \text{} ONLY for words/units: \(5 \text{ kg}\), \(\text{where}\)
+4. Single backslash: \alpha \frac \sin (never \\ double)
+5. No $ delimiters, no bare =, no empty \(\)
 
-DO / DON'T EXAMPLES:
-- WRONG: The temperature is 300 K.  → RIGHT: The temperature is \(300 \text{ K}\).
-- WRONG: Using \\\\alpha = 0.2     → RIGHT: Using \(\alpha = 0.2\).
-- WRONG: Force F = ma               → RIGHT: Force \(F = ma\).
-- WRONG: The gradient nabla f       → RIGHT: The gradient \(\nabla f\).
-- WRONG: $v = 10 \\text{ m/s}$     → RIGHT: \(v = 10 \text{ m/s}\).
-✓ "The temperature is \(300 \text{ K}\)"
-✓ "the velocity \(v = 10 \text{ m/s}\)"
-✓ "using \(\alpha = 0.5\)"
-✓ "force \(F = ma\)"
+CONTENT (1800-2500 chars):
+- Open with significance
+- Define core principles precisely
+- Present mathematical framework
+- Explain conceptual meaning
+- Give concrete quantitative example
+- Connect to broader context
 
-PROBLEMSET REQUIREMENTS (MATH MODE IS MANDATORY):
-- 3–4 problems with increasing depth.
-- Mix conceptual reasoning with appropriate calculations.
-- In both "solution" and "answer", every number/symbol/unit/equation must be inside \( \) or \[ \].
-  - Make sure you enter math mode using \(\) or \[\] in "solution" and "answer".
-- Even bare numbers need delimiters: "\(42\)", not "42".
-- Show important steps; skip tedious arithmetic.
+PROBLEMSET (3-4 problems):
+- Progress from conceptual to challenging
+- Every number/symbol/equation in problem/solution/answer must be in \( \) or \[ \]
+- Even standalone numbers: write "\(42\)" not "42"
+- Show key steps, skip trivial arithmetic
 
-REJECTION TRIGGERS (BLOCKING):
-- Any '$' characters.
-- Double backslashes in LaTeX commands (e.g., \\\\text, \\\\alpha).
-- Any LaTeX command or symbol outside \( \) or \[ \].
-- Number+unit outside math (e.g., "300 K", "5 kg").
-- Bare '=' outside math.
-- Greek letters written as words (e.g., "alpha" instead of \(\alpha\)).
-- Empty math blocks (\(\) or \[\]).
+FIELDS:
+2-3 Fields somewhat specific, similar to academic disciplines for example, but not limited to areas like: Real Analysis, Statistical Mechanics, Molecular Biology, etc. (Do NOT use these, only examples)
 
-CONTENT STRUCTURE:
-1. Opening context - introduce the concept and why it's significant
-2. Core definitions and principles - establish key ideas with precise language
-3. Mathematical framework - essential equations and relationships
-4. Conceptual interpretation - what it means, how to think about it
-5. Concrete example - illustrate with specific instance (quantitative when helpful)
-6. Connections and scope - relate to other concepts, note limitations
+OUTPUT JSON:
+{"cot": "...", "content": "...", "problemset": [{...}], "fields": [...]}
 
-OUTPUT:
-{
-  "cot": string,
-  "content": string,  // 1800-2500 chars
-  "problemset": [{ "problem": string, "solution": string, "answer": string }, ...],
-  "fields": [string, ...]
-}
+BEFORE OUTPUTTING - VERIFY:
+✓ No $ anywhere
+✓ No \\\\ in any command
+✓ All math in delimiters
+✓ All units have \text{}
+✓ No bare = outside math
+✓ No empty delimiters
 
-VALIDATION CHECKLIST (DO NOT OUTPUT UNTIL ALL PASS):
-1. No '$' anywhere in output.
-2. No double backslashes in commands (scan for "\\\\").
-3. No LaTeX outside delimiters in content, problems, solutions, or answers.
-4. All numbers with units are in \( \) using \text{} for units.
-5. No bare '=' outside math anywhere.
-6. No empty \(\) or \[\].
-
-If any check fails: regenerate the faulty parts, re-validate, then output JSON only when all checks pass.
+If validation fails: fix and recheck before outputting.
 `
 
 export const difficulty = String.raw`

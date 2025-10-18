@@ -5,6 +5,7 @@ const COMMANDS_TO_FIX = [
   { escaped: '\n', command: 'nabla' },
   { escaped: '\r', command: 'rho' },
   { escaped: '\t', command: 'theta' },
+  { escaped: '\f', command: 'frac'}
 
 ];
 
@@ -25,6 +26,13 @@ export function sanitizeLatexBackslashes(input: string): string {
       result = result.split(searchStr).join('\\' + command);
     }
   }
+
+  // Step 3: Wrap standalone \text{...} with \( \)
+  // Find \text{...} that is NOT preceded by \( or \[ and NOT followed by \) or \]
+  // This catches bare \text{} commands outside of math mode
+  result = result.replace(/(?<!\\[\(\[])\\text\{[^}]*\}(?![\)\]])/g, (match) => {
+    return `\\(${match}\\)`;
+  });
   
   return result;
 }
