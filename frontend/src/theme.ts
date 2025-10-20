@@ -47,7 +47,7 @@ const customConfig = defineConfig({
           muted: { 
             value: { 
               _light: "{colors.sage.100}", 
-              _dark: "{colors.sage.900}" 
+              _dark: "{colors.sage.700}" 
             } 
           },
           subtle: { 
@@ -72,31 +72,31 @@ const customConfig = defineConfig({
         bg: {
           value: {
             _light: "white",
-            _dark: "#262624"
+            _dark: "#141413"
           }
         },
         subtle: {
           value: {
             _light: "{colors.gray.50}",
-            _dark: "#30302e"
+            _dark: "#1a1a19"
           }
         },
         muted: {
           value: {
             _light: "{colors.gray.100}",
-            _dark: "#333333"
+            _dark: "#1f1f1e"
           }
         },
         emphasized: {
           value: {
             _light: "{colors.gray.200}",
-            _dark: "#3d3d3d"
+            _dark: "#252524"
           }
         },
         panel: {
           value: {
             _light: "white",
-            _dark: "#1e1f1d"
+            _dark: "#0f0f0e"
           }
         },
       },

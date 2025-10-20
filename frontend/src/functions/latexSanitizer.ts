@@ -14,11 +14,17 @@ export function sanitizeLatexBackslashes(input: string): string {
   
   let result = input;
 
-  // Replace multiple backslashes with single backslash when NOT followed by whitespace
+  // Step 1: Protect LaTeX line breaks (\\) by temporarily replacing them
+  result = result.replace(/\\\\(?=\s)/g, '___LINEBREAK___');
+
+  // Step 2: Replace multiple backslashes with single backslash when NOT followed by whitespace
   // Using negative lookahead (?!...) to check it's not followed by whitespace
   result = result.replace(/\\{2,}(?!\s)/g, '\\');
   
-  // Step 2: Fix escape sequence corruption
+  // Step 3: Restore LaTeX line breaks
+  result = result.replace(/___LINEBREAK___/g, '\\\\');
+  
+  // Step 4: Fix escape sequence corruption
   for (const { escaped, command } of COMMANDS_TO_FIX) {
     const searchStr = escaped + command.substring(1); // e.g., [TAB] + "ext"
     if (searchStr) {
@@ -27,12 +33,12 @@ export function sanitizeLatexBackslashes(input: string): string {
     }
   }
 
-  // Step 3: Wrap standalone \text{...} with \( \)
+  // Step 5: Wrap standalone \text{...} with \( \)
   // Find \text{...} that is NOT preceded by \( or \[ and NOT followed by \) or \]
   // This catches bare \text{} commands outside of math mode
-  result = result.replace(/(?<!\\[\(\[])\\text\{[^}]*\}(?![\)\]])/g, (match) => {
-    return `\\(${match}\\)`;
-  });
+  // result = result.replace(/(?<!\\[\(\[])\\text\{[^}]*\}(?![\)\]])/g, (match) => {
+  //   return `\\(${match}\\)`;
+  // });
   
   return result;
 }

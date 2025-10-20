@@ -19,8 +19,8 @@ const Navbar = () => {
     >
       <Box maxW="8xl" mx="auto" px={8} py={4}>
         <Stack direction="row" justify="space-between" align="center">
-          <Heading size="lg" cursor="pointer" onClick={() => navigate("/")}>
-            Daily Knowledge
+          <Heading size="lg" cursor="pointer" onClick={() => navigate("/")} color="sage.400">
+            Verocity
           </Heading>
           <Stack direction="row" gap={2}>
             <Button variant="outline" onClick={() => navigate("/")}>
