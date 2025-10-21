@@ -67,7 +67,7 @@ const SettingsPage = () => {
         <Stack gap={6}>
           <Stack gap={2}>
             <Heading size="2xl">Settings</Heading>
-            <Text color="gray.600">Manage your account and preferences</Text>
+            <Text color="fg.muted">Manage your account and preferences</Text>
           </Stack>
 
           {error && (
@@ -85,15 +85,15 @@ const SettingsPage = () => {
           {!isLoading && userData && (
             <Stack gap={4}>
               {/* Current Field Section */}
-              <Box p={6} bg="white" borderRadius="lg" border="1px solid" borderColor="gray.200">
+              <Box p={6} bg="panel" borderRadius="lg" border="1px solid" borderColor="muted">
                 <Stack gap={3}>
-                  <Heading size="md" color="gray.800">Current Field of Study</Heading>
+                  <Heading size="md">Current Field of Study</Heading>
                   {userData.hasField ? (
                     <>
                       <Text fontSize="lg" fontWeight="bold" color="sage.600">
                         {userData.currentField}
                       </Text>
-                      <Text fontSize="sm" color="gray.600">
+                      <Text fontSize="sm" color="fg.muted">
                         {userData.conceptStats.currentFieldCount} concepts learned in this field
                       </Text>
                     </>
@@ -113,26 +113,26 @@ const SettingsPage = () => {
               </Box>
 
               {/* Learning Progress Section */}
-              <Box p={6} bg="white" borderRadius="lg" border="1px solid" borderColor="gray.200">
+              <Box p={6} bg="panel" borderRadius="lg" border="1px solid" borderColor="muted">
                 <Stack gap={3}>
-                  <Heading size="md" color="gray.800">Learning Progress</Heading>
+                  <Heading size="md">Learning Progress</Heading>
                   <Stack gap={2}>
                     <Box>
-                      <Text fontSize="sm" fontWeight="bold" color="gray.600">Total Concepts Learned</Text>
+                      <Text fontSize="sm" fontWeight="bold" color="fg.muted">Total Concepts Learned</Text>
                       <Text fontSize="2xl" fontWeight="bold" color="sage.600">
                         {userData.conceptStats.totalConceptsCount}
                       </Text>
                     </Box>
                     <Box>
-                      <Text fontSize="sm" fontWeight="bold" color="gray.600">Current Field Progress</Text>
-                      <Text fontSize="xl" fontWeight="bold" color="gray.800">
+                      <Text fontSize="sm" fontWeight="bold" color="fg.muted">Current Field Progress</Text>
+                      <Text fontSize="xl" fontWeight="bold">
                         {userData.conceptStats.currentFieldCount}
                       </Text>
                     </Box>
                     {userData.pastFields.length > 0 && (
                       <Box>
-                        <Text fontSize="sm" fontWeight="bold" color="gray.600">Past Fields Explored</Text>
-                        <Text fontSize="md" color="gray.700">
+                        <Text fontSize="sm" fontWeight="bold" color="fg.muted">Past Fields Explored</Text>
+                        <Text fontSize="md">
                           {userData.pastFields.join(", ")}
                         </Text>
                       </Box>
@@ -142,9 +142,9 @@ const SettingsPage = () => {
               </Box>
 
               {/* Account Actions Section */}
-              <Box p={6} bg="white" borderRadius="lg" border="1px solid" borderColor="gray.200">
+              <Box p={6} bg="panel" borderRadius="lg" border="1px solid" borderColor="muted">
                 <Stack gap={3}>
-                  <Heading size="md" color="gray.800">Account</Heading>
+                  <Heading size="md">Account</Heading>
                   <Button
                     colorPalette="red"
                     variant="outline"
