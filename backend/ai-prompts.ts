@@ -3,18 +3,18 @@ You are an expert academic content curator. Pick ONE next advanced concept for a
 
 INPUT:
 - Current field (string)
-- Past concepts (array of strings) – already mastered
-- Difficulty (1–15) where 1=6th grade, 6=12th grade, 9=college sophomore
+- Past concepts (array of strings) - already mastered
+- Difficulty (1-15) where 1=6th grade, 6=12th grade, 9=college sophomore
 
 SELECTION RULES:
 - Must be genuinely NEW (not substring/synonym of any past concept)
-- Builds naturally on 2–3 past concepts (coherent progression)
+- Builds naturally on 2-3 past concepts (coherent progression)
 - Prefer modern or deep structural ideas over survey topics
 - May be research-adjacent if still scaffoldable
 - Inspiration and interest are key
 
 OUTPUT JSON:
-{"cot": "Why this is the right next concept based on the field, past list, and difficulty.", "concept": "Single concise academic-style title"}
+{"cot": "Why this is the right next concept based on the field, past list, and difficulty.", "concept": "..."}
 
 VALIDATION CHECKLIST:
 1. Is it absent (case-insensitive) from the past list?
@@ -31,7 +31,7 @@ Use LaTeX formatting with \( \) and \[ \] for ANY mathematical or scientific exp
 
 INPUT:
 - Concept name (string)
-- Difficulty level (1–15) where 1=6th grade, 6=12th grade, 9=college sophomore, etc.
+- Difficulty level (1-15) where 1=6th grade, 6=12th grade, 9=college sophomore, etc.
 
 Ensure all content and problems are appropriate for the specified difficulty level.
 
@@ -48,10 +48,10 @@ PROBLEMSET (3-4 problems):
 - Show key steps, skip trivial arithmetic
 
 FIELDS:
-2-3 Fields somewhat specific, similar to academic disciplines for example, but not limited to areas like: Real Analysis, Statistical Mechanics, Molecular Biology, etc. (Do NOT use these, only examples)
+2-3 Fields somewhat specific, similar to what a course would be titled, e.g. Real Analysis, Statistical Mechanics, Molecular Biology, Algebra etc. (Do NOT use these, only examples)
 
 OUTPUT JSON:
-{"cot": "...", "content": "...", "problemset": [{...}], "fields": [...]}
+{"cot": "How to properly structure the content and problemset, ensure LaTeX format integrity", "content": "...", "problemset": [{...}], "fields": [...]}
 
 VALIDATION CHECKLIST:
 1. Are all LaTeX commands in delimiters \( \) and \[ \]?
@@ -83,25 +83,11 @@ ASSESSMENT CRITERIA:
 EXAMPLES (FORMAT REFERENCE ONLY):
 Do not copy content, topics, or specific calculations. These show structure and style expectations only.
 
-Example 1:
-Content: "Introduction to fractions and basic fraction operations like 1/2 + 1/4"
-Chain of Thought: "This covers basic fraction concepts typically taught in 5th-6th grade. Requires understanding of parts of a whole and simple arithmetic operations with denominators."
-Difficulty: 2
-
-Example 2:
-Content: "Solving quadratic equations using the quadratic formula and analyzing discriminants"
-Chain of Thought: "Requires algebra skills, understanding of polynomials, square roots, and formula manipulation. Typically taught in high school algebra courses around 10th-11th grade."
-Difficulty: 6
-
-Example 3:
-Content: "Thermodynamic ensembles in statistical mechanics, including microcanonical, canonical, and grand canonical ensembles with partition functions"
-Chain of Thought: "This discusses advanced concepts in statistical mechanics with complex mathematical formulations. Requires strong foundation in thermodynamics, statistical physics, and advanced calculus. For a highly capable student, this represents challenging but accessible upper-level undergraduate physics content."
-Difficulty: 11
 
 OUTPUT:
 {
   "cot": "Step-by-step analysis of difficulty factors...",
-  "num": 7.5
+  "num": "..."
 }
 
 Note: Rate assuming the student is exceptionally bright and motivated, capable of handling material 2-3 years beyond typical grade level. Focus on intellectual challenge rather than standard curriculum appropriateness.
@@ -117,13 +103,12 @@ INPUT:
 
 SELECTION PHILOSOPHY:
 Your suggestions should reflect natural academic progression while maintaining intellectual coherence. Consider how fields interconnect in university curricula and research environments, favoring areas that:
-- Build naturally upon established knowledge
 - Open new perspectives within the scientific domain
 - Maintain appropriate intellectual challenge
 - Represent distinct but complementary approaches
 
 FIELD CHARACTERISTICS:
-Select fields with similar specificity to established academic disciplines:
+Select fields with similar specificity to established academic disciplines, for example, but not limited to:
 - Mathematics: Number Theory, Real Analysis, Algebraic Topology
 - Physics: Statistical Mechanics, Condensed Matter Physics, Quantum Field Theory  
 - Chemistry: Physical Chemistry, Organometallic Chemistry, Chemical Kinetics
@@ -135,14 +120,18 @@ CONSTRAINTS:
 - Distinctiveness: Select fields that offer genuinely different perspectives
 - Academic validity: Choose recognized academic disciplines or subdisciplines
 
-OUTPUT:
-Return a JSON array (5–7 strings), ONLY the array. No commentary.
+OUTPUT JSON (OBJECT):
+{
+  "cot": "Reasoning explaining the selection logic, how each suggested field fits the progression and constraints.",
+  "fields": ["...", "...", "..."] // 5-7 items
+}
 
 VALIDATION CHECKLIST:
 1. None duplicate or present in current/past fields?
 2. Similar academic specificity level?
 3. Mix of lateral + progressive depth?
 4. No generic labels like "Science" or "Advanced Topics"?
+5. Fields count is between 5 and 7.
 
 If any check fails: revise, then output.
 `

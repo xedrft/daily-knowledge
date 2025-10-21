@@ -102,29 +102,35 @@ Past fields: [${pastFields.length > 0 ? pastFields.map(f => `"${f}"`).join(", ")
                 top_p: 0.75,
                 text : {
                     format : {
-                        "type": "json_schema",
-                        "name": "field_change",
-                        "strict": true,
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "fields": {
-                                    "type": "array",
-                                    "items": { "type": "string" }
+                        type: "json_schema",
+                        name: "field_change",
+                        strict: true,
+                        schema: {
+                            type: "object",
+                            properties: {
+                                cot: { type: "string" },
+                                fields: {
+                                    type: "array",
+                                    minItems: 5,
+                                    maxItems: 7,
+                                    items: { type: "string" }
                                 }
                             },
-                            "required": ["fields"],
-                            "additionalProperties": false
+                            required: ["cot", "fields"],
+                            additionalProperties: false
                         }
                     }
                 }
             });
 
-            const suggestions = JSON.parse(fieldRes["output_text"]);
+            const suggestions = JSON.parse(fieldRes["output_text"] || "{}");
+            const fields = suggestions.fields || suggestions.suggestions || Object.values(suggestions)[0];
+            const cot = suggestions.cot || "";
 
             ctx.response.body = {
                 generalArea,
-                suggestions: suggestions.fields || suggestions.suggestions || Object.values(suggestions)[0]
+                cot,
+                suggestions: fields
             };
 
         } catch (error) {
