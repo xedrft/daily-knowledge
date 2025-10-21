@@ -1,7 +1,12 @@
-import { Button, Field, Input, Stack, Heading, Text, Box } from "@chakra-ui/react"
+import { Button, Field, Input, Stack, Heading, Text, Box, Badge } from "@chakra-ui/react"
 import { useForm } from "react-hook-form"
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import Navbar from "@/components/Navbar"
+import PageContainer from "@/components/layout/PageContainer"
+import Panel from "@/components/layout/Panel"
+import { api } from "@/lib/api/client"
+import { endpoints } from "@/lib/api/endpoints"
 
 interface FormValues {
   generalArea: string
@@ -26,6 +31,7 @@ interface UserFieldData {
 interface FieldSuggestions {
   generalArea: string
   suggestions: string[]
+  cot?: string
 }
 
 const ChangeFieldPage = () => {
@@ -38,6 +44,8 @@ const ChangeFieldPage = () => {
   const {
     register: registerFieldSelection,
     handleSubmit: handleSubmitFieldSelection,
+    watch: watchFieldSelection,
+    setValue,
     formState: { errors: fieldSelectionErrors },
   } = useForm<SelectFieldValues>()
   
@@ -67,26 +75,14 @@ const ChangeFieldPage = () => {
         navigate("/signin")
         return
       }
-
-      const response = await fetch("http://127.0.0.1:1337/api/check-field", {
-        method: "GET",
-        credentials: "include",
-        headers: {
-          Authorization: `Bearer ${jwt}`,
-        },
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setUserFieldData(data)
-      } else {
-        console.error("Failed to fetch user field data:", response.status, await response.text())
-        if (response.status === 401) {
-          navigate("/signin")
-        }
-      }
-    } catch (err) {
+      const data = await api.get<UserFieldData>(endpoints.checkField())
+      setUserFieldData(data)
+    } catch (err: any) {
+      const msg = String(err?.message || "")
       console.error("Error fetching user field data:", err)
+      if (msg.includes("HTTP 401") || msg.includes("HTTP 403")) {
+        navigate("/signin")
+      }
     }
   }
 
@@ -102,29 +98,9 @@ const ChangeFieldPage = () => {
         return
       }
 
-      const response = await fetch("http://127.0.0.1:1337/api/get-field-suggestions", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${jwt}`,
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          generalArea: data.generalArea,
-        }),
-      })
-
-      if (response.ok) {
-        const suggestions = await response.json()
-        setFieldSuggestions(suggestions)
-        setStep('select')
-      } else {
-        const errorData = await response.json()
-        setError(errorData.error || "Failed to get field suggestions")
-        if (response.status === 401) {
-          navigate("/signin")
-        }
-      }
+  const suggestions = await api.post<FieldSuggestions>(endpoints.getFieldSuggestions(), { generalArea: data.generalArea })
+  setFieldSuggestions(suggestions)
+  setStep('select')
 
     } catch (err) {
       console.error("Error:", err)
@@ -146,30 +122,10 @@ const ChangeFieldPage = () => {
         return
       }
 
-      const response = await fetch("http://127.0.0.1:1337/api/change-field", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${jwt}`,
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          field: data.selectedField,
-        }),
-      })
-
-      if (response.ok) {
-        await response.json()
-        setSuccess("Field changed successfully! You can now explore new topics.")
-        fetchUserFieldData()
-        setTimeout(() => navigate("/questions"), 2000)
-      } else {
-        const errorData = await response.json()
-        setError(errorData.error || "Failed to change field")
-        if (response.status === 401) {
-          navigate("/signin")
-        }
-      }
+      await api.post(endpoints.changeField(), { field: data.selectedField })
+      setSuccess("Field changed successfully! You can now explore new topics.")
+      fetchUserFieldData()
+      setTimeout(() => navigate("/questions"), 1200)
 
     } catch (err) {
       console.error("Error:", err)
@@ -179,147 +135,172 @@ const ChangeFieldPage = () => {
     }
   }
 
+  const selectedField = watchFieldSelection("selectedField")
+
   return (
-    <Stack gap={8} align="center" justify="center" minH="100vh" p={8}>
-      <Stack gap={4} align="center" maxW="2xl">
-        <Heading size="xl">Change Your Field of Study</Heading>
-        <Text color="gray.400" textAlign="center">
-          Switch to a new area of science to explore different concepts and expand your knowledge
-        </Text>
-      </Stack>
+    <>
+      <Navbar />
+      <PageContainer>
+        <Stack gap={6} align="center">
+          <Stack gap={2} align="center">
+            <Heading size="2xl">Change Your Field</Heading>
+            <Text color="fg.muted">Pick a new area to study. We’ll tailor concepts to your selection.</Text>
+          </Stack>
 
-      {userFieldData && (
-        <Box bg="#1a1a1a" border="1px solid #4A4A4A" p={6} borderRadius="md" maxW="md" w="full">
-          <Stack gap={4}>
-            <Text fontWeight="bold">Current Status:</Text>
-            {userFieldData.hasField ? (
-              <>
-                <Box>
-                  <Text><strong>Current Field:</strong> <span style={{color: "#7dd3fc"}}>{userFieldData.currentField}</span></Text>
-                  <Text fontSize="sm" color="gray.400">
-                    {userFieldData.conceptStats.currentFieldCount} concepts learned in this field
-                  </Text>
-                </Box>
-                
-                {userFieldData.pastFields.length > 0 && (
-                  <Box>
-                    <Text><strong>Past Fields:</strong> <span style={{color: "#d1d5db"}}>{userFieldData.pastFields.join(", ")}</span></Text>
-                    <Text fontSize="sm" color="gray.400">
-                      {userFieldData.conceptStats.totalConceptsCount - userFieldData.conceptStats.currentFieldCount} concepts from past fields
+          {userFieldData && (
+            <Panel w="full" maxW="3xl" mx="auto">
+              <Stack gap={4}>
+                <Heading size="sm">Your Current Status</Heading>
+                {userFieldData.hasField ? (
+                  <Stack gap={3}>
+                    <Stack direction="row" gap={2} align="center">
+                      <Text fontWeight="bold">Current field:</Text>
+                      <Badge colorPalette="blue">{userFieldData.currentField}</Badge>
+                    </Stack>
+                    <Text fontSize="sm" color="fg.muted">
+                      {userFieldData.conceptStats.currentFieldCount} concepts learned in this field
                     </Text>
-                  </Box>
+                    {userFieldData.pastFields.length > 0 && (
+                      <Stack gap={2}>
+                        <Text fontWeight="bold">Past fields</Text>
+                        <Stack direction="row" gap={2} flexWrap="wrap">
+                          {userFieldData.pastFields.map((pf, i) => (
+                            <Badge key={i} colorPalette="gray">{pf}</Badge>
+                          ))}
+                        </Stack>
+                      </Stack>
+                    )}
+                    <Box borderTop="1px solid" borderColor="muted" />
+                    <Text fontSize="sm" color="fg.muted">
+                      Total progress: <strong>{userFieldData.conceptStats.totalConceptsCount}</strong> concepts explored
+                    </Text>
+                  </Stack>
+                ) : (
+                  <Text color="orange.400">No field selected yet</Text>
                 )}
-                
-                <Box pt={2} borderTop="1px solid #4A4A4A">
-                  <Text fontSize="sm" color="emerald.300">
-                    <strong>Total Learning Progress:</strong> {userFieldData.conceptStats.totalConceptsCount} concepts explored
-                  </Text>
-                </Box>
-              </>
-            ) : (
-              <Text color="orange.400">No field selected yet</Text>
-            )}
-          </Stack>
-        </Box>
-      )}
-
-      {step === 'general' ? (
-        <form onSubmit={handleSubmitGeneralArea(onSubmitGeneralArea)}>
-          <Stack gap="4" align="flex-start" maxW="md" w="full">
-            {error && (
-              <Text color="red.500" fontSize="sm">{error}</Text>
-            )}
-            
-            <Field.Root invalid={!!generalAreaErrors.generalArea}>
-              <Field.Label>General Area of Science</Field.Label>
-              <Input
-                {...registerGeneralArea("generalArea", {
-                  required: "General area is required",
-                  minLength: { value: 2, message: "General area must be at least 2 characters" }
-                })}
-                placeholder="e.g., Physics, Mathematics, Chemistry, Biology..."
-              />
-              <Field.ErrorText>{generalAreaErrors.generalArea?.message}</Field.ErrorText>
-              <Field.HelperText>
-                Enter a broad scientific area to get specific field suggestions
-              </Field.HelperText>
-            </Field.Root>
-
-            <Button type="submit" w="full" loading={isLoading} colorPalette="emerald">
-              Get Field Suggestions
-            </Button>
-          </Stack>
-        </form>
-      ) : (
-        <form onSubmit={handleSubmitFieldSelection(onSubmitFieldSelection)}>
-          <Stack gap="4" align="flex-start" maxW="md" w="full">
-            {error && (
-              <Text color="red.500" fontSize="sm">{error}</Text>
-            )}
-            
-            {success && (
-              <Text color="green.500" fontSize="sm">{success}</Text>
-            )}
-
-            <Field.Root invalid={!!fieldSelectionErrors.selectedField}>
-              <Field.Label>Choose Your Field of Study</Field.Label>
-              <Stack gap={3}>
-                {fieldSuggestions?.suggestions.map((field, index) => (
-                  <Box 
-                    key={index} 
-                    p={3} 
-                    bg="#1a1a1a" 
-                    border="1px solid #4A4A4A" 
-                    borderRadius="md"
-                    cursor="pointer"
-                    _hover={{ bg: "#2a2a2a" }}
-                  >
-                    <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-                      <input
-                        type="radio"
-                        {...registerFieldSelection("selectedField", {
-                          required: "Please select a field"
-                        })}
-                        value={field}
-                        style={{ marginRight: '12px', accentColor: '#7dd3fc' }}
-                      />
-                      <Text color="white">{field}</Text>
-                    </label>
-                  </Box>
-                ))}
               </Stack>
-              <Field.ErrorText>{fieldSelectionErrors.selectedField?.message}</Field.ErrorText>
-              <Field.HelperText>
-                Select the specific field you'd like to explore from the suggestions above
-              </Field.HelperText>
-            </Field.Root>
+            </Panel>
+          )}
 
-            <Stack direction="row" gap={2} w="full">
-              <Button 
-                variant="outline" 
-                onClick={() => setStep('general')} 
-                w="full"
-                colorPalette="gray"
-              >
-                Back
-              </Button>
-              <Button type="submit" w="full" loading={isLoading} colorPalette="emerald">
-                Change Field
-              </Button>
-            </Stack>
+          {step === 'general' ? (
+            <Panel w="full" maxW="3xl" mx="auto">
+              <form onSubmit={handleSubmitGeneralArea(onSubmitGeneralArea)}>
+                <Stack gap={4}>
+                  {error && (
+                    <Box bg="red.50" border="1px solid" borderColor="red.200" p={3} borderRadius="md">
+                      <Text color="red.700" fontSize="sm">{error}</Text>
+                    </Box>
+                  )}
+                  <Text fontSize="sm" color="fg.muted">Step 1 of 2</Text>
+                  <Field.Root invalid={!!generalAreaErrors.generalArea}>
+                    <Field.Label>General Area</Field.Label>
+                    <Input
+                      {...registerGeneralArea("generalArea", {
+                        required: "General area is required",
+                        minLength: { value: 2, message: "Must be at least 2 characters" }
+                      })}
+                      placeholder="e.g., Physics, Mathematics, Chemistry, Biology..."
+                      bg="bg"
+                    />
+                    <Field.ErrorText>{generalAreaErrors.generalArea?.message}</Field.ErrorText>
+                    <Field.HelperText>We’ll propose specific fields within this area.</Field.HelperText>
+                  </Field.Root>
+
+                  <Button type="submit" loading={isLoading} variant="solid" colorPalette="sage" size="lg" alignSelf="center" minW="180px">
+                    Get Suggestions
+                  </Button>
+                </Stack>
+              </form>
+            </Panel>
+          ) : (
+              <Panel w="full" maxW="3xl" mx="auto">
+                <form onSubmit={handleSubmitFieldSelection(onSubmitFieldSelection)}>
+                  <Stack gap={4}>
+                    {error && (
+                      <Box bg="red.50" border="1px solid" borderColor="red.200" p={3} borderRadius="md">
+                        <Text color="red.700" fontSize="sm">{error}</Text>
+                      </Box>
+                    )}
+                    {success && (
+                      <Box bg="green.50" border="1px solid" borderColor="green.200" p={3} borderRadius="md">
+                        <Text color="green.700" fontSize="sm">{success}</Text>
+                      </Box>
+                    )}
+
+                    <Text fontSize="sm" color="fg.muted">Step 2 of 2</Text>
+                    {fieldSuggestions?.generalArea && (
+                      <Box bg="bg" border="1px solid" borderColor="muted" p={2} borderRadius="md">
+                        <Text fontSize="sm" color="fg.muted">General area: <strong>{fieldSuggestions.generalArea}</strong></Text>
+                      </Box>
+                    )}
+                    <Field.Root invalid={!!fieldSelectionErrors.selectedField}>
+                      <Field.Label>Choose your field</Field.Label>
+                      <Stack gap={3} align="center" w="full">
+                        {fieldSuggestions?.suggestions.map((field, index) => {
+                          const active = selectedField === field
+                          return (
+                            <Box
+                              key={index}
+                              p={4}
+                              border="1px solid"
+                              borderColor={active ? "sage.400" : "muted"}
+                              bg={active ? "sage.50" : "panel"}
+                              borderRadius="md"
+                              cursor="pointer"
+                              w="100%"
+                              maxW="480px"
+                              mx="auto"
+                              transition="all 0.15s ease-in-out"
+                              _hover={{ borderColor: "border.emphasized", boxShadow: "md" }}
+                              onClick={() => setValue("selectedField", field)}
+                            >
+                              <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, width: '100%', justifyContent: 'center' }}>
+                                <input
+                                  type="radio"
+                                  {...registerFieldSelection("selectedField", { required: "Please select a field" })}
+                                  value={field}
+                                  style={{ accentColor: 'var(--chakra-colors-sage-500)' }}
+                                />
+                                <Text color={active ? "sage.400" : "white"}>{field}</Text>
+                              </label>
+                            </Box>
+                          )
+                        })}
+                      </Stack>
+                      <Field.ErrorText>{fieldSelectionErrors.selectedField?.message}</Field.ErrorText>
+                      <Field.HelperText>Select a specific field to focus your learning.</Field.HelperText>
+                    </Field.Root>
+
+                    <Stack direction={{ base: 'column', sm: 'row' }} gap={3} justify="center" align="center" w="full">
+                      <Button
+                        variant="outline"
+                        onClick={() => setStep('general')}
+                        colorPalette="gray"
+                        size="lg"
+                        minW="160px"
+                      >
+                        Back
+                      </Button>
+                      <Button type="submit" loading={isLoading} variant="solid" colorPalette="sage" size="lg" minW="160px">
+                        Change Field
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </form>
+              </Panel>
+          )}
+
+          <Stack gap={2} align="flex-start">
+            <Text fontSize="sm">
+              <Link to="/questions">← Back to Questions</Link>
+            </Text>
+            <Text fontSize="sm">
+              <Link to="/">← Back to Home</Link>
+            </Text>
           </Stack>
-        </form>
-      )}
-
-      <Stack gap={2} align="center">
-        <Text fontSize="sm">
-          <Link to="/questions">← Back to Questions</Link>
-        </Text>
-        <Text fontSize="sm">
-          <Link to="/">← Back to Home</Link>
-        </Text>
-      </Stack>
-    </Stack>
+        </Stack>
+      </PageContainer>
+    </>
   )
 }
 
