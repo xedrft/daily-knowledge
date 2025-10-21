@@ -1,7 +1,9 @@
-import { Button, Stack, Heading, Text, Box, Input, Grid, Badge } from "@chakra-ui/react"
+import { Button, Stack, Heading, Text, Box, Input, Grid, Badge, useDisclosure, Dialog, Tooltip } from "@chakra-ui/react"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
+import latexFormatter from "@/functions/latexFormatter"
+import ProblemSet from "@/components/ProblemSet"
 
 interface Concept {
   documentId: string
@@ -29,6 +31,8 @@ const ConceptLibraryPage = () => {
 
   // Available fields (extracted from concepts)
   const [availableFields, setAvailableFields] = useState<string[]>([])
+  const { open, onOpen, onClose } = useDisclosure()
+  const [activeConcept, setActiveConcept] = useState<any>(null)
 
   // Auth check
   const redirectCheck = async (): Promise<boolean> => {
@@ -179,7 +183,7 @@ const ConceptLibraryPage = () => {
         <Stack gap={6}>
           <Stack gap={2}>
             <Heading size="2xl">My Learned Concepts</Heading>
-            <Text color="gray.600">
+            <Text color="fg.muted">
               Browse all {filteredConcepts.length} concepts you've learned
             </Text>
           </Stack>
@@ -191,24 +195,24 @@ const ConceptLibraryPage = () => {
           )}
 
           {/* Filters */}
-          <Box p={6} bg="gray.50" borderRadius="lg" border="1px solid" borderColor="gray.200">
+          <Box p={6} bg="panel" borderRadius="lg" border="1px solid" borderColor="muted">
             <Stack gap={4}>
-              <Heading size="md" color="gray.800">Filters</Heading>
+              <Heading size="md">Filters</Heading>
 
               {/* Search */}
               <Box>
-                <Text fontSize="sm" fontWeight="bold" mb={2} color="gray.800">Search</Text>
+                <Text fontSize="sm" fontWeight="bold" mb={2}>Search</Text>
                 <Input
                   placeholder="Search concepts..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  bg="white"
+                  bg="bg"
                 />
               </Box>
 
               {/* Field Filter */}
               <Box>
-                <Text fontSize="sm" fontWeight="bold" mb={2} color="gray.800">Field</Text>
+                <Text fontSize="sm" fontWeight="bold" mb={2}>Field</Text>
                 <select
                   value={selectedField}
                   onChange={(e) => setSelectedField(e.target.value)}
@@ -216,9 +220,10 @@ const ConceptLibraryPage = () => {
                     width: "100%",
                     padding: "8px 12px",
                     borderRadius: "6px",
-                    border: "1px solid #d1d5db",
-                    backgroundColor: "white",
-                    color: "#1f2937"
+                    border: "1px solid",
+                    borderColor: "var(--chakra-colors-muted)",
+                    backgroundColor: "var(--chakra-colors-bg)",
+                    color: "var(--chakra-colors-fg)"
                   }}
                 >
                   <option value="all">All Fields</option>
@@ -230,7 +235,7 @@ const ConceptLibraryPage = () => {
 
               {/* Difficulty Filter */}
               <Box>
-                <Text fontSize="sm" fontWeight="bold" mb={2} color="gray.800">Difficulty</Text>
+                <Text fontSize="sm" fontWeight="bold" mb={2}>Difficulty</Text>
                 <select
                   value={selectedDifficulty}
                   onChange={(e) => setSelectedDifficulty(e.target.value)}
@@ -238,9 +243,10 @@ const ConceptLibraryPage = () => {
                     width: "100%",
                     padding: "8px 12px",
                     borderRadius: "6px",
-                    border: "1px solid #d1d5db",
-                    backgroundColor: "white",
-                    color: "#1f2937"
+                    border: "1px solid",
+                    borderColor: "var(--chakra-colors-muted)",
+                    backgroundColor: "var(--chakra-colors-bg)",
+                    color: "var(--chakra-colors-fg)"
                   }}
                 >
                   <option value="all">All Levels</option>
@@ -290,24 +296,44 @@ const ConceptLibraryPage = () => {
                   <Box
                     key={concept.documentId}
                     p={5}
-                    bg="white"
+                    bg="panel"
                     borderRadius="lg"
                     border="1px solid"
-                    borderColor="gray.200"
-                    _hover={{ boxShadow: "md", borderColor: "sage.400" }}
+                    borderColor="muted"
+                    _hover={{ boxShadow: "md", borderColor: "border.emphasized" }}
                     cursor="pointer"
                     transition="all 0.2s"
+                    onClick={async () => {
+                      try {
+                        const jwt = localStorage.getItem('jwt')
+                        const res = await fetch('http://127.0.0.1:1337/api/concept/get', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${jwt}`,
+                          },
+                          credentials: 'include',
+                          body: JSON.stringify({ documentId: concept.documentId }),
+                        })
+                        if (!res.ok) return
+                        const payload = await res.json()
+                        setActiveConcept(payload)
+                        onOpen()
+                      } catch (e) {
+                        console.error('Failed to open concept modal', e)
+                      }
+                    }}
                   >
                     <Stack gap={3}>
                       {/* Title */}
-                      <Heading size="sm" color="gray.800" minH="48px">
+                      <Heading size="sm" minH="48px">
                         {concept.title}
                       </Heading>
 
                       {/* Fields */}
                       {Array.isArray(concept.fields) && concept.fields.length > 0 && (
                         <Box>
-                          <Text fontSize="xs" fontWeight="bold" color="gray.600" mb={1}>
+                          <Text fontSize="xs" fontWeight="bold" color="fg.muted" mb={1}>
                             Fields:
                           </Text>
                           <Stack direction="row" gap={1} flexWrap="wrap">
@@ -317,9 +343,18 @@ const ConceptLibraryPage = () => {
                               </Badge>
                             ))}
                             {concept.fields.length > 2 && (
-                              <Badge colorPalette="gray" fontSize="xs">
-                                +{concept.fields.length - 2}
-                              </Badge>
+                              <Tooltip.Root>
+                                <Tooltip.Trigger>
+                                  <Badge colorPalette="gray" fontSize="xs">
+                                    +{concept.fields.length - 2}
+                                  </Badge>
+                                </Tooltip.Trigger>
+                                <Tooltip.Positioner>
+                                  <Tooltip.Content bg="gray.800" color="white">
+                                    {concept.fields.slice(2).join(', ')}
+                                  </Tooltip.Content>
+                                </Tooltip.Positioner>
+                              </Tooltip.Root>
                             )}
                           </Stack>
                         </Box>
@@ -327,7 +362,7 @@ const ConceptLibraryPage = () => {
 
                       {/* Difficulty */}
                       <Box>
-                        <Text fontSize="xs" fontWeight="bold" color="gray.600" mb={1}>
+                        <Text fontSize="xs" fontWeight="bold" color="fg.muted" mb={1}>
                           Difficulty:
                         </Text>
                         <Badge colorPalette={getDifficultyColor(concept.difficulty)}>
@@ -377,6 +412,31 @@ const ConceptLibraryPage = () => {
               </Text>
             </Box>
           )}
+
+          {/* Dialog for concept details (Chakra UI v3) */}
+          <Dialog.Root open={open} onOpenChange={(details) => (details.open ? onOpen() : onClose())}>
+            <Dialog.Backdrop />
+            <Dialog.Positioner>
+              <Dialog.Content maxW="4xl" bg="panel" border="1px solid" borderColor="muted">
+                <Dialog.CloseTrigger />
+                <Stack gap={3} p={4}>
+                  <Heading size="lg">{activeConcept?.title}</Heading>
+                  {activeConcept ? (
+                    <Stack gap={4}>
+                      <Box className="math-content-container">
+                        {latexFormatter(activeConcept.content || '')}
+                      </Box>
+                      {Array.isArray(activeConcept.problemset) && activeConcept.problemset.length > 0 && (
+                        <ProblemSet problemset={activeConcept.problemset} />
+                      )}
+                    </Stack>
+                  ) : (
+                    <Text>Loading...</Text>
+                  )}
+                </Stack>
+              </Dialog.Content>
+            </Dialog.Positioner>
+          </Dialog.Root>
         </Stack>
       </Box>
     </>

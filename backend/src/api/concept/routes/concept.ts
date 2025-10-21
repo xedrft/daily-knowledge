@@ -2,6 +2,12 @@
  * concept router
  */
 
-import { factories } from '@strapi/strapi';
-
-export default factories.createCoreRouter('api::concept.concept');
+module.exports = {
+	routes: [
+		{
+			method: 'POST',
+			path: '/concept/get',
+			handler: 'concept.getByIdOrTitle',
+		},
+	],
+};

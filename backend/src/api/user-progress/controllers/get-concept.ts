@@ -58,10 +58,28 @@ Difficulty level: ${currLevel}`;
                 model : "gpt-4o-mini",
                 instructions: prompts.concept,
                 input: formattedInput,
-                top_p : 0.75
+                top_p : 0.75,
+                text: {
+                    format: {
+                        type: "json_schema",
+                        name: "concept_selection",
+                        strict: true,
+                        schema: {
+                            type: "object",
+                            properties: {
+                                cot: { type: "string" },
+                                concept: { type: "string" }
+                            },
+                            required: ["cot", "concept"],
+                            additionalProperties: false
+                        }
+                    }
+                }
             });
             
-            const currConcept = conceptRes["output_text"];
+            const conceptJson = JSON.parse(conceptRes["output_text"] || "{}");
+            const currConcept = conceptJson.concept;
+            const conceptCot = conceptJson.cot;
             console.log(currConcept);
             let content = await strapi.documents("api::concept.concept").findFirst({
                 filters : {
@@ -69,13 +87,14 @@ Difficulty level: ${currLevel}`;
                 }
             });
 
-            if (content){
+                        if (content){
                 ctx.response.body = {
-                    title: currConcept,
+                                        title: currConcept,
                     content : content["content"],
                     problemset : content["problemset"],
                     fields: content["fields"],
-                    difficulty: content["difficulty"]
+                                        difficulty: content["difficulty"],
+                                        cot: conceptCot
                 }
             } else {
                 const contentRes = await contentCall(currConcept, currLevel);
@@ -86,7 +105,8 @@ Difficulty level: ${currLevel}`;
                   title: currConcept,
                   content: content.content,
                   problemset: content.problemset,
-                  fields: content.fields,
+                                    fields: content.fields,
+                                    cot: conceptCot
                 };
 
                 content["title"] = currConcept;

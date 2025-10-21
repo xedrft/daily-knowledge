@@ -21,21 +21,31 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 }
             });
 
-            // Get learned concept titles
+            // Get learned concept titles and build a recency order map from allPastConcepts
             const learnedConcepts = new Set<string>();
+            const orderMap: Record<string, number> = {};
             if (userProgress) {
-                const currentFieldConcepts = Array.isArray(userProgress.currentFieldConcepts) 
-                    ? userProgress.currentFieldConcepts 
+                const currentFieldConcepts = Array.isArray(userProgress.currentFieldConcepts)
+                    ? userProgress.currentFieldConcepts
                     : [];
-                const allPastConcepts = Array.isArray(userProgress.allPastConcepts) 
-                    ? userProgress.allPastConcepts 
+                const allPastConcepts = Array.isArray(userProgress.allPastConcepts)
+                    ? userProgress.allPastConcepts
                     : [];
-                
+
+                // Mark learned
                 [...currentFieldConcepts, ...allPastConcepts].forEach(concept => {
                     if (typeof concept === 'string') {
                         learnedConcepts.add(concept);
                     } else if (concept && typeof concept === 'object' && 'title' in concept) {
                         learnedConcepts.add((concept as any).title);
+                    }
+                });
+
+                // Build recency order map from allPastConcepts sequence (append-only, most recent is last)
+                allPastConcepts.forEach((concept, idx) => {
+                    const title = typeof concept === 'string' ? concept : (concept && typeof concept === 'object' && 'title' in concept ? (concept as any).title : undefined);
+                    if (title) {
+                        orderMap[title] = idx; // larger idx means more recent
                     }
                 });
             }
@@ -54,7 +64,8 @@ export default factories.createCoreController('api::user-progress.user-progress'
                     title: concept.title,
                     difficulty: concept.difficulty || 7,
                     fields: Array.isArray(concept.fields) ? concept.fields : [],
-                    learned: true // All concepts here are learned
+                    learned: true, // All concepts here are learned
+                    recentOrder: orderMap[concept.title] ?? -1
                 }));
 
             // Sort by title

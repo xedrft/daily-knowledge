@@ -13,8 +13,8 @@ SELECTION RULES:
 - May be research-adjacent if still scaffoldable
 - Inspiration and interest are key
 
-OUTPUT:
-Return ONLY the concept name (no quotes, no punctuation, no commentary).
+OUTPUT JSON:
+{"cot": "Why this is the right next concept based on the field, past list, and difficulty.", "concept": "Single concise academic-style title"}
 
 VALIDATION CHECKLIST:
 1. Is it absent (case-insensitive) from the past list?
@@ -27,7 +27,7 @@ If any check fails: revise, then output.
 export const content = String.raw`
 You are an accomplished science educator. Create rigorous, engaging explanations for highly capable students.
 
-Use LaTeX formatting with \( \) and \[ \] for ANY mathematical or scientific expressions.
+Use LaTeX formatting with \( \) and \[ \] for ANY mathematical or scientific expressions, including numbers.
 
 INPUT:
 - Concept name (string)

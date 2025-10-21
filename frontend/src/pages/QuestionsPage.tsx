@@ -82,6 +82,71 @@ const QuestionsPage = () => {
     }
   }
 
+  // Fallback: always show something by loading the last learned concept
+  const loadLastLearnedConcept = async () => {
+    try {
+      const ok = await redirectCheck();
+      if (!ok) return;
+      const jwt = localStorage.getItem('jwt');
+      if (!jwt) return;
+
+      // Fetch current field to filter concepts from the same field
+      const fieldRes = await fetch('http://127.0.0.1:1337/api/check-field', {
+        method: 'GET',
+        credentials: 'include',
+        headers: { Authorization: `Bearer ${jwt}` },
+      });
+      if (!fieldRes.ok) return;
+      const fieldJson = await fieldRes.json();
+      const currentFieldName: string | null = fieldJson?.currentField || null;
+
+      const listRes = await fetch('http://127.0.0.1:1337/api/list-concepts', {
+        credentials: 'include',
+        headers: { Authorization: `Bearer ${jwt}` },
+      });
+      if (!listRes.ok) return;
+  const listJson = await listRes.json();
+  const items: Array<{ documentId: string; title: string; fields?: string[]; recentOrder?: number }>= listJson.concepts || [];
+      if (!items.length) return;
+
+      // If we know the current field, prefer items that include it in their fields array
+      let candidates = items;
+      if (currentFieldName) {
+        const cf = currentFieldName.toLowerCase();
+        const filtered = items.filter(it => Array.isArray(it.fields) && it.fields.some(f => f?.toLowerCase() === cf));
+        if (filtered.length > 0) candidates = filtered;
+      }
+
+  // Choose the most recent by highest recentOrder; fallback to last item if unavailable
+  const orderOf = (it: { recentOrder?: number }) => (typeof it.recentOrder === 'number' ? it.recentOrder : -1);
+  const mostRecent = candidates.reduce((best, it) => (orderOf(it) >= orderOf(best) ? it : best), candidates[0]);
+
+      // fetch full content from new endpoint
+      const contentRes = await fetch('http://127.0.0.1:1337/api/concept/get', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${jwt}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ documentId: mostRecent.documentId }),
+      });
+      if (!contentRes.ok) return;
+      const payload = await contentRes.json();
+      setConcept(payload);
+    } catch (e) {
+      console.error('Failed to load last learned concept', e);
+    }
+  };
+
+  // On mount, if no concept is present, try to load last learned
+  useEffect(() => {
+    if (!concept) {
+      loadLastLearnedConcept();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [concept]);
+
   return (
     <>
       <Navbar />
@@ -93,14 +158,11 @@ const QuestionsPage = () => {
           <Text color="gray.600">
             Learn something new and expand your knowledge
           </Text>
-          {!concept && !isLoading ? (
-            <Button onClick={fetchConcept} colorPalette="sage">
+          {!concept && (
+            <Button onClick={fetchConcept} colorPalette="sage" disabled={isLoading} {...(isLoading ? { loading: true, loadingText: 'Fetching concept...' } : {})}>
               Get Concept
             </Button>
-          ) : !concept &&
-          <Button colorPalette="sage" loading loadingText="Fetching concept...">
-            Get Concept 
-          </Button>}
+          )}
         </Stack>
 
         {error && (
@@ -146,6 +208,12 @@ const QuestionsPage = () => {
           <Button colorPalette="sage" loading loadingText="Fetching new concept...">
             Get New Concept
           </Button>
+        )}
+
+        {!concept && !isLoading && (
+          <Box bg="subtle" p={4} borderRadius="md" border="1px solid" borderColor="muted">
+            <Text>Learn your first concept in this field to see it here.</Text>
+          </Box>
         )}
 
       </Stack>
