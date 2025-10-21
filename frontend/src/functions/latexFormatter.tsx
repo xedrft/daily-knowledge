@@ -118,9 +118,7 @@ export default function latexFormatter(input: string): ReactElement[] {
     if (match.type === 'block') {
       elements.push(<BlockMath key={key++} math={(match as any).latex} />);
     } else if (match.type === 'inline') {
-      let latexStr = (match as any).latex as string;
-      // If inline math ends with a LaTeX line break (\\), trim it to avoid KaTeX inline errors
-      latexStr = latexStr.replace(/\\\s*$/, '');
+      const latexStr = (match as any).latex as string;
       elements.push(<InlineMath key={key++} math={latexStr} />);
     }
 

@@ -109,13 +109,11 @@ const QuestionsPage = () => {
   const items: Array<{ documentId: string; title: string; fields?: string[]; recentOrder?: number }>= listJson.concepts || [];
       if (!items.length) return;
 
-      // If we know the current field, prefer items that include it in their fields array
-      let candidates = items;
-      if (currentFieldName) {
-        const cf = currentFieldName.toLowerCase();
-        const filtered = items.filter(it => Array.isArray(it.fields) && it.fields.some(f => f?.toLowerCase() === cf));
-        if (filtered.length > 0) candidates = filtered;
-      }
+      // Only allow items from the current field
+      if (!currentFieldName) return;
+      const cf = currentFieldName.toLowerCase();
+      const candidates = items.filter(it => Array.isArray(it.fields) && it.fields.some(f => f?.toLowerCase() === cf));
+      if (candidates.length === 0) return;
 
   // Choose the most recent by highest recentOrder; fallback to last item if unavailable
   const orderOf = (it: { recentOrder?: number }) => (typeof it.recentOrder === 'number' ? it.recentOrder : -1);
