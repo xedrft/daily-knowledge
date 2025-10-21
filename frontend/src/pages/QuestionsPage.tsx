@@ -5,6 +5,12 @@ import latexFormatter from "@/functions/latexFormatter"
 import "@/styles/math.css"
 import ProblemSet from "@/components/ProblemSet"
 import Navbar from "@/components/Navbar"
+import PageContainer from "@/components/layout/PageContainer"
+import Panel from "@/components/layout/Panel"
+import { api } from "@/lib/api/client"
+import { endpoints } from "@/lib/api/endpoints"
+import type { ConceptFull, ConceptSummary } from "@/types/domain"
+import { useAuthGate } from "@/hooks/useAuthGate"
 
 const QuestionsPage = () => {
   const [concept, setConcept] = useState<any>(null)
@@ -12,41 +18,10 @@ const QuestionsPage = () => {
   const [error, setError] = useState<string>("")
   const navigate = useNavigate()
 
-  // NEW: unified auth + field presence gate
-  const redirectCheck = async (): Promise<boolean> => {
-    const jwt = localStorage.getItem("jwt")
-    if (!jwt) {
-      navigate("/signin")
-      return false
-    }
-    try {
-      const resp = await fetch("http://127.0.0.1:1337/api/check-field", {
-        method: "GET",
-        credentials: "include",
-        headers: { Authorization: `Bearer ${jwt}` }
-      })
-      if (!resp.ok) {
-        if (resp.status === 401 || resp.status === 403) {
-          navigate("/signin")
-          return false
-        }
-        // backend error: silently stop
-        return false
-      }
-      const data = await resp.json()
-      if (data.hasField === false) {
-        navigate("/change-field")
-        return false
-      }
-      return true
-    } catch (e) {
-      console.error("Field check failed:", e)
-      return false
-    }
-  }
+  const { check } = useAuthGate()
 
   useEffect(() => {
-    redirectCheck()
+    check()
   }, [])
 
   const fetchConcept = async () => {
@@ -54,26 +29,10 @@ const QuestionsPage = () => {
     setError("")
     try {
       // Re-use the unified gate; abort if redirect happened
-      const ok = await redirectCheck()
+      const { ok } = await check()
       if (!ok) return
-
-      const jwt = localStorage.getItem("jwt")
-      if (!jwt) {
-        navigate("/signin")
-        return
-      }
-
-      const conceptRes = await fetch("http://127.0.0.1:1337/api/get-concept", {
-        credentials: "include",
-        headers: { Authorization: `Bearer ${jwt}` }
-      })
-      const conceptJson = await conceptRes.json()
-      if (conceptRes.ok) {
-        setConcept(conceptJson)
-      } else {
-        setError(conceptJson.error || "Failed to fetch concept")
-        if (conceptRes.status === 401 || conceptRes.status === 403) navigate("/signin")
-      }
+      const conceptJson = await api.get<ConceptFull>(endpoints.getConcept())
+      setConcept(conceptJson)
     } catch (err) {
       console.error("Error:", err)
       setError("Network error. Please try again.")
@@ -85,28 +44,12 @@ const QuestionsPage = () => {
   // Fallback: always show something by loading the last learned concept
   const loadLastLearnedConcept = async () => {
     try {
-      const ok = await redirectCheck();
+      const { ok, currentField } = await check();
       if (!ok) return;
-      const jwt = localStorage.getItem('jwt');
-      if (!jwt) return;
+      const currentFieldName: string | null = currentField || null;
 
-      // Fetch current field to filter concepts from the same field
-      const fieldRes = await fetch('http://127.0.0.1:1337/api/check-field', {
-        method: 'GET',
-        credentials: 'include',
-        headers: { Authorization: `Bearer ${jwt}` },
-      });
-      if (!fieldRes.ok) return;
-      const fieldJson = await fieldRes.json();
-      const currentFieldName: string | null = fieldJson?.currentField || null;
-
-      const listRes = await fetch('http://127.0.0.1:1337/api/list-concepts', {
-        credentials: 'include',
-        headers: { Authorization: `Bearer ${jwt}` },
-      });
-      if (!listRes.ok) return;
-  const listJson = await listRes.json();
-  const items: Array<{ documentId: string; title: string; fields?: string[]; recentOrder?: number }>= listJson.concepts || [];
+      const listJson = await api.get<{ concepts: ConceptSummary[] }>(endpoints.listConcepts());
+      const items: ConceptSummary[] = listJson.concepts || [];
       if (!items.length) return;
 
       // Only allow items from the current field
@@ -120,17 +63,7 @@ const QuestionsPage = () => {
   const mostRecent = candidates.reduce((best, it) => (orderOf(it) >= orderOf(best) ? it : best), candidates[0]);
 
       // fetch full content from new endpoint
-      const contentRes = await fetch('http://127.0.0.1:1337/api/concept/get', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${jwt}`,
-        },
-        credentials: 'include',
-        body: JSON.stringify({ documentId: mostRecent.documentId }),
-      });
-      if (!contentRes.ok) return;
-      const payload = await contentRes.json();
+      const payload = await api.post<ConceptFull>(endpoints.conceptGet(), { documentId: mostRecent.documentId });
       setConcept(payload);
     } catch (e) {
       console.error('Failed to load last learned concept', e);
@@ -150,7 +83,7 @@ const QuestionsPage = () => {
       <Navbar />
       
       {/* Page container */}
-      <Stack gap={6} p={8} maxW="8xl" mx="auto">
+      <PageContainer>
         <Stack gap={2}>
           <Heading size="md">Today's Concept</Heading>
           <Text color="gray.600">
@@ -173,7 +106,7 @@ const QuestionsPage = () => {
         )}
 
         {concept && !isLoading && (
-          <Box bg="panel" p={6} borderRadius="md">
+          <Panel>
             <Stack gap={4}>
               <Heading size="3xl" color="sage.400">{concept.title}</Heading>
               <Box 
@@ -186,7 +119,7 @@ const QuestionsPage = () => {
                 <ProblemSet problemset={concept.problemset} />
               )}
             </Stack>
-          </Box>
+          </Panel>
         )}
 
         {concept && !isLoading ?(
@@ -209,12 +142,11 @@ const QuestionsPage = () => {
         )}
 
         {!concept && !isLoading && (
-          <Box bg="subtle" p={4} borderRadius="md" border="1px solid" borderColor="muted">
+          <Panel p={4}>
             <Text>Learn your first concept in this field to see it here.</Text>
-          </Box>
+          </Panel>
         )}
-
-      </Stack>
+      </PageContainer>
     </>
   )
 }

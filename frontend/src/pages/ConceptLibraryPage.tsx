@@ -1,24 +1,21 @@
 import { Button, Stack, Heading, Text, Box, Input, Grid, Badge, useDisclosure, Dialog, Tooltip } from "@chakra-ui/react"
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
 import latexFormatter from "@/functions/latexFormatter"
 import ProblemSet from "@/components/ProblemSet"
-
-interface Concept {
-  documentId: string
-  title: string
-  difficulty: number
-  fields: string[]
-  learned?: boolean
-}
+import PageContainer from "@/components/layout/PageContainer"
+import Panel from "@/components/layout/Panel"
+import { api } from "@/lib/api/client"
+import { endpoints } from "@/lib/api/endpoints"
+import type { ConceptSummary, ConceptFull } from "@/types/domain"
+import { useAuthGate } from "@/hooks/useAuthGate"
 
 const ConceptLibraryPage = () => {
-  const [concepts, setConcepts] = useState<Concept[]>([])
-  const [filteredConcepts, setFilteredConcepts] = useState<Concept[]>([])
+  const [concepts, setConcepts] = useState<ConceptSummary[]>([])
+  const [filteredConcepts, setFilteredConcepts] = useState<ConceptSummary[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string>("")
-  const navigate = useNavigate()
+  const { check } = useAuthGate()
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState("")
@@ -34,97 +31,41 @@ const ConceptLibraryPage = () => {
   const { open, onOpen, onClose } = useDisclosure()
   const [activeConcept, setActiveConcept] = useState<any>(null)
 
-  // Auth check
-  const redirectCheck = async (): Promise<boolean> => {
-    const jwt = localStorage.getItem("jwt")
-    console.log("[ConceptLibrary] JWT exists:", !!jwt)
-    if (!jwt) {
-      console.log("[ConceptLibrary] No JWT, redirecting to signin")
-      navigate("/signin")
-      return false
-    }
-    try {
-      console.log("[ConceptLibrary] Calling check-field API...")
-      const resp = await fetch("http://127.0.0.1:1337/api/check-field", {
-        method: "GET",
-        credentials: "include",
-        headers: { Authorization: `Bearer ${jwt}` }
-      })
-      console.log("[ConceptLibrary] check-field response status:", resp.status)
-      if (!resp.ok) {
-        console.log("[ConceptLibrary] Response not OK, status:", resp.status)
-        if (resp.status === 401 || resp.status === 403) {
-          console.log("[ConceptLibrary] Unauthorized, redirecting to signin")
-          navigate("/signin")
-          return false
-        }
-        return false
-      }
-      const data = await resp.json()
-      console.log("[ConceptLibrary] check-field data:", data)
-      if (data.hasField === false) {
-        console.log("[ConceptLibrary] No field set, redirecting to change-field")
-        navigate("/change-field")
-        return false
-      }
-      console.log("[ConceptLibrary] All checks passed!")
-      return true
-    } catch (e) {
-      console.error("[ConceptLibrary] Field check failed:", e)
-      return false
-    }
-  }
+  // Auth check via hook
 
   // Fetch all concepts
   useEffect(() => {
-    const fetchConcepts = async () => {
-      const ok = await redirectCheck()
-      if (!ok) return
+    (async () => {
+      const { ok } = await check();
+      if (!ok) return;
 
-      setIsLoading(true)
-      setError("")
+      setIsLoading(true);
+      setError("");
       try {
-        const jwt = localStorage.getItem("jwt")
-        if (!jwt) {
-          navigate("/signin")
-          return
-        }
+        const data = await api.get<{ concepts: ConceptSummary[] }>(endpoints.listConcepts());
+        const list = data.concepts || [];
+        setConcepts(list);
 
-        const response = await fetch("http://127.0.0.1:1337/api/list-concepts", {
-          credentials: "include",
-          headers: { Authorization: `Bearer ${jwt}` }
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          setConcepts(data.concepts || [])
-          
-          // Extract unique fields
-          const fieldsSet = new Set<string>()
-          data.concepts?.forEach((c: Concept) => {
-            if (Array.isArray(c.fields)) {
-              c.fields.forEach(f => fieldsSet.add(f))
-            }
-          })
-          setAvailableFields(Array.from(fieldsSet).sort())
-        } else {
-          setError("Failed to fetch concepts")
-          if (response.status === 401 || response.status === 403) navigate("/signin")
-        }
+        // Extract unique fields
+        const fieldsSet = new Set<string>();
+        list.forEach((c) => {
+          if (Array.isArray(c.fields)) {
+            c.fields.forEach((f: string) => fieldsSet.add(f));
+          }
+        });
+        setAvailableFields(Array.from(fieldsSet).sort());
       } catch (err) {
-        console.error("Error:", err)
-        setError("Network error. Please try again.")
+        console.error("Error:", err);
+        setError("Failed to fetch concepts");
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
-
-    fetchConcepts()
-  }, [])
+    })();
+  }, [check])
 
   // Apply filters
   useEffect(() => {
-    let result = [...concepts]
+  let result = [...concepts]
 
     // Search filter
     if (searchTerm) {
@@ -135,9 +76,7 @@ const ConceptLibraryPage = () => {
 
     // Field filter
     if (selectedField !== "all") {
-      result = result.filter(c =>
-        Array.isArray(c.fields) && c.fields.includes(selectedField)
-      )
+      result = result.filter(c => Array.isArray(c.fields) && c.fields.includes(selectedField))
     }
 
     // Difficulty filter
@@ -179,7 +118,7 @@ const ConceptLibraryPage = () => {
       <Navbar />
 
       {/* Main Content */}
-      <Box maxW="8xl" mx="auto" px={8} py={6}>
+      <PageContainer>
         <Stack gap={6}>
           <Stack gap={2}>
             <Heading size="2xl">My Learned Concepts</Heading>
@@ -195,7 +134,7 @@ const ConceptLibraryPage = () => {
           )}
 
           {/* Filters */}
-          <Box p={6} bg="panel" borderRadius="lg" border="1px solid" borderColor="muted">
+          <Panel>
             <Stack gap={4}>
               <Heading size="md">Filters</Heading>
 
@@ -271,7 +210,7 @@ const ConceptLibraryPage = () => {
                 Clear Filters
               </Button>
             </Stack>
-          </Box>
+          </Panel>
 
           {/* Loading State */}
           {isLoading && (
@@ -293,30 +232,15 @@ const ConceptLibraryPage = () => {
                 gap={4}
               >
                 {currentConcepts.map((concept) => (
-                  <Box
+                  <Panel
                     key={concept.documentId}
                     p={5}
-                    bg="panel"
-                    borderRadius="lg"
-                    border="1px solid"
-                    borderColor="muted"
                     _hover={{ boxShadow: "md", borderColor: "border.emphasized" }}
                     cursor="pointer"
                     transition="all 0.2s"
                     onClick={async () => {
                       try {
-                        const jwt = localStorage.getItem('jwt')
-                        const res = await fetch('http://127.0.0.1:1337/api/concept/get', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${jwt}`,
-                          },
-                          credentials: 'include',
-                          body: JSON.stringify({ documentId: concept.documentId }),
-                        })
-                        if (!res.ok) return
-                        const payload = await res.json()
+                        const payload = await api.post<ConceptFull>(endpoints.conceptGet(), { documentId: concept.documentId })
                         setActiveConcept(payload)
                         onOpen()
                       } catch (e) {
@@ -370,7 +294,7 @@ const ConceptLibraryPage = () => {
                         </Badge>
                       </Box>
                     </Stack>
-                  </Box>
+                  </Panel>
                 ))}
               </Grid>
 
@@ -438,7 +362,7 @@ const ConceptLibraryPage = () => {
             </Dialog.Positioner>
           </Dialog.Root>
         </Stack>
-      </Box>
+      </PageContainer>
     </>
   )
 }

@@ -1,48 +1,26 @@
 import { Button, Stack, Heading, Text, Box } from "@chakra-ui/react"
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
 import Navbar from "../components/Navbar"
-
-interface UserData {
-  hasField: boolean
-  currentField: string | null
-  pastFields: string[]
-  conceptStats: {
-    currentFieldCount: number
-    totalConceptsCount: number
-  }
-}
+import PageContainer from "@/components/layout/PageContainer"
+import Panel from "@/components/layout/Panel"
+import { api } from "@/lib/api/client"
+import { endpoints } from "@/lib/api/endpoints"
+import type { UserData } from "@/types/domain"
+import { useAuthGate } from "@/hooks/useAuthGate"
 
 const SettingsPage = () => {
   const [userData, setUserData] = useState<UserData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string>("")
-  const navigate = useNavigate()
+  const { check } = useAuthGate()
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const jwt = localStorage.getItem("jwt")
-      if (!jwt) {
-        navigate("/signin")
-        return
-      }
-
+      const { ok } = await check()
+      if (!ok) return
       try {
-        const response = await fetch("http://127.0.0.1:1337/api/check-field", {
-          method: "GET",
-          credentials: "include",
-          headers: { Authorization: `Bearer ${jwt}` }
-        })
-
-        if (response.ok) {
-          const data = await response.json()
-          setUserData(data)
-        } else {
-          setError("Failed to fetch user data")
-          if (response.status === 401 || response.status === 403) {
-            navigate("/signin")
-          }
-        }
+        const data = await api.get<UserData>(endpoints.checkField())
+        setUserData(data)
       } catch (err) {
         console.error("Error:", err)
         setError("Network error. Please try again.")
@@ -52,18 +30,18 @@ const SettingsPage = () => {
     }
 
     fetchUserData()
-  }, [navigate])
+  }, [check])
 
   const handleSignOut = () => {
     localStorage.removeItem("jwt")
-    navigate("/")
+    window.location.href = "/"
   }
 
   return (
     <>
       <Navbar />
 
-      <Box maxW="4xl" mx="auto" px={8} py={6}>
+      <PageContainer>
         <Stack gap={6}>
           <Stack gap={2}>
             <Heading size="2xl">Settings</Heading>
@@ -85,7 +63,7 @@ const SettingsPage = () => {
           {!isLoading && userData && (
             <Stack gap={4}>
               {/* Current Field Section */}
-              <Box p={6} bg="panel" borderRadius="lg" border="1px solid" borderColor="muted">
+              <Panel>
                 <Stack gap={3}>
                   <Heading size="md">Current Field of Study</Heading>
                   {userData.hasField ? (
@@ -104,16 +82,16 @@ const SettingsPage = () => {
                     size="sm"
                     variant="outline"
                     colorPalette="sage"
-                    onClick={() => navigate("/change-field")}
+                    onClick={() => (window.location.href = "/change-field")}
                     alignSelf="flex-start"
                   >
                     Change Field
                   </Button>
                 </Stack>
-              </Box>
+              </Panel>
 
               {/* Learning Progress Section */}
-              <Box p={6} bg="panel" borderRadius="lg" border="1px solid" borderColor="muted">
+              <Panel>
                 <Stack gap={3}>
                   <Heading size="md">Learning Progress</Heading>
                   <Stack gap={2}>
@@ -139,10 +117,10 @@ const SettingsPage = () => {
                     )}
                   </Stack>
                 </Stack>
-              </Box>
+              </Panel>
 
               {/* Account Actions Section */}
-              <Box p={6} bg="panel" borderRadius="lg" border="1px solid" borderColor="muted">
+              <Panel>
                 <Stack gap={3}>
                   <Heading size="md">Account</Heading>
                   <Button
@@ -154,11 +132,11 @@ const SettingsPage = () => {
                     Sign Out
                   </Button>
                 </Stack>
-              </Box>
+              </Panel>
             </Stack>
           )}
         </Stack>
-      </Box>
+      </PageContainer>
     </>
   )
 }
