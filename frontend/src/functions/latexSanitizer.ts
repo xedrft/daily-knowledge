@@ -35,7 +35,7 @@ export function sanitizeLatexBackslashes(input: string): string {
   let result = input;
 
   // Step 1: Protect LaTeX line breaks (\\) by temporarily replacing them
-  result = result.replace(/\\\\(?=\s)/g, '___LINEBREAK___');
+  result = result.replace(/\\\\/g, '___LINEBREAK___');
 
   // Step 2: Replace multiple backslashes with single backslash when NOT followed by whitespace
   // Using negative lookahead (?!...) to check it's not followed by whitespace

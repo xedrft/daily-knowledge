@@ -437,7 +437,10 @@ export interface ApiUserProgressUserProgress
       'api::user-progress.user-progress'
     > &
       Schema.Attribute.Private;
+    onboardingComplete: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     pastFields: Schema.Attribute.JSON;
+    previouslyLearned: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<[]>;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

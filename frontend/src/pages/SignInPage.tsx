@@ -3,6 +3,9 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { useForm } from "react-hook-form"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import Navbar from "@/components/Navbar"
+import PageContainer from "@/components/layout/PageContainer"
+import Panel from "@/components/layout/Panel"
 
 interface FormValues {
   identifier: string
@@ -64,54 +67,58 @@ const SignInPage = () => {
   }
 
   return (
-    <Stack gap={8} align="center" justify="center" minH="100vh" p={8}>
-      <Stack gap={4} align="center">
-        <Heading size="xl">Welcome Back</Heading>
-        <Text color="gray.600">Sign in to continue your learning journey</Text>
-      </Stack>
+    <>
+      <Navbar />
+      <PageContainer>
+        <Stack minH="80vh" align="center" justify="center">
+          <Panel maxW="lg" w="full" p={{ base: 8, md: 12 }} borderRadius="2xl">
+            <Stack gap={10}>
+              <Stack gap={1} align="center">
+                <Heading size="2xl">Welcome Back</Heading>
+                <Text color="fg.muted" fontSize="md">Sign in to continue your learning journey</Text>
+              </Stack>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack gap="4" align="flex-start" maxW="sm" w="full">
-          {error && (
-            <Text color="red.500" fontSize="sm">{error}</Text>
-          )}
-          
-          <Field.Root invalid={!!errors.identifier}>
-            <Field.Label>Email or Username</Field.Label>
-            <Input
-              {...register("identifier", {
-                required: "Identifier is required",
-              })}
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Stack gap="5" align="flex-start" maxW="lg" w="full">
+                  {error && <Text color="red.400" fontSize="sm">{error}</Text>}
 
-            />
-            <Field.ErrorText>{errors.identifier?.message}</Field.ErrorText>
-          </Field.Root>
+                  <Field.Root invalid={!!errors.identifier}>
+                    <Field.Label>Email or Username</Field.Label>
+                    <Input
+                      size="lg"
+                      {...register("identifier", { required: "Identifier is required" })}
+                    />
+                    <Field.ErrorText>{errors.identifier?.message}</Field.ErrorText>
+                  </Field.Root>
 
-          <Field.Root invalid={!!errors.password}>
-            <Field.Label>Password</Field.Label>
-            <PasswordInput
-              {...register("password", {
-                required: "Password is required",
-              })}
-            />
-            <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
-          </Field.Root>
+                  <Field.Root invalid={!!errors.password}>
+                    <Field.Label>Password</Field.Label>
+                    <PasswordInput
+                      size="lg"
+                      {...register("password", { required: "Password is required" })}
+                    />
+                    <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
+                  </Field.Root>
 
-          <Button type="submit" w="full" loading={isLoading}>
-            Sign In
-          </Button>
+                  <Button type="submit" size="lg" w="full" loading={isLoading} colorPalette="sage">
+                    Sign In
+                  </Button>
+                </Stack>
+              </form>
+
+              <Stack gap={2} align="center">
+                <Text fontSize="sm">
+                  Don't have an account? <Link to="/register">Sign up</Link>
+                </Text>
+                <Text fontSize="sm">
+                  <Link to="/">← Back to Home</Link>
+                </Text>
+              </Stack>
+            </Stack>
+          </Panel>
         </Stack>
-      </form>
-
-      <Stack gap={2} align="center">
-        <Text fontSize="sm">
-          Don't have an account? <Link to="/register">Sign up</Link>
-        </Text>
-        <Text fontSize="sm">
-          <Link to="/">← Back to Home</Link>
-        </Text>
-      </Stack>
-    </Stack>
+      </PageContainer>
+    </>
   )
 }
 

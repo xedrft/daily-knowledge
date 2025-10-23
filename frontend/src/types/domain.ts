@@ -24,4 +24,7 @@ export interface UserData {
     currentFieldCount: number;
     totalConceptsCount: number;
   };
+  current_level?: number | null;
+  previouslyLearned?: string[];
+  onboardingComplete?: boolean;
 }

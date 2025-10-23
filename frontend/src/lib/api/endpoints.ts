@@ -7,6 +7,9 @@ export const endpoints = {
   conceptGet: () => `${API_BASE}/concept/get`,
   getFieldSuggestions: () => `${API_BASE}/get-field-suggestions`,
   changeField: () => `${API_BASE}/change-field`,
+  initializeProfile: () => `${API_BASE}/initialize-profile`,
+  updateLevel: () => `${API_BASE}/update-level`,
+  updatePreviouslyLearned: () => `${API_BASE}/update-previously-learned`,
   signin: () => `${API_BASE}/signin`,
   register: () => `${API_BASE}/register`,
 };

@@ -44,6 +44,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 return '';
             }).filter(Boolean);
             const currLevel = pastData["current_level"];
+            const previouslyLearned = Array.isArray((pastData as any).previouslyLearned) ? (pastData as any).previouslyLearned : [];
 
             const client = new OpenAI({
                 apiKey: process.env['OPENAI_API_KEY'],
@@ -52,6 +53,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
             // Format input properly: field, then array of past concepts, then difficulty
             const formattedInput = `Current field: ${pastData["currentField"]}
 Past concepts: [${pastTitles.map(t => `"${t}"`).join(', ')}]
+Previously learned courses: [${previouslyLearned.map((c: string) => `"${c}"`).join(', ')}]
 Difficulty level: ${currLevel}`;
             
             const conceptRes = await client.responses.create({
@@ -97,7 +99,7 @@ Difficulty level: ${currLevel}`;
                                         cot: conceptCot
                 }
             } else {
-                const contentRes = await contentCall(currConcept, currLevel);
+                const contentRes = await contentCall(currConcept, currLevel, previouslyLearned);
                 
                 const output = contentRes["output_text"];
                 content = JSON.parse(output);

@@ -41,6 +41,14 @@
     "current_level": {
       "type": "float",
       "required": false
+    },
+    "previouslyLearned": {
+      "type": "json",
+      "default": []
+    },
+    "onboardingComplete": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

@@ -7,6 +7,8 @@ import PageContainer from "@/components/layout/PageContainer"
 import Panel from "@/components/layout/Panel"
 import { api } from "@/lib/api/client"
 import { endpoints } from "@/lib/api/endpoints"
+import { useAuthGate } from "@/hooks/useAuthGate"
+import FieldOptionCard from "@/components/FieldOptionCard"
 
 interface FormValues {
   generalArea: string
@@ -56,17 +58,16 @@ const ChangeFieldPage = () => {
   const [fieldSuggestions, setFieldSuggestions] = useState<FieldSuggestions | null>(null)
   const [step, setStep] = useState<'general' | 'select'>('general')
   const navigate = useNavigate()
+  const { check } = useAuthGate()
 
   useEffect(() => {
-    const jwt = localStorage.getItem("jwt")
-    if (!jwt) {
-      navigate("/signin")
-      return
-    }
-
-    // Fetch current user field data
-    fetchUserFieldData()
-  }, [navigate])
+    (async () => {
+      const { ok } = await check()
+      if (!ok) return
+      // Fetch current user field data
+      fetchUserFieldData()
+    })()
+  }, [check])
 
   const fetchUserFieldData = async () => {
     try {
@@ -121,7 +122,7 @@ const ChangeFieldPage = () => {
         navigate("/signin")
         return
       }
-
+      // Change field only (do not update level here)
       await api.post(endpoints.changeField(), { field: data.selectedField })
       setSuccess("Field changed successfully! You can now explore new topics.")
       fetchUserFieldData()
@@ -236,34 +237,20 @@ const ChangeFieldPage = () => {
                     <Field.Root invalid={!!fieldSelectionErrors.selectedField}>
                       <Field.Label>Choose your field</Field.Label>
                       <Stack gap={3} align="center" w="full">
-                        {fieldSuggestions?.suggestions.map((field, index) => {
-                          const active = selectedField === field
+                        {fieldSuggestions?.suggestions.map((fieldName) => {
+                          const active = selectedField === fieldName
                           return (
-                            <Box
-                              key={index}
-                              p={4}
-                              border="1px solid"
-                              borderColor={active ? "sage.400" : "muted"}
-                              bg={active ? "sage.50" : "panel"}
-                              borderRadius="md"
-                              cursor="pointer"
-                              w="100%"
-                              maxW="480px"
-                              mx="auto"
-                              transition="all 0.15s ease-in-out"
-                              _hover={{ borderColor: "border.emphasized", boxShadow: "md" }}
-                              onClick={() => setValue("selectedField", field)}
-                            >
-                              <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 12, width: '100%', justifyContent: 'center' }}>
-                                <input
-                                  type="radio"
-                                  {...registerFieldSelection("selectedField", { required: "Please select a field" })}
-                                  value={field}
-                                  style={{ accentColor: 'var(--chakra-colors-sage-500)' }}
-                                />
-                                <Text color={active ? "sage.400" : "white"}>{field}</Text>
-                              </label>
-                            </Box>
+                            <div key={fieldName} onClick={() => setValue("selectedField", fieldName)}>
+                              {/* Keep form registration intact for validation */}
+                              <input
+                                type="radio"
+                                {...registerFieldSelection("selectedField", { required: "Please select a field" })}
+                                value={fieldName}
+                                style={{ display: 'none' }}
+                                readOnly
+                              />
+                              <FieldOptionCard label={fieldName} active={active} />
+                            </div>
                           )
                         })}
                       </Stack>

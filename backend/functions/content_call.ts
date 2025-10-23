@@ -1,13 +1,14 @@
 import OpenAI from "openai";
 import { content } from "../ai-prompts"
 
-export default async function contentCall(currConcept, currLevel){
+export default async function contentCall(currConcept: string, currLevel: number | null, previouslyLearned: string[] = []){
     const client = new OpenAI({
         apiKey: process.env['OPENAI_API_KEY'],
     });
     
     // Format input clearly for the AI
     const formattedInput = `Concept name: ${currConcept}
+Previously learned courses: [${previouslyLearned.map(c => `"${c}"`).join(', ')}]
 Difficulty level: ${currLevel}`;
     
     const contentRes = await client.responses.create({

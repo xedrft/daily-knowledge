@@ -13,9 +13,9 @@ export function useAuthGate() {
       return { ok: false };
     }
     try {
-      const data = await api.get<{ hasField: boolean; currentField?: string | null }>(endpoints.checkField());
-      if (!data.hasField) {
-        navigate("/change-field");
+      const data = await api.get<{ hasField: boolean; currentField?: string | null; onboardingComplete?: boolean }>(endpoints.checkField());
+      if (!data.onboardingComplete || !data.hasField) {
+        navigate("/onboarding");
         return { ok: false };
       }
       return { ok: true, currentField: data.currentField ?? null };

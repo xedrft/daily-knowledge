@@ -46,5 +46,21 @@ module.exports = {
             path: "/list-concepts",
             handler: "list-concepts.listConcepts",
         }
+        ,
+        {
+            method: "POST",
+            path: "/initialize-profile",
+            handler: "change-field.initializeProfile",
+        },
+        {
+            method: "POST",
+            path: "/update-level",
+            handler: "change-field.updateLevel",
+        },
+        {
+            method: "POST",
+            path: "/update-previously-learned",
+            handler: "change-field.updatePreviouslyLearned",
+        }
     ]
 };

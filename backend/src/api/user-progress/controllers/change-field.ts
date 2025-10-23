@@ -29,6 +29,9 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 ctx.response.body = { 
                     hasField: false, 
                     currentField: null,
+                    current_level: null,
+                    previouslyLearned: [],
+                    onboardingComplete: false,
                     message: "User progress not found" 
                 };
                 return;
@@ -43,6 +46,9 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 pastFields: userProgress.pastFields || [],
                 currentFieldConcepts: currentFieldConcepts,
                 allPastConcepts: allPastConcepts,
+                current_level: userProgress.current_level ?? null,
+                previouslyLearned: Array.isArray((userProgress as any).previouslyLearned) ? (userProgress as any).previouslyLearned : [],
+                onboardingComplete: !!(userProgress as any).onboardingComplete,
                 conceptStats: {
                     currentFieldCount: currentFieldConcepts.length,
                     totalConceptsCount: allPastConcepts.length + currentFieldConcepts.length
@@ -52,6 +58,89 @@ export default factories.createCoreController('api::user-progress.user-progress'
         } catch (error) {
             console.error('Error checking user field:', error);
             return ctx.badRequest("An error occurred while checking field. Please try again.");
+        }
+    },
+    async initializeProfile(ctx) {
+        try {
+            await this.validateQuery(ctx);
+            const user = ctx.state.user;
+            if (!user) return ctx.unauthorized("No token found or invalid token");
+
+            const { level, field, previouslyLearned } = ctx.request.body || {};
+            if (typeof level !== 'number' || level < 1 || level > 15) return ctx.badRequest("Level must be a number between 1 and 15");
+            if (!field || typeof field !== 'string') return ctx.badRequest("Field is required");
+            const learned = Array.isArray(previouslyLearned) ? previouslyLearned : [];
+
+            const existing = await strapi.documents("api::user-progress.user-progress").findFirst({
+                filters: { user_id: { id: user.id } }
+            });
+
+            if (existing) {
+                await strapi.documents("api::user-progress.user-progress").update({
+                    documentId: existing.documentId,
+                    data: {
+                        current_level: level,
+                        currentField: field,
+                        pastFields: existing.pastFields || [],
+                        currentFieldConcepts: [],
+                        allPastConcepts: existing.allPastConcepts || [],
+                        previouslyLearned: learned,
+                        onboardingComplete: true,
+                    },
+                    status: 'published'
+                });
+            } else {
+                await strapi.documents("api::user-progress.user-progress").create({
+                    data: {
+                        user_id: user.id,
+                        current_level: level,
+                        currentField: field,
+                        pastFields: [],
+                        currentFieldConcepts: [],
+                        allPastConcepts: [],
+                        previouslyLearned: learned,
+                        onboardingComplete: true,
+                    },
+                    status: 'published'
+                });
+            }
+
+            ctx.response.body = { ok: true };
+        } catch (error) {
+            console.error('Error initializing profile:', error);
+            return ctx.badRequest("An error occurred while initializing profile.");
+        }
+    },
+    async updateLevel(ctx) {
+        try {
+            await this.validateQuery(ctx);
+            const user = ctx.state.user;
+            if (!user) return ctx.unauthorized("No token found or invalid token");
+            const { level } = ctx.request.body || {};
+            if (typeof level !== 'number' || level < 1 || level > 15) return ctx.badRequest("Level must be 1-15");
+            const up = await strapi.documents("api::user-progress.user-progress").findFirst({ filters: { user_id: { id: user.id } } });
+            if (!up) return ctx.badRequest("User progress not found");
+            await strapi.documents("api::user-progress.user-progress").update({ documentId: up.documentId, data: { current_level: level }, status: 'published' });
+            ctx.response.body = { ok: true };
+        } catch (error) {
+            console.error('Error updating level:', error);
+            return ctx.badRequest("An error occurred while updating level.");
+        }
+    },
+    async updatePreviouslyLearned(ctx) {
+        try {
+            await this.validateQuery(ctx);
+            const user = ctx.state.user;
+            if (!user) return ctx.unauthorized("No token found or invalid token");
+            const { courses } = ctx.request.body || {};
+            if (!Array.isArray(courses)) return ctx.badRequest("courses must be an array of strings");
+            const up = await strapi.documents("api::user-progress.user-progress").findFirst({ filters: { user_id: { id: user.id } } });
+            if (!up) return ctx.badRequest("User progress not found");
+            await strapi.documents("api::user-progress.user-progress").update({ documentId: up.documentId, data: { previouslyLearned: courses }, status: 'published' });
+            ctx.response.body = { ok: true };
+        } catch (error) {
+            console.error('Error updating previously learned:', error);
+            return ctx.badRequest("An error occurred while updating previously learned.");
         }
     },
 
@@ -81,6 +170,8 @@ export default factories.createCoreController('api::user-progress.user-progress'
             const currentField = userProgress.currentField;
             const pastFields = Array.isArray(userProgress.pastFields) ? userProgress.pastFields : [];
             const generalArea = ctx.request.body["generalArea"];
+            const providedLevel = ctx.request.body["level"];
+            const currentLevel = typeof providedLevel === 'number' ? providedLevel : (typeof userProgress.current_level === 'number' ? userProgress.current_level : null);
 
             if (!generalArea) {
                 return ctx.badRequest("General area is required");
@@ -92,6 +183,7 @@ export default factories.createCoreController('api::user-progress.user-progress'
 
             // Format input clearly for the AI
             const formattedInput = `General area of science: ${generalArea}
+Current level (1-15): ${currentLevel ?? 'unknown'}
 Current field: ${currentField}
 Past fields: [${pastFields.length > 0 ? pastFields.map(f => `"${f}"`).join(", ") : ''}]`;
 
@@ -186,7 +278,8 @@ Past fields: [${pastFields.length > 0 ? pastFields.map(f => `"${f}"`).join(", ")
                     pastFields: updatedPastFields,
                     currentFieldConcepts: [], // Reset for new field
                     allPastConcepts: updatedAllPastConcepts
-                }
+                },
+                status: 'published'
             });
 
             ctx.response.body = {

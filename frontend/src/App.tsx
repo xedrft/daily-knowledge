@@ -7,6 +7,8 @@ import ChangeFieldPage from './pages/ChangeFieldPage'
 import SanitizerTestPage from './pages/SanitizerTestPage'
 import ConceptLibraryPage from './pages/ConceptLibraryPage'
 import SettingsPage from './pages/SettingsPage'
+import OnboardingPage from './pages/OnboardingPage'
+import { Toaster } from './components/ui/toaster'
 
 
 
@@ -21,8 +23,10 @@ export const App = () => {
         <Route path="/change-field" element={<ChangeFieldPage />} />
         <Route path="/library" element={<ConceptLibraryPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+  <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/sanitizer-test" element={<SanitizerTestPage />} />
       </Routes>
+      <Toaster />
     </Router>
   )
 }
