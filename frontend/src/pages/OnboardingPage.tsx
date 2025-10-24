@@ -46,7 +46,7 @@ export default function OnboardingPage() {
                 <Text fontSize="sm" color="fg.muted">Step 1 of 3</Text>
                 <Field.Root>
                   <Field.Label>Level (1–15)</Field.Label>
-                  <Stack gap={2}>
+                  <Stack w="full" >
                     <Box mx="-6" px={8}>
                       <CInput
                         type="range"
@@ -54,7 +54,6 @@ export default function OnboardingPage() {
                         max={15}
                         value={level}
                         onChange={(e) => setLevel(Number(e.target.value))}
-                        w="full"
                         style={{ accentColor: 'var(--chakra-colors-sage-500)' }}
                       />
                     </Box>
