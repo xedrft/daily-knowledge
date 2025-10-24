@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Field, Heading, Input as CInput, Stack, Text, Grid, Badge } from "@chakra-ui/react";
+import { Box, Button, Field, Heading, Input as CInput, Stack, Text, Grid, Badge, HStack, Tooltip } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
 import PageContainer from "@/components/layout/PageContainer";
 import Panel from "@/components/layout/Panel";
@@ -8,6 +8,7 @@ import { endpoints } from "@/lib/api/endpoints";
 import { useNavigate } from "react-router-dom";
 import FieldOptionCard from "@/components/FieldOptionCard";
 import { COURSE_CATALOG } from "@/lib/constants/courses";
+import { LuInfo } from "react-icons/lu";
 
 // using shared COURSE_CATALOG
 
@@ -45,7 +46,26 @@ export default function OnboardingPage() {
               <Stack gap={4}>
                 <Text fontSize="sm" color="fg.muted">Step 1 of 3</Text>
                 <Field.Root>
-                  <Field.Label>Level (1–15)</Field.Label>
+                  <Tooltip.Root openDelay={50} closeDelay={100}>
+                    <Tooltip.Trigger>
+                      <HStack gap={2} align="center" tabIndex={0}>
+                        <Field.Label>Level (1–15)</Field.Label>
+                        <Box as="span" color="fg.muted" display="inline-flex" alignItems="center" aria-hidden>
+                          <LuInfo size={16} />
+                        </Box>
+                      </HStack>
+                    </Tooltip.Trigger>
+                    <Tooltip.Positioner>
+                      <Tooltip.Content bg="gray.800" color="white" maxW="300px" px={3} py={2} borderRadius="md">
+                        <Stack gap={1}>
+                          <Text fontWeight="semibold" fontSize="sm">Choosing Your Level</Text>
+                          <Text fontSize="xs"><strong>1–5:</strong> High school or introductory</Text>
+                          <Text fontSize="xs"><strong>6–10:</strong> Undergraduate or intermediate</Text>
+                          <Text fontSize="xs"><strong>11–15:</strong> Graduate, advanced, or professional</Text>
+                        </Stack>
+                      </Tooltip.Content>
+                    </Tooltip.Positioner>
+                  </Tooltip.Root>
                   <Stack w="full" >
                     <Box mx="-6" px={8}>
                       <CInput
