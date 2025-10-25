@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import { Box, Button, Field, Heading, Input as CInput, Stack, Text, Grid, Badge, HStack, Tooltip, Spinner, Menu } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { Box, Button, Field, Heading, Input as CInput, Stack, Text, Grid, Badge, HStack, Tooltip, Spinner } from "@chakra-ui/react";
 import PageContainer from "@/components/layout/PageContainer";
 import Panel from "@/components/layout/Panel";
 import { api } from "@/lib/api/client";
 import { endpoints } from "@/lib/api/endpoints";
 import { useNavigate } from "react-router-dom";
 import FieldOptionCard from "@/components/FieldOptionCard";
-import { COURSE_CATALOG, COURSE_CATEGORIES } from "@/lib/constants/courses";
-import { LuInfo, LuChevronDown } from "react-icons/lu";
+import { LuInfo } from "react-icons/lu";
+import PreviouslyLearnedSelector from "@/components/PreviouslyLearnedSelector";
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
@@ -20,16 +20,7 @@ export default function OnboardingPage() {
   const [selectedCourses, setSelectedCourses] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [courseQuery, setCourseQuery] = useState("");
-  const [courseFilter, setCourseFilter] = useState<
-    | "all"
-    | "math"
-    | "physics"
-    | "chemistry"
-    | "biology"
-    | "engineering"
-    | "cs"
-  >("all");
+  // Previously learned selector UI is now a reusable component
 
   useEffect(() => {
     const jwt = localStorage.getItem("jwt");
@@ -48,24 +39,9 @@ export default function OnboardingPage() {
     }
   };
 
-  const toggleCourse = (c: string) => {
-    setSelectedCourses((prev) => prev.includes(c) ? prev.filter(x => x !== c) : [...prev, c]);
-  };
+  // selection handling moved inside the reusable component via onChange
 
-  const COURSE_TO_CATEGORY = useMemo(() => {
-    const m = new Map<string, typeof COURSE_CATEGORIES[number]["key"]>();
-    COURSE_CATEGORIES.forEach((cat) => {
-      cat.courses.forEach((course) => m.set(course, cat.key));
-    });
-    return m;
-  }, []);
-
-  const visibleCourses = COURSE_CATALOG.filter((c) => {
-    const matchesQuery = courseQuery.trim().length === 0 || c.toLowerCase().includes(courseQuery.toLowerCase());
-    const cat = COURSE_TO_CATEGORY.get(c);
-    const matchesCat = courseFilter === "all" || cat === courseFilter;
-    return matchesQuery && matchesCat;
-  });
+  // filtering is handled inside the selector component now
 
   return (
     <>
@@ -151,109 +127,7 @@ export default function OnboardingPage() {
                 <Box bg="bg" border="1px solid" borderColor="muted" p={2} borderRadius="md">
                   <Text fontSize="sm" color="fg.muted">General area: <strong>{generalArea}</strong></Text>
                 </Box>
-                <Field.Root>
-                  <Field.Label>Previously learned courses (optional)</Field.Label>
-                  <Stack gap={3}>
-                    <Stack direction={{ base: 'column' }} gap={2} align="stretch">
-                      <CInput
-                        placeholder="Search courses (e.g., Algebra, Physics)"
-                        value={courseQuery}
-                        onChange={(e) => setCourseQuery(e.target.value)}
-                        bg="bg"
-                      />
-                      <Menu.Root>
-                        <Menu.Trigger asChild>
-                          <Button size="sm" variant="outline" w="full" justifyContent="space-between" bg="bg" borderColor="muted">
-                            {courseFilter === 'all' ? 'All categories' : (COURSE_CATEGORIES.find(c => c.key === courseFilter)?.label || 'Category')}
-                            <Box as="span" aria-hidden display="inline-flex"><LuChevronDown size={16} /></Box>
-                          </Button>
-                        </Menu.Trigger>
-                        <Menu.Positioner>
-                          <Menu.Content bg="bg" borderColor="muted" boxShadow="sm" borderRadius="md" p={1}>
-                            <Menu.Item
-                              value="all"
-                              onClick={() => setCourseFilter('all')}
-                              _hover={{ bg: 'muted' }}
-                              _focus={{ bg: 'muted' }}
-                              color="fg"
-                              cursor="pointer"
-                            >
-                              All categories
-                            </Menu.Item>
-                            {COURSE_CATEGORIES.map((cat) => (
-                              <Menu.Item
-                                key={cat.key}
-                                value={cat.key}
-                                onClick={() => setCourseFilter(cat.key)}
-                                _hover={{ bg: 'muted' }}
-                                _focus={{ bg: 'muted' }}
-                                color="fg"
-                                cursor="pointer"
-                              >
-                                {cat.label}
-                              </Menu.Item>
-                            ))}
-                          </Menu.Content>
-                        </Menu.Positioner>
-                      </Menu.Root>
-                    </Stack>
-
-                    <HStack gap={2} justify="space-between" wrap="wrap">
-                      <Text fontSize="sm" color="fg.muted">Showing {visibleCourses.length} course{visibleCourses.length !== 1 ? 's' : ''}</Text>
-                      <HStack gap={2}>
-                        <Button
-                          size="xs"
-                          variant="outline"
-                          onClick={() => setSelectedCourses((prev) => Array.from(new Set([...prev, ...visibleCourses])))}
-                          disabled={visibleCourses.length === 0}
-                        >
-                          Select all
-                        </Button>
-                        <Button
-                          size="xs"
-                          variant="ghost"
-                          onClick={() => setSelectedCourses([])}
-                          disabled={selectedCourses.length === 0}
-                        >
-                          Clear
-                        </Button>
-                      </HStack>
-                    </HStack>
-
-                    <Grid templateColumns={{ base: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' , md: 'repeat(4, 1fr)'}} gap={2}>
-                      {visibleCourses.map((c) => {
-                        const active = selectedCourses.includes(c);
-                        return (
-                          <Button
-                            key={c}
-                            size="sm"
-                            variant={active ? 'solid' : 'outline'}
-                            colorPalette="sage"
-                            onClick={() => toggleCourse(c)}
-                          >
-                            {c}
-                          </Button>
-                        );
-                      })}
-                    </Grid>
-
-                    {selectedCourses.length > 0 && (
-                      <Stack gap={2}>
-                        <Text fontSize="sm">Selected ({selectedCourses.length}):</Text>
-                        <HStack gap={2} wrap="wrap">
-                          {selectedCourses.map((c) => (
-                            <Badge key={c} colorPalette="sage" variant="solid" px={2} py={1}>
-                              <HStack gap={2}>
-                                <span>{c}</span>
-                                <Button size="2xs" variant="subtle" onClick={() => toggleCourse(c)}>×</Button>
-                              </HStack>
-                            </Badge>
-                          ))}
-                        </HStack>
-                      </Stack>
-                    )}
-                  </Stack>
-                </Field.Root>
+                <PreviouslyLearnedSelector selected={selectedCourses} onChange={setSelectedCourses} />
                 <Stack direction={{ base: 'column', sm: 'row' }} justify="center" align="center" gap={3}>
                   <Button size="lg" minW="160px" variant="outline" onClick={() => setStep(1)}>Back</Button>
                   <Button
