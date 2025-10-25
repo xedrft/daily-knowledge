@@ -30,6 +30,7 @@ export default function FieldOptionCard({ label, active, onClick }: PropsWithChi
       w="100%"
       maxW="520px"
       mx="auto"
+      alignSelf="center"
       transition="all 0.15s ease-in-out"
       _hover={{ borderColor: active ? 'sage.500' : 'border.emphasized', bg: active ? 'sage.50' : 'panel' }}
       onClick={onClick}

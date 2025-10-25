@@ -246,7 +246,7 @@ const ChangeFieldPage = () => {
                         {fieldSuggestions?.suggestions.map((fieldName) => {
                           const active = selectedField === fieldName
                           return (
-                            <div key={fieldName} onClick={() => setValue("selectedField", fieldName)}>
+                            <Box key={fieldName} onClick={() => setValue("selectedField", fieldName)} alignSelf="center" w="full">
                               {/* Keep form registration intact for validation */}
                               <input
                                 type="radio"
@@ -256,7 +256,7 @@ const ChangeFieldPage = () => {
                                 readOnly
                               />
                               <FieldOptionCard label={fieldName} active={active} />
-                            </div>
+                            </Box>
                           )
                         })}
                       </Stack>

@@ -291,9 +291,11 @@ export default function OnboardingPage() {
                       <Text fontSize="sm" color="fg.muted">Preparing suggestions…</Text>
                     </Stack>
                   ) : suggestions.length > 0 ? (
-                    <Stack gap={3} align="center">
+                    <Stack gap={3} align="center" w="full">
                       {suggestions.map((f) => (
-                        <FieldOptionCard key={f} label={f} active={selectedField === f} onClick={() => setSelectedField(f)} />
+                        <Box key={f} w="full" alignSelf="center">
+                          <FieldOptionCard label={f} active={selectedField === f} onClick={() => setSelectedField(f)} />
+                        </Box>
                       ))}
                     </Stack>
                   ) : (
