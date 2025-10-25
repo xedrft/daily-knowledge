@@ -1,4 +1,4 @@
-import { Button, Field, Input, Stack, Heading, Text, Box, Badge } from "@chakra-ui/react"
+import { Button, Field, Input, Stack, Heading, Text, Box, Badge, Grid } from "@chakra-ui/react"
 import { useForm } from "react-hook-form"
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
@@ -242,11 +242,11 @@ const ChangeFieldPage = () => {
                     )}
                     <Field.Root invalid={!!fieldSelectionErrors.selectedField}>
                       <Field.Label>Select your field</Field.Label>
-                      <Stack gap={3} align="center" w="full">
+                      <Grid w="full" templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={3}>
                         {fieldSuggestions?.suggestions.map((fieldName) => {
                           const active = selectedField === fieldName
                           return (
-                            <Box key={fieldName} onClick={() => setValue("selectedField", fieldName)} alignSelf="center" w="full">
+                            <Box key={fieldName} onClick={() => setValue("selectedField", fieldName)}>
                               {/* Keep form registration intact for validation */}
                               <input
                                 type="radio"
@@ -259,7 +259,7 @@ const ChangeFieldPage = () => {
                             </Box>
                           )
                         })}
-                      </Stack>
+                      </Grid>
                       <Field.ErrorText>{fieldSelectionErrors.selectedField?.message}</Field.ErrorText>
                       <Field.HelperText>Select a specific field to focus your learning.</Field.HelperText>
                     </Field.Root>

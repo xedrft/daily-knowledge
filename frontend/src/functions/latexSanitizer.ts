@@ -35,7 +35,7 @@ export function sanitizeLatexBackslashes(input: string): string {
   let result = input;
 
   // Step 1: Protect LaTeX line breaks (\\) by temporarily replacing them
-  result = result.replace(/\\\\/g, '___LINEBREAK___');
+  result = result.replace(/\\\\(?=\s)/g, '___LINEBREAK___');
 
   // Step 2: Replace multiple backslashes with single backslash when NOT followed by whitespace
   // Using negative lookahead (?!...) to check it's not followed by whitespace
@@ -53,14 +53,6 @@ export function sanitizeLatexBackslashes(input: string): string {
     }
   }
 
-  // Step 5: Trim trailing LaTeX line breaks (\\) or stray backslashes at the end of inline math to avoid KaTeX inline errors
-  // Only operate inside inline math delimiters: \( ... \)
-  result = result.replace(/\\\((.+?)\\\)/g, (_m, inner: string) => {
-    let cleaned = inner;
-    cleaned = cleaned.replace(/\\\\\s*$/, ''); // remove trailing \\
-    cleaned = cleaned.replace(/\\\s*$/, '');    // then trailing \
-    return `\\(${cleaned}\\)`;
-  });
 
   // Step 5: Wrap standalone \text{...} with \( \)
   // Find \text{...} that is NOT preceded by \( or \[ and NOT followed by \) or \]
@@ -69,6 +61,7 @@ export function sanitizeLatexBackslashes(input: string): string {
   //   return `\\(${match}\\)`;
   // });
   
+  console.log("Sanitized LaTeX:", result);
   return result;
 }
 

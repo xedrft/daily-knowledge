@@ -7,7 +7,7 @@ import { endpoints } from "@/lib/api/endpoints";
 import { useNavigate } from "react-router-dom";
 import FieldOptionCard from "@/components/FieldOptionCard";
 import { COURSE_CATALOG, COURSE_CATEGORIES } from "@/lib/constants/courses";
-import { LuInfo } from "react-icons/lu";
+import { LuInfo, LuChevronDown } from "react-icons/lu";
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
@@ -135,7 +135,6 @@ export default function OnboardingPage() {
                       setError("");
                       if (!generalArea.trim()) { setError("Please enter a general area"); return; }
                       setStep(2);
-                      fetchSuggestions(generalArea, level);
                     }}
                   >
                     Continue
@@ -155,18 +154,18 @@ export default function OnboardingPage() {
                 <Field.Root>
                   <Field.Label>Previously learned courses (optional)</Field.Label>
                   <Stack gap={3}>
-                    <Stack direction={{ base: 'column', sm: 'row' }} gap={2} align="stretch">
+                    <Stack direction={{ base: 'column' }} gap={2} align="stretch">
                       <CInput
                         placeholder="Search courses (e.g., Algebra, Physics)"
                         value={courseQuery}
                         onChange={(e) => setCourseQuery(e.target.value)}
                         bg="bg"
-                        flex={1}
                       />
                       <Menu.Root>
-                        <Menu.Trigger>
-                          <Button size="sm" variant="outline" minW={{ base: 'full', sm: '220px' }} bg="bg" borderColor="muted">
+                        <Menu.Trigger asChild>
+                          <Button size="sm" variant="outline" w="full" justifyContent="space-between" bg="bg" borderColor="muted">
                             {courseFilter === 'all' ? 'All categories' : (COURSE_CATEGORIES.find(c => c.key === courseFilter)?.label || 'Category')}
+                            <Box as="span" aria-hidden display="inline-flex"><LuChevronDown size={16} /></Box>
                           </Button>
                         </Menu.Trigger>
                         <Menu.Positioner>
@@ -286,18 +285,18 @@ export default function OnboardingPage() {
                 <Field.Root>
                   <Field.Label>Select your field</Field.Label>
                   {suggestionsLoading ? (
-                    <Stack gap={2} align="center" py={4}>
-                      <Spinner size="md" color="sage.500" />
-                      <Text fontSize="sm" color="fg.muted">Preparing suggestions…</Text>
-                    </Stack>
+                    <Box w="full" minH="40vh" display="flex" alignItems="center" justifyContent="center">
+                      <Stack gap={3} align="center">
+                        <Spinner size="md" color="sage.500" />
+                        <Text fontSize="sm" color="fg.muted">Preparing suggestions…</Text>
+                      </Stack>
+                    </Box>
                   ) : suggestions.length > 0 ? (
-                    <Stack gap={3} align="center" w="full">
+                    <Grid w="full" templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={3}>
                       {suggestions.map((f) => (
-                        <Box key={f} w="full" alignSelf="center">
-                          <FieldOptionCard label={f} active={selectedField === f} onClick={() => setSelectedField(f)} />
-                        </Box>
+                        <FieldOptionCard key={f} label={f} active={selectedField === f} onClick={() => setSelectedField(f)} />
                       ))}
-                    </Stack>
+                    </Grid>
                   ) : (
                     <Text fontSize="sm" color="fg.muted">No suggestions yet. Try going back to adjust your area or add some courses.</Text>
                   )}

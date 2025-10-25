@@ -1,5 +1,6 @@
-import { Button, Stack, Heading, Text, Box, Input, Grid, Badge, useDisclosure, Dialog, Tooltip } from "@chakra-ui/react"
-import { useState, useEffect } from "react"
+import { Button, Stack, Heading, Text, Box, Input, Grid, Badge, useDisclosure, Dialog, Tooltip, Menu, HStack } from "@chakra-ui/react"
+import { LuChevronDown, LuCheck } from "react-icons/lu"
+import { useState, useEffect, useRef } from "react"
 import Navbar from "../components/Navbar"
 import latexFormatter from "@/functions/latexFormatter"
 import ProblemSet from "@/components/ProblemSet"
@@ -30,6 +31,11 @@ const ConceptLibraryPage = () => {
   const [availableFields, setAvailableFields] = useState<string[]>([])
   const { open, onOpen, onClose } = useDisclosure()
   const [activeConcept, setActiveConcept] = useState<any>(null)
+  // Refs to align menu width with trigger row without complex layout
+  const fieldRowRef = useRef<HTMLDivElement | null>(null)
+  const diffRowRef = useRef<HTMLDivElement | null>(null)
+  const [fieldMenuWidth, setFieldMenuWidth] = useState<number>(0)
+  const [diffMenuWidth, setDiffMenuWidth] = useState<number>(0)
 
   // Auth check via hook
 
@@ -62,6 +68,8 @@ const ConceptLibraryPage = () => {
       }
     })();
   }, [check])
+
+  // No extra width logic needed—buttons will span the full container via w="full"
 
   // Apply filters
   useEffect(() => {
@@ -98,19 +106,29 @@ const ConceptLibraryPage = () => {
   const currentConcepts = filteredConcepts.slice(startIdx, endIdx)
 
   const getDifficultyLabel = (diff: number): string => {
-    if (diff <= 3) return "Elementary"
-    if (diff <= 6) return "Middle School"
-    if (diff <= 9) return "High School"
-    if (diff <= 12) return "Undergraduate"
-    return "Graduate+"
+    // Align with onboarding: 1–5 = school/intro, 6–10 = undergraduate, 11–15 = graduate/professional
+    // We split 1–5 to show Middle vs High explicitly in the library
+    if (diff <= 3) return "Middle School"
+    if (diff <= 5) return "High School"
+    if (diff <= 10) return "Undergraduate"
+    return "Graduate / Professional"
   }
 
   const getDifficultyColor = (diff: number): string => {
     if (diff <= 3) return "green"
-    if (diff <= 6) return "blue"
-    if (diff <= 9) return "yellow"
-    if (diff <= 12) return "orange"
+    if (diff <= 5) return "blue"
+    if (diff <= 10) return "yellow"
     return "red"
+  }
+
+  const difficultyTriggerLabel = (val: string): string => {
+    switch (val) {
+      case "1-3": return "Middle School (1–3)";
+      case "4-5": return "High School (4–5)";
+      case "6-10": return "Undergraduate (6–10)";
+      case "11-15": return "Graduate / Professional (11–15)";
+      default: return "All Levels";
+    }
   }
 
   return (
@@ -149,52 +167,157 @@ const ConceptLibraryPage = () => {
                 />
               </Box>
 
-              {/* Field Filter */}
-              <Box>
+              {/* Field Filter (styled dropdown) */}
+              <Box w="full" ref={fieldRowRef}
+                // Keep the row as the sizing source for the menu
+              >
                 <Text fontSize="sm" fontWeight="bold" mb={2}>Field</Text>
-                <select
-                  value={selectedField}
-                  onChange={(e) => setSelectedField(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                    border: "1px solid",
-                    borderColor: "var(--chakra-colors-muted)",
-                    backgroundColor: "var(--chakra-colors-bg)",
-                    color: "var(--chakra-colors-fg)"
-                  }}
-                >
-                  <option value="all">All Fields</option>
-                  {availableFields.map(field => (
-                    <option key={field} value={field}>{field}</option>
-                  ))}
-                </select>
+                <Menu.Root onOpenChange={(d) => {
+                  if (d.open && fieldRowRef.current) {
+                    setFieldMenuWidth(fieldRowRef.current.offsetWidth);
+                  }
+                }}>
+                  <Menu.Trigger asChild>
+                    <Button
+                      size="md"
+                      variant="outline"
+                      w="full"
+                      justifyContent="space-between"
+                      bg="bg"
+                      borderColor="muted"
+                      borderRadius="md"
+                      px={3}
+                    >
+                      {selectedField === 'all' ? 'All Fields' : selectedField}
+                      <Box as="span" aria-hidden display="inline-flex"><LuChevronDown size={16} /></Box>
+                    </Button>
+                  </Menu.Trigger>
+                  <Menu.Positioner>
+                    <Menu.Content bg="bg" borderColor="muted" boxShadow="sm" borderRadius="md" p={2} maxH="260px" overflowY="auto" w={fieldMenuWidth ? `${fieldMenuWidth}px` : undefined}>
+                      <Menu.Item
+                        fontSize="sm"
+                        px={3}
+                        py={2}
+                        value="all"
+                        onClick={() => setSelectedField('all')}
+                        _hover={{ bg: 'muted' }}
+                        _focus={{ bg: 'muted' }}
+                        color="fg"
+                        cursor="pointer"
+                      >
+                        <HStack w="full" justify="space-between">
+                          <span>All Fields</span>
+                          {selectedField === 'all' && (
+                            <Box as="span" aria-hidden display="inline-flex"><LuCheck size={16} /></Box>
+                          )}
+                        </HStack>
+                      </Menu.Item>
+                      {availableFields.map((field) => (
+                        <Menu.Item
+                          fontSize="sm"
+                          px={3}
+                          py={2}
+                          key={field}
+                          value={field}
+                          onClick={() => setSelectedField(field)}
+                          _hover={{ bg: 'muted' }}
+                          _focus={{ bg: 'muted' }}
+                          color="fg"
+                          cursor="pointer"
+                        >
+                          <HStack w="full" justify="space-between">
+                            <span>{field}</span>
+                            {selectedField === field && (
+                              <Box as="span" aria-hidden display="inline-flex"><LuCheck size={16} /></Box>
+                            )}
+                          </HStack>
+                        </Menu.Item>
+                      ))}
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Menu.Root>
               </Box>
 
-              {/* Difficulty Filter */}
-              <Box>
+              {/* Difficulty Filter (styled dropdown) */}
+              <Box w="full" ref={diffRowRef}
+                // Sizing source for difficulty menu
+              >
                 <Text fontSize="sm" fontWeight="bold" mb={2}>Difficulty</Text>
-                <select
-                  value={selectedDifficulty}
-                  onChange={(e) => setSelectedDifficulty(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "8px 12px",
-                    borderRadius: "6px",
-                    border: "1px solid",
-                    borderColor: "var(--chakra-colors-muted)",
-                    backgroundColor: "var(--chakra-colors-bg)",
-                    color: "var(--chakra-colors-fg)"
-                  }}
-                >
-                  <option value="all">All Levels</option>
-                  <option value="1-3">Middle School (1-3)</option>
-                  <option value="4-6">High School (4-6)</option>
-                  <option value="7-9">Undergraduate (7-9)</option>
-                  <option value="10-12">Graduate (10-12)</option>
-                  <option value="13-15">Graduate+ (13-15)</option>
-                </select>
+                <Menu.Root onOpenChange={(d) => {
+                  if (d.open && diffRowRef.current) {
+                    setDiffMenuWidth(diffRowRef.current.offsetWidth);
+                  }
+                }}>
+                  <Menu.Trigger asChild>
+                    <Button
+                      size="md"
+                      variant="outline"
+                      w="full"
+                      justifyContent="space-between"
+                      bg="bg"
+                      borderColor="muted"
+                      borderRadius="md"
+                      px={3}
+                    >
+                      {difficultyTriggerLabel(selectedDifficulty)}
+                      <Box as="span" aria-hidden display="inline-flex"><LuChevronDown size={16} /></Box>
+                    </Button>
+                  </Menu.Trigger>
+                  <Menu.Positioner>
+                    <Menu.Content bg="bg" borderColor="muted" boxShadow="sm" borderRadius="md" p={2} w={diffMenuWidth ? `${diffMenuWidth}px` : undefined}>
+                      <Menu.Item
+                        fontSize="sm"
+                        px={3}
+                        py={2}
+                        value="all"
+                        onClick={() => setSelectedDifficulty('all')}
+                        _hover={{ bg: 'muted' }}
+                        _focus={{ bg: 'muted' }}
+                        color="fg"
+                        cursor="pointer"
+                      >
+                        <HStack w="full" justify="space-between">
+                          <span>All Levels</span>
+                          {selectedDifficulty === 'all' && (
+                            <Box as="span" aria-hidden display="inline-flex"><LuCheck size={16} /></Box>
+                          )}
+                        </HStack>
+                      </Menu.Item>
+                      <Menu.Item fontSize="sm" px={3} py={2} value="1-3" onClick={() => setSelectedDifficulty('1-3')} _hover={{ bg: 'muted' }} _focus={{ bg: 'muted' }} color="fg" cursor="pointer">
+                        <HStack w="full" justify="space-between">
+                          <span>Middle School (1–3)</span>
+                          {selectedDifficulty === '1-3' && (
+                            <Box as="span" aria-hidden display="inline-flex"><LuCheck size={16} /></Box>
+                          )}
+                        </HStack>
+                      </Menu.Item>
+                      <Menu.Item fontSize="sm" px={3} py={2} value="4-5" onClick={() => setSelectedDifficulty('4-5')} _hover={{ bg: 'muted' }} _focus={{ bg: 'muted' }} color="fg" cursor="pointer">
+                        <HStack w="full" justify="space-between">
+                          <span>High School (4–5)</span>
+                          {selectedDifficulty === '4-5' && (
+                            <Box as="span" aria-hidden display="inline-flex"><LuCheck size={16} /></Box>
+                          )}
+                        </HStack>
+                      </Menu.Item>
+                      <Menu.Item fontSize="sm" px={3} py={2} value="6-10" onClick={() => setSelectedDifficulty('6-10')} _hover={{ bg: 'muted' }} _focus={{ bg: 'muted' }} color="fg" cursor="pointer">
+                        <HStack w="full" justify="space-between">
+                          <span>Undergraduate (6–10)</span>
+                          {selectedDifficulty === '6-10' && (
+                            <Box as="span" aria-hidden display="inline-flex"><LuCheck size={16} /></Box>
+                          )}
+                        </HStack>
+                      </Menu.Item>
+                      <Menu.Item fontSize="sm" px={3} py={2} value="11-15" onClick={() => setSelectedDifficulty('11-15')} _hover={{ bg: 'muted' }} _focus={{ bg: 'muted' }} color="fg" cursor="pointer">
+                        <HStack w="full" justify="space-between">
+                          <span>Graduate / Professional (11–15)</span>
+                          {selectedDifficulty === '11-15' && (
+                            <Box as="span" aria-hidden display="inline-flex"><LuCheck size={16} /></Box>
+                          )}
+                        </HStack>
+                      </Menu.Item>
+                    </Menu.Content>
+                  </Menu.Positioner>
+                </Menu.Root>
               </Box>
 
               <Button
@@ -267,7 +390,7 @@ const ConceptLibraryPage = () => {
                               </Badge>
                             ))}
                             {concept.fields.length > 2 && (
-                              <Tooltip.Root>
+                              <Tooltip.Root openDelay={50} closeDelay={100}>
                                 <Tooltip.Trigger>
                                   <Badge colorPalette="gray" fontSize="xs">
                                     +{concept.fields.length - 2}
