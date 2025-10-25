@@ -172,6 +172,10 @@ export default factories.createCoreController('api::user-progress.user-progress'
             const generalArea = ctx.request.body["generalArea"];
             const providedLevel = ctx.request.body["level"];
             const currentLevel = typeof providedLevel === 'number' ? providedLevel : (typeof userProgress.current_level === 'number' ? userProgress.current_level : null);
+            const providedLearned = ctx.request.body["previouslyLearned"];
+            const previouslyLearned = Array.isArray(providedLearned)
+                ? providedLearned
+                : (Array.isArray((userProgress as any).previouslyLearned) ? (userProgress as any).previouslyLearned : []);
 
             if (!generalArea) {
                 return ctx.badRequest("General area is required");
@@ -185,7 +189,8 @@ export default factories.createCoreController('api::user-progress.user-progress'
             const formattedInput = `General area of science: ${generalArea}
 Current level (1-15): ${currentLevel ?? 'unknown'}
 Current field: ${currentField}
-Past fields: [${pastFields.length > 0 ? pastFields.map(f => `"${f}"`).join(", ") : ''}]`;
+Past fields: [${pastFields.length > 0 ? pastFields.map(f => `"${f}"`).join(", ") : ''}]
+Previously learned courses: [${previouslyLearned.length > 0 ? previouslyLearned.map((c: string) => `"${c}"`).join(", ") : ''}]`;
 
             const fieldRes = await client.responses.create({
                 model: "gpt-4o-mini",

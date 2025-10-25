@@ -28,6 +28,8 @@ interface UserFieldData {
     currentFieldCount: number
     totalConceptsCount: number
   }
+  current_level?: number | null
+  previouslyLearned?: string[]
 }
 
 interface FieldSuggestions {
@@ -99,7 +101,11 @@ const ChangeFieldPage = () => {
         return
       }
 
-  const suggestions = await api.post<FieldSuggestions>(endpoints.getFieldSuggestions(), { generalArea: data.generalArea })
+  const suggestions = await api.post<FieldSuggestions>(endpoints.getFieldSuggestions(), {
+    generalArea: data.generalArea,
+    level: typeof userFieldData?.current_level === 'number' ? userFieldData?.current_level : undefined,
+    previouslyLearned: Array.isArray(userFieldData?.previouslyLearned) ? userFieldData?.previouslyLearned : []
+  })
   setFieldSuggestions(suggestions)
   setStep('select')
 
@@ -235,7 +241,7 @@ const ChangeFieldPage = () => {
                       </Box>
                     )}
                     <Field.Root invalid={!!fieldSelectionErrors.selectedField}>
-                      <Field.Label>Choose your field</Field.Label>
+                      <Field.Label>Select your field</Field.Label>
                       <Stack gap={3} align="center" w="full">
                         {fieldSuggestions?.suggestions.map((fieldName) => {
                           const active = selectedField === fieldName

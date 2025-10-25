@@ -95,7 +95,8 @@ const SettingsPage = () => {
                     variant="outline"
                     colorPalette="sage"
                     onClick={() => (window.location.href = "/change-field")}
-                    alignSelf="flex-start"
+                    alignSelf="center"
+                    minW="160px"
                   >
                     Change Field
                   </Button>
@@ -124,7 +125,7 @@ const SettingsPage = () => {
                       <Stack gap={2}>
                         <Input type="range" min={1} max={15} value={level} onChange={(e) => setLevel(Number(e.target.value))} w="full" style={{ accentColor: 'var(--chakra-colors-sage-500)' }} />
                         <Text>Selected: <Badge colorPalette="sage">{level}</Badge></Text>
-                        <Button size="sm" variant="outline" colorPalette="sage" alignSelf="flex-start" onClick={async () => {
+                        <Button size="sm" variant="outline" colorPalette="sage" alignSelf="center" minW="140px" onClick={async () => {
                           try { await api.post(endpoints.updateLevel(), { level }); toaster.create({ title: 'Level saved', type: 'success' }); }
                           catch (e) { setError('Failed to update level'); toaster.create({ title: 'Failed to update level', type: 'error' }); }
                         }}>Save Level</Button>
@@ -140,7 +141,7 @@ const SettingsPage = () => {
                           </label>
                         ))}
                       </Grid>
-                      <Button size="sm" variant="outline" colorPalette="sage" mt={2} onClick={async () => {
+                      <Button size="sm" variant="outline" colorPalette="sage" mt={2} alignSelf="center" minW="160px" onClick={async () => {
                         try { await api.post(endpoints.updatePreviouslyLearned(), { courses: prevLearned }); toaster.create({ title: 'Courses saved', type: 'success' }); }
                         catch (e) { setError('Failed to update courses'); toaster.create({ title: 'Failed to update courses', type: 'error' }); }
                       }}>Save Courses</Button>
