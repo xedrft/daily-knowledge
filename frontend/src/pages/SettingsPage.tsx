@@ -92,7 +92,7 @@ const SettingsPage = () => {
                   )}
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="subtle"
                     colorPalette="sage"
                     onClick={() => (window.location.href = "/change-field")}
                     alignSelf="center"
@@ -125,7 +125,7 @@ const SettingsPage = () => {
                       <Stack gap={2}>
                         <Input type="range" min={1} max={15} value={level} onChange={(e) => setLevel(Number(e.target.value))} w="full" style={{ accentColor: 'var(--chakra-colors-sage-500)' }} />
                         <Text>Selected: <Badge colorPalette="sage">{level}</Badge></Text>
-                        <Button size="sm" variant="outline" colorPalette="sage" alignSelf="center" minW="140px" onClick={async () => {
+                        <Button size="sm" variant="subtle" colorPalette="sage" alignSelf="center" minW="140px" onClick={async () => {
                           try { await api.post(endpoints.updateLevel(), { level }); toaster.create({ title: 'Level saved', type: 'success' }); }
                           catch (e) { setError('Failed to update level'); toaster.create({ title: 'Failed to update level', type: 'error' }); }
                         }}>Save Level</Button>
@@ -156,10 +156,10 @@ const SettingsPage = () => {
                         onSecondaryAction={() => setPrevLearned(baselinePrevLearned)}
                       />
                     </Box>
-                    <Box mt={2} display="flex" justifyContent="center">
+                    <Box mt={6} display="flex" justifyContent="center">
                       <Button
                         size="sm"
-                        variant="outline"
+                        variant="subtle"
                         colorPalette="sage"
                         minW="160px"
                         onClick={async () => {

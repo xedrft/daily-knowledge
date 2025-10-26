@@ -2,6 +2,7 @@ import { Button, Field, Input, Stack, Heading, Text, Box, Badge, Grid } from "@c
 import { useForm } from "react-hook-form"
 import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { toaster } from "@/components/ui/toaster"
 import Navbar from "@/components/Navbar"
 import PageContainer from "@/components/layout/PageContainer"
 import Panel from "@/components/layout/Panel"
@@ -55,10 +56,9 @@ const ChangeFieldPage = () => {
   
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string>("")
-  const [success, setSuccess] = useState<string>("")
   const [userFieldData, setUserFieldData] = useState<UserFieldData | null>(null)
   const [fieldSuggestions, setFieldSuggestions] = useState<FieldSuggestions | null>(null)
-  const [step, setStep] = useState<'general' | 'select'>('general')
+  const [step, setStep] = useState<'general' | 'select' | 'success'>('general')
   const navigate = useNavigate()
   const { check } = useAuthGate()
 
@@ -92,7 +92,6 @@ const ChangeFieldPage = () => {
   async function onSubmitGeneralArea(data: FormValues) {
     setIsLoading(true)
     setError("")
-    setSuccess("")
     
     try {
       const jwt = localStorage.getItem("jwt")
@@ -120,7 +119,6 @@ const ChangeFieldPage = () => {
   async function onSubmitFieldSelection(data: SelectFieldValues) {
     setIsLoading(true)
     setError("")
-    setSuccess("")
     
     try {
       const jwt = localStorage.getItem("jwt")
@@ -130,9 +128,19 @@ const ChangeFieldPage = () => {
       }
       // Change field only (do not update level here)
       await api.post(endpoints.changeField(), { field: data.selectedField })
-      setSuccess("Field changed successfully! You can now explore new topics.")
+      
+      // Show success toast and provide user choice
+      toaster.create({
+        title: "Field changed successfully!",
+        description: "Ready to explore new topics in your field.",
+        type: "success",
+        duration: 4000,
+      })
+      
       fetchUserFieldData()
-      setTimeout(() => navigate("/questions"), 1200)
+      
+      // Give user control over next action
+      setStep('success')
 
     } catch (err) {
       console.error("Error:", err)
@@ -219,18 +227,13 @@ const ChangeFieldPage = () => {
                 </Stack>
               </form>
             </Panel>
-          ) : (
+          ) : step === 'select' ? (
               <Panel w="full" maxW="3xl" mx="auto">
                 <form onSubmit={handleSubmitFieldSelection(onSubmitFieldSelection)}>
                   <Stack gap={4}>
                     {error && (
                       <Box bg="red.50" border="1px solid" borderColor="red.200" p={3} borderRadius="md">
                         <Text color="red.700" fontSize="sm">{error}</Text>
-                      </Box>
-                    )}
-                    {success && (
-                      <Box bg="green.50" border="1px solid" borderColor="green.200" p={3} borderRadius="md">
-                        <Text color="green.700" fontSize="sm">{success}</Text>
                       </Box>
                     )}
 
@@ -281,6 +284,49 @@ const ChangeFieldPage = () => {
                   </Stack>
                 </form>
               </Panel>
+          ) : (
+            // Success step - give user control over next action
+            <Panel w="full" maxW="3xl" mx="auto">
+              <Stack gap={6} align="center" textAlign="center">
+                <Stack gap={2}>
+                  <Heading size="lg" color="green.600">Field Changed Successfully! 🎉</Heading>
+                  <Text color="fg.muted">
+                    You're now studying <strong>{userFieldData?.currentField}</strong>. 
+                    Ready to explore new concepts in your field?
+                  </Text>
+                </Stack>
+                
+                <Stack direction={{ base: 'column', sm: 'row' }} gap={4} w="full" justify="center">
+                  <Button
+                    onClick={() => navigate("/questions")}
+                    variant="solid"
+                    colorPalette="sage"
+                    size="lg"
+                    minW="200px"
+                  >
+                    Start Learning Questions
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/")}
+                    variant="outline"
+                    colorPalette="sage"
+                    size="lg"
+                    minW="160px"
+                  >
+                    Go to Home
+                  </Button>
+                </Stack>
+                
+                <Button
+                  onClick={() => setStep('general')}
+                  variant="ghost"
+                  size="sm"
+                  color="fg.muted"
+                >
+                  Change to a different field
+                </Button>
+              </Stack>
+            </Panel>
           )}
 
           <Stack gap={2} align="flex-start">

@@ -50,7 +50,7 @@ export default function PreviouslyLearnedSelector({ selected, onChange, label = 
           />
           <Menu.Root>
             <Menu.Trigger asChild>
-              <Button size="sm" variant="outline" w="full" justifyContent="space-between" bg="bg" borderColor="muted">
+              <Button size="sm" variant="outline" w="full" justifyContent="space-between" bg="bg" borderColor="muted" minW="200px">
                 {courseFilter === "all" ? "All categories" : COURSE_CATEGORIES.find((c) => c.key === courseFilter)?.label || "Category"}
                 <Box as="span" aria-hidden display="inline-flex">
                   <LuChevronDown size={16} />
@@ -58,7 +58,7 @@ export default function PreviouslyLearnedSelector({ selected, onChange, label = 
               </Button>
             </Menu.Trigger>
             <Menu.Positioner>
-              <Menu.Content bg="bg" borderColor="muted" boxShadow="sm" borderRadius="md" p={1}>
+              <Menu.Content bg="bg" borderColor="muted" boxShadow="sm" borderRadius="md" p={1} minW="200px">
                 <Menu.Item
                   value="all"
                   onClick={() => setCourseFilter("all")}
@@ -115,7 +115,7 @@ export default function PreviouslyLearnedSelector({ selected, onChange, label = 
           {visibleCourses.map((c) => {
             const active = selected.includes(c);
             return (
-              <Button key={c} size="sm" variant={active ? "solid" : "outline"} colorPalette="sage" onClick={() => toggleCourse(c)}>
+              <Button key={c} size="md" variant={active ? "solid" : "outline"} colorPalette="sage" onClick={() => toggleCourse(c)} whiteSpace="normal" textAlign="center" minH="12">
                 {c}
               </Button>
             );
