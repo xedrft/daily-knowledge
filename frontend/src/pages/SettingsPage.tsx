@@ -92,11 +92,13 @@ const SettingsPage = () => {
                   )}
                   <Button
                     size="sm"
-                    variant="subtle"
+                    variant="outline"
                     colorPalette="sage"
                     onClick={() => (window.location.href = "/change-field")}
                     alignSelf="center"
                     minW="160px"
+                    fontWeight="semibold"
+                    borderWidth="2px"
                   >
                     Change Field
                   </Button>
@@ -125,7 +127,7 @@ const SettingsPage = () => {
                       <Stack gap={2}>
                         <Input type="range" min={1} max={15} value={level} onChange={(e) => setLevel(Number(e.target.value))} w="full" style={{ accentColor: 'var(--chakra-colors-sage-500)' }} />
                         <Text>Selected: <Badge colorPalette="sage">{level}</Badge></Text>
-                        <Button size="sm" variant="subtle" colorPalette="sage" alignSelf="center" minW="140px" onClick={async () => {
+                        <Button size="sm" variant="outline" colorPalette="sage" alignSelf="center" minW="140px" fontWeight="semibold" borderWidth="2px" onClick={async () => {
                           try { await api.post(endpoints.updateLevel(), { level }); toaster.create({ title: 'Level saved', type: 'success' }); }
                           catch (e) { setError('Failed to update level'); toaster.create({ title: 'Failed to update level', type: 'error' }); }
                         }}>Save Level</Button>
@@ -159,9 +161,11 @@ const SettingsPage = () => {
                     <Box mt={6} display="flex" justifyContent="center">
                       <Button
                         size="sm"
-                        variant="subtle"
+                        variant="outline"
                         colorPalette="sage"
                         minW="160px"
+                        fontWeight="semibold"
+                        borderWidth="2px"
                         onClick={async () => {
                           try {
                             await api.post(endpoints.updatePreviouslyLearned(), { courses: prevLearned });
