@@ -5,7 +5,7 @@ export default [
   {
     name: 'strapi::cors',
     config: {
-      origin: ['http://localhost:5173', 'https://daily-knowledge.onrender.com'], // your React dev server
+      origin: ['http://localhost:5173', 'https://verocity.onrender.com'], // your React dev server
       headers: [
         'Content-Type',
         'Authorization',

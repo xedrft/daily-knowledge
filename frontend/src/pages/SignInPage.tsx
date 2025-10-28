@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom"
 import Navbar from "@/components/Navbar"
 import PageContainer from "@/components/layout/PageContainer"
 import Panel from "@/components/layout/Panel"
+import { endpoints } from "@/lib/api/endpoints"
 
 interface FormValues {
   identifier: string
@@ -28,7 +29,7 @@ const SignInPage = () => {
     setError("")
     
     try {
-      const loginRes = await fetch("http://127.0.0.1:1337/api/signin", {
+      const loginRes = await fetch(endpoints.signin(), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", 
