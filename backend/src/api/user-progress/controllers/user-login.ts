@@ -46,8 +46,13 @@ export default factories.createCoreController('api::user-progress.user-progress'
             console.log('User registered successfully:', user);
         } catch (error) {
             console.log('An error occurred:', error.response?.data || error);
-            ctx.response.body = { error: "An error occurred during registration. Please try again." };
-            ctx.response.status = 400;
+            
+            // Pass through the actual error message from Strapi auth
+            const errorData = error.response?.data;
+            const errorMessage = errorData?.error?.message || errorData?.message || "An error occurred during registration. Please try again.";
+            
+            ctx.response.body = { error: errorMessage };
+            ctx.response.status = error.response?.status || 400;
         }
     },
 
@@ -66,14 +71,6 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 user: response.data.user,
                 jwt: response.data.jwt
             };
-
-            // Set JWT as an HTTP-only cookie for secure authentication
-            ctx.cookies.set("jwt", response.data.jwt, {
-                httpOnly: true,
-                secure: false, // Set to true in production with HTTPS
-                sameSite: 'lax',
-                maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-            });
 
             console.log('User signed in successfully:', response.data.user);
 

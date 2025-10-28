@@ -44,6 +44,7 @@ const RegisterPage = () => {
       });
       
       const registerJson = await registerRes.json();
+      console.log("Registration response:", registerRes.status, registerJson); // Debug the actual response
       
       if (registerRes.ok) {
         // Auto sign-in after successful registration
@@ -73,7 +74,12 @@ const RegisterPage = () => {
           navigate("/signin");
         }
       } else {
-        setError(registerJson.error || "Registration failed");
+        // Handle nested error structure from backend
+        console.log("Error response structure:", JSON.stringify(registerJson, null, 2)); // Debug error structure
+        const errorMessage = registerJson.error || registerJson.message || "Registration failed";
+        console.log("Extracted error message:", errorMessage); // Debug extracted message
+        setError(errorMessage);
+        console.error("Registration error:", registerJson); // Add logging to debug
       }
 
     } catch (err) {
