@@ -19,20 +19,54 @@ const Navbar = () => {
     >
       <Box maxW="8xl" mx="auto" px={8} py={4}>
         <Stack direction="row" justify="space-between" align="center">
-          <Heading size="lg" cursor="pointer" onClick={() => navigate("/")} color="sage.400">
+          <Heading 
+            size="lg" 
+            cursor="pointer" 
+            onClick={() => navigate(isLoggedIn ? "/questions" : "/")} 
+            color="sage.400"
+            _hover={{ color: "sage.500" }}
+            transition="color 0.2s"
+          >
             Verocity
           </Heading>
-          <Stack direction="row" gap={2}>
-            <Button variant="outline" onClick={() => navigate("/")}>
-              Home
-            </Button>
-            <Button variant="outline" onClick={() => navigate("/questions")}>
+          <Stack direction="row" gap={1}>
+            {!isLoggedIn && (
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate("/")}
+                size="sm"
+                borderRadius="md"
+                _hover={{ bg: "gray.800" }}
+              >
+                Home
+              </Button>
+            )}
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate("/questions")}
+              size="sm"
+              borderRadius="md"
+              _hover={{ bg: "gray.800" }}
+            >
               Questions
             </Button>
-            <Button variant="outline" onClick={() => navigate("/library")}>
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate("/library")}
+              size="sm"
+              borderRadius="md"
+              _hover={{ bg: "gray.800" }}
+            >
               Library
             </Button>
-            <Button variant="outline" onClick={() => navigate(isLoggedIn ? "/settings" : "/signin")}>
+            <Button 
+              variant={isLoggedIn ? "ghost" : "outline"} 
+              onClick={() => navigate(isLoggedIn ? "/settings" : "/signin")}
+              size="sm"
+              borderRadius="md"
+              _hover={{ bg: isLoggedIn ? "gray.800" : "sage.50" }}
+              colorPalette={isLoggedIn ? "gray" : "sage"}
+            >
               {isLoggedIn ? "Settings" : "Sign In"}
             </Button>
           </Stack>
