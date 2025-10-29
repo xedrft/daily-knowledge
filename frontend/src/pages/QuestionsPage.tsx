@@ -85,9 +85,9 @@ const QuestionsPage = () => {
       {/* Page container */}
       <PageContainer>
         <Stack gap={2}>
-          <Heading size="md">Today's Concept</Heading>
+          <Heading size="md">Your Concept</Heading>
           <Text color="gray.600">
-            Learn something new and expand your knowledge
+            Wise words go here
           </Text>
           {!concept && (
             <Button onClick={fetchConcept} colorPalette="sage" disabled={isLoading} {...(isLoading ? { loading: true, loadingText: 'Fetching concept...' } : {})}>
