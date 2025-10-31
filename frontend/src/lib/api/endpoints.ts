@@ -12,4 +12,8 @@ export const endpoints = {
   updatePreviouslyLearned: () => `${API_BASE}/update-previously-learned`,
   signin: () => `${API_BASE}/signin`,
   register: () => `${API_BASE}/register`,
+  // Activity & streak
+  recordActivity: () => `${API_BASE}/record-activity`,
+  getActivity: (from: string, to: string) => `${API_BASE}/activity?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
+  getStreak: (date?: string) => date ? `${API_BASE}/streak?date=${encodeURIComponent(date)}` : `${API_BASE}/streak`,
 };

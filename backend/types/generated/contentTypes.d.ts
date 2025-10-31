@@ -470,6 +470,41 @@ export interface ApiConceptConcept extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiLearningActivityLearningActivity
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'learning_activities';
+  info: {
+    description: 'Per-user daily activity counts';
+    displayName: 'Learning Activity';
+    pluralName: 'learning-activities';
+    singularName: 'learning-activity';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    count: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date: Schema.Attribute.Date & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::learning-activity.learning-activity'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    user_id: Schema.Attribute.Relation<
+      'manyToOne',
+      'plugin::users-permissions.user'
+    >;
+  };
+}
+
 export interface ApiUserProgressUserProgress
   extends Struct.CollectionTypeSchema {
   collectionName: 'user_progresses';
@@ -492,6 +527,7 @@ export interface ApiUserProgressUserProgress
     currentField: Schema.Attribute.String & Schema.Attribute.Required;
     currentFieldConcepts: Schema.Attribute.JSON &
       Schema.Attribute.DefaultTo<[]>;
+    dailyActivity: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<{}>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1027,6 +1063,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::concept.concept': ApiConceptConcept;
+      'api::learning-activity.learning-activity': ApiLearningActivityLearningActivity;
       'api::user-progress.user-progress': ApiUserProgressUserProgress;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

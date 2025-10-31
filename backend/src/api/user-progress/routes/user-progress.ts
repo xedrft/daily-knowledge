@@ -61,6 +61,22 @@ module.exports = {
             method: "POST",
             path: "/update-previously-learned",
             handler: "change-field.updatePreviouslyLearned",
+        },
+        // Activity & streak endpoints
+        {
+            method: "POST",
+            path: "/record-activity",
+            handler: "activity.record",
+        },
+        {
+            method: "GET",
+            path: "/activity",
+            handler: "activity.getRange",
+        },
+        {
+            method: "GET",
+            path: "/streak",
+            handler: "activity.getStreak",
         }
     ]
 };

@@ -61,7 +61,6 @@ export function sanitizeLatexBackslashes(input: string): string {
   //   return `\\(${match}\\)`;
   // });
   
-  console.log("Sanitized LaTeX:", result);
   return result;
 }
 

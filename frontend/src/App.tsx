@@ -9,6 +9,7 @@ import ConceptLibraryPage from './pages/ConceptLibraryPage'
 import SettingsPage from './pages/SettingsPage'
 import OnboardingPage from './pages/OnboardingPage'
 import { Toaster } from './components/ui/toaster'
+import ToastDemoPage from './pages/ToastDemoPage'
 
 
 
@@ -25,6 +26,7 @@ export const App = () => {
         <Route path="/settings" element={<SettingsPage />} />
   <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/sanitizer-test" element={<SanitizerTestPage />} />
+        <Route path="/toast-demo" element={<ToastDemoPage />} />
       </Routes>
       <Toaster />
     </Router>

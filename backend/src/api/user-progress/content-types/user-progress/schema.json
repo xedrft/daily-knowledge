@@ -50,5 +50,10 @@
       "type": "boolean",
       "default": false
     }
+    ,
+    "dailyActivity": {
+      "type": "json",
+      "default": {}
+    }
   }
 }

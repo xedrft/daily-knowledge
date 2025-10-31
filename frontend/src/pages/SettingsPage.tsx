@@ -9,6 +9,7 @@ import { endpoints } from "@/lib/api/endpoints"
 import type { UserData } from "@/types/domain"
 import { useAuthGate } from "@/hooks/useAuthGate"
 import PreviouslyLearnedSelector from "@/components/PreviouslyLearnedSelector"
+import ActivityGrid, { type ActivityDay } from "@/components/ActivityGrid"
 
 // Removed local COURSE_CATALOG in favor of shared catalog + UI from onboarding
 
@@ -19,6 +20,8 @@ const SettingsPage = () => {
   const [level, setLevel] = useState<number>(7)
   const [prevLearned, setPrevLearned] = useState<string[]>([])
   const [baselinePrevLearned, setBaselinePrevLearned] = useState<string[]>([])
+  const [activity, setActivity] = useState<ActivityDay[]>([])
+  const [streak, setStreak] = useState<number>(0)
   const { check } = useAuthGate()
 
   useEffect(() => {
@@ -33,6 +36,16 @@ const SettingsPage = () => {
     setPrevLearned(data.previouslyLearned)
     setBaselinePrevLearned(data.previouslyLearned)
   }
+  // Also fetch activity for the last 26 weeks
+  const today = new Date()
+  const to = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`
+  const start = new Date(today)
+  start.setUTCDate(start.getUTCDate() - 26 * 7)
+  const from = `${start.getUTCFullYear()}-${String(start.getUTCMonth()+1).padStart(2,'0')}-${String(start.getUTCDate()).padStart(2,'0')}`
+  const a = await api.get<{ activities: ActivityDay[] }>(endpoints.getActivity(from, to))
+  setActivity(a.activities || [])
+  const s = await api.get<{ streak: number }>(endpoints.getStreak())
+  setStreak(s.streak || 0)
       } catch (err) {
         console.error("Error:", err)
         setError("Network error. Please try again.")
@@ -142,6 +155,16 @@ const SettingsPage = () => {
                       </Box>
                     )}
                   </Stack>
+                </Stack>
+              </Panel>
+
+              {/* Activity Calendar Section */}
+              <Panel>
+                <Stack gap={3}>
+                  <Heading size="md">Activity</Heading>
+                  <Text fontWeight="semibold" color="sage.600">Current streak: {streak} day{streak===1?'':'s'}</Text>
+                  <Text color="fg.muted" fontSize="sm" textAlign="center">Your recent learning activity (last 6 months)</Text>
+                  <ActivityGrid activities={activity} weeks={30} cellSize={16} gap={3} />
                 </Stack>
               </Panel>
 

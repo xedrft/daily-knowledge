@@ -1,0 +1,26 @@
+{
+  "kind": "collectionType",
+  "collectionName": "learning_activities",
+  "info": {
+    "singularName": "learning-activity",
+    "pluralName": "learning-activities",
+    "displayName": "Learning Activity",
+    "description": "Per-user daily activity counts"
+  },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "user_id": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "date": {
+      "type": "date",
+      "required": true
+    },
+    "count": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

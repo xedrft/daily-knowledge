@@ -1,4 +1,6 @@
 import { Button, Stack, Heading, Text, Box } from "@chakra-ui/react"
+import { toaster } from "@/components/ui/toaster"
+import { StreakToastContent, TodayCountToastContent } from "@/components/ui/ActivityToast"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import latexFormatter from "@/functions/latexFormatter"
@@ -33,6 +35,37 @@ const QuestionsPage = () => {
       if (!ok) return
       const conceptJson = await api.get<ConceptFull>(endpoints.getConcept())
       setConcept(conceptJson)
+      // Record activity for today and possibly show streak toast
+      try {
+        const today = new Date()
+        const dateKey = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`
+        const res = await api.post<{ date: string; todayCount: number; firstOfDay: boolean; streak: number }>(endpoints.recordActivity(), { date: dateKey })
+        if (res.firstOfDay) {
+          // Fetch last 7 days including today to show which days had activity
+          const end = dateKey
+          const startDate = new Date(today)
+          startDate.setDate(today.getDate() - 6)
+          const start = `${startDate.getFullYear()}-${String(startDate.getMonth()+1).padStart(2,'0')}-${String(startDate.getDate()).padStart(2,'0')}`
+          let week: Array<{ date: string; count: number }> = []
+          try {
+            const a = await api.get<{ activities: Array<{ date: string; count: number }> }>(endpoints.getActivity(start, end))
+            week = a.activities || []
+          } catch {}
+          toaster.create({
+            type: 'success',
+            title: 'Streak +1',
+            description: (<StreakToastContent streak={res.streak} week={week} />),
+          })
+        } else {
+          toaster.create({
+            title: 'Nice progress',
+            description: (<TodayCountToastContent count={res.todayCount} />),
+          })
+        }
+      } catch (e) {
+        // Non-fatal
+        console.warn('Failed to record activity', e)
+      }
     } catch (err) {
       console.error("Error:", err)
       setError("Network error. Please try again.")
