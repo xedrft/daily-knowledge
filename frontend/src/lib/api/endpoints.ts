@@ -16,4 +16,6 @@ export const endpoints = {
   recordActivity: () => `${API_BASE}/record-activity`,
   getActivity: (from: string, to: string) => `${API_BASE}/activity?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
   getStreak: (date?: string) => date ? `${API_BASE}/streak?date=${encodeURIComponent(date)}` : `${API_BASE}/streak`,
+  // Concept management
+  regenerateConcept: () => `${API_BASE}/concept/regenerate`,
 };

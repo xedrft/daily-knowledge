@@ -1,7 +1,8 @@
 import { Button, Field, Input, Stack, Heading, Text, Box, Badge, Grid } from "@chakra-ui/react"
 import { useForm } from "react-hook-form"
 import { useState, useEffect } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import InlineLink from "@/components/ui/InlineLink"
 import { toaster } from "@/components/ui/toaster"
 import Navbar from "@/components/Navbar"
 import PageContainer from "@/components/layout/PageContainer"
@@ -331,10 +332,7 @@ const ChangeFieldPage = () => {
 
           <Stack gap={2} align="flex-start">
             <Text fontSize="sm">
-              <Link to="/questions">← Back to Questions</Link>
-            </Text>
-            <Text fontSize="sm">
-              <Link to="/">← Back to Home</Link>
+              <InlineLink to="/questions" leadingArrow>Back to Questions</InlineLink>
             </Text>
           </Stack>
         </Stack>

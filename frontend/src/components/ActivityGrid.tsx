@@ -5,12 +5,12 @@ import React from "react"
 export interface ActivityDay { date: string; count: number }
 
 function getColor(count: number): string {
-  // 0: bg subtle, then 1-4 levels of sage
-  if (count <= 0) return "var(--chakra-colors-bg-subtle)"
-  if (count < 2) return "var(--chakra-colors-sage-900)"
+  // Make empty days visibly distinct from the background, and keep
+  // "darker = more" for activity levels.
+  if (count <= 0) return "var(--chakra-colors-muted)"
+  if (count < 2) return "var(--chakra-colors-sage-700)"
   if (count < 4) return "var(--chakra-colors-sage-800)"
-  if (count < 7) return "var(--chakra-colors-sage-700)"
-  return "var(--chakra-colors-sage-600)"
+  return "var(--chakra-colors-sage-900)"
 }
 
 function formatDate(date: Date): string {
@@ -43,7 +43,7 @@ export const buildCalendar = (activities: ActivityDay[], weeks = 26) => {
   return days
 }
 
-const ActivityGrid: React.FC<{ activities: ActivityDay[]; weeks?: number; cellSize?: number; gap?: number } > = ({ activities, weeks = 26, cellSize = 14, gap = 2 }) => {
+const ActivityGrid: React.FC<{ activities: ActivityDay[]; weeks?: number; cellSize?: number; gap?: number } > = ({ activities, weeks = 26, cellSize = 16, gap = 3 }) => {
   const days = buildCalendar(activities, weeks)
   // Render columns by week
   const columns: Array<typeof days> = []
@@ -57,14 +57,20 @@ const ActivityGrid: React.FC<{ activities: ActivityDay[]; weeks?: number; cellSi
             <Stack key={idx} gap={`${gap}px`}>
               {col.map((d) => (
                 <Tooltip key={d.date} content={`${d.count} learned on ${d.date}`} positioning={{ placement: 'top' }} openDelay={100}>
-                  <Box w={`${cellSize}px`} h={`${cellSize}px`} borderRadius="2px" bg={getColor(d.count)} border="1px solid" borderColor="var(--chakra-colors-border-muted)" />
+                  <Box
+                    w={`${cellSize}px`}
+                    h={`${cellSize}px`}
+                    borderRadius="2px"
+                    bg={getColor(d.count)}
+                    border="1px solid"
+                    borderColor="var(--chakra-colors-emphasized)"
+                  />
                 </Tooltip>
               ))}
             </Stack>
           ))}
         </Stack>
       </Box>
-      <Text mt={2} fontSize="xs" color="fg.muted">Darker = more concepts learned that day</Text>
     </Box>
   )
 }

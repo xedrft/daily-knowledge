@@ -2,7 +2,8 @@ import { Button, Field, Input, Stack, Heading, Text } from "@chakra-ui/react"
 import { PasswordInput } from "@/components/ui/password-input"
 import { useForm } from "react-hook-form"
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import InlineLink from "@/components/ui/InlineLink"
 import Navbar from "@/components/Navbar"
 import PageContainer from "@/components/layout/PageContainer"
 import Panel from "@/components/layout/Panel"
@@ -107,12 +108,12 @@ const SignInPage = () => {
                 </Stack>
               </form>
 
-              <Stack gap={2} align="center">
+              <Stack gap={1} align="center">
                 <Text fontSize="sm">
-                  Don't have an account? <Link to="/register">Sign up</Link>
+                  Don't have an account? <InlineLink to="/register">Sign up</InlineLink>
                 </Text>
                 <Text fontSize="sm">
-                  <Link to="/">← Back to Home</Link>
+                  <InlineLink to="/" leadingArrow>Back to Home</InlineLink>
                 </Text>
               </Stack>
             </Stack>

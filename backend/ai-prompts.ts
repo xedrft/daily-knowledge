@@ -59,6 +59,7 @@ CONTENT (1800-2500 chars):
 - Do not blindly follow this format strictly, do what is best for the content
 
 PROBLEMSET (3-4 problems):
+- Must be within user capabilities based on content and users past knowledge
 - Progress from conceptual to challenging
 - Show key steps, skip trivial arithmetic
 

@@ -48,7 +48,7 @@ const Navbar = () => {
               borderRadius="md"
               _hover={{ bg: "gray.800" }}
             >
-              Questions
+              Concept
             </Button>
             <Button 
               variant="ghost" 
