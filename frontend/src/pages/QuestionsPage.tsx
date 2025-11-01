@@ -141,7 +141,27 @@ const QuestionsPage = () => {
         {concept && !isLoading && (
           <Panel>
             <Stack gap={4}>
-              <Heading size="3xl" color="sage.400">{concept.title}</Heading>
+              <Stack direction="row" justify="space-between" align="center">
+                <Heading size="3xl" color="sage.400">{concept.title}</Heading>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={async () => {
+                    try {
+                      setIsLoading(true)
+                      const refreshed = await api.post<ConceptFull>(endpoints.regenerateConcept(), { title: concept.title })
+                      setConcept(refreshed)
+                      toaster.create({ title: 'Content refreshed', description: 'This concept was regenerated and saved.' })
+                    } catch (e) {
+                      toaster.create({ type: 'error', title: 'Failed to refresh content' })
+                    } finally {
+                      setIsLoading(false)
+                    }
+                  }}
+                >
+                  ↻ Regenerate
+                </Button>
+              </Stack>
               <Box 
                 className="math-content-container"
               >
