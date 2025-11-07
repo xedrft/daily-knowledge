@@ -97,8 +97,8 @@ export default function OnboardingPage() {
                   <Field.HelperText>We’ll suggest specific fields next.</Field.HelperText>
                 </Field.Root>
                 {error && (
-                  <Box bg="red.50" border="1px solid" borderColor="red.200" p={3} borderRadius="md">
-                    <Text color="red.700" fontSize="sm">{error}</Text>
+                  <Box bg={{ _light: "red.100", _dark: "red.950" }} border="1px solid" borderColor={{ _light: "red.300", _dark: "red.800" }} p={3} borderRadius="md">
+                    <Text color={{ _light: "red.700", _dark: "red.400" }} fontSize="sm">{error}</Text>
                   </Box>
                 )}
                 <Stack direction={{ base: 'column', sm: 'row' }} justify="center" align="center" gap={3}>
@@ -192,8 +192,8 @@ export default function OnboardingPage() {
                   }} disabled={submitLoading} {...(submitLoading ? { loading: true } : {})}>Finish</Button>
                 </Stack>
                 {error && (
-                  <Box bg="red.50" border="1px solid" borderColor="red.200" p={3} borderRadius="md">
-                    <Text color="red.700" fontSize="sm">{error}</Text>
+                  <Box bg={{ _light: "red.100", _dark: "red.950" }} border="1px solid" borderColor={{ _light: "red.300", _dark: "red.800" }} p={3} borderRadius="md">
+                    <Text color={{ _light: "red.700", _dark: "red.400" }} fontSize="sm">{error}</Text>
                   </Box>
                 )}
               </Stack>

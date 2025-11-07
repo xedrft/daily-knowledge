@@ -130,8 +130,8 @@ const QuestionsPage = () => {
         </Stack>
 
         {error && (
-          <Box bg="red.50" p={4} borderRadius="md" border="1px solid" borderColor="red.200">
-            <Text color="red.600">{error}</Text>
+          <Box bg={{ _light: "red.100", _dark: "red.950" }} p={4} borderRadius="md" border="1px solid" borderColor={{ _light: "red.300", _dark: "red.800" }}>
+            <Text color={{ _light: "red.700", _dark: "red.400" }}>{error}</Text>
             <Button mt={2} size="sm" onClick={fetchConcept}>
               Try Again
             </Button>

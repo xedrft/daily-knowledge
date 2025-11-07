@@ -82,7 +82,7 @@ const SignInPage = () => {
 
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Stack gap="5" align="flex-start" maxW="lg" w="full">
-                  {error && <Text color="red.400" fontSize="sm">{error}</Text>}
+                  {error && <Text color={{ _light: "red.600", _dark: "red.400" }} fontSize="sm">{error}</Text>}
 
                   <Field.Root invalid={!!errors.identifier}>
                     <Field.Label>Email or Username</Field.Label>

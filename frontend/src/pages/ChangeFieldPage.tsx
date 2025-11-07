@@ -203,8 +203,8 @@ const ChangeFieldPage = () => {
               <form onSubmit={handleSubmitGeneralArea(onSubmitGeneralArea)}>
                 <Stack gap={4}>
                   {error && (
-                    <Box bg="red.50" border="1px solid" borderColor="red.200" p={3} borderRadius="md">
-                      <Text color="red.700" fontSize="sm">{error}</Text>
+                    <Box bg={{ _light: "red.100", _dark: "red.950" }} border="1px solid" borderColor={{ _light: "red.300", _dark: "red.800" }} p={3} borderRadius="md">
+                      <Text color={{ _light: "red.700", _dark: "red.400" }} fontSize="sm">{error}</Text>
                     </Box>
                   )}
                   <Text fontSize="sm" color="fg.muted">Step 1 of 2</Text>
@@ -233,8 +233,8 @@ const ChangeFieldPage = () => {
                 <form onSubmit={handleSubmitFieldSelection(onSubmitFieldSelection)}>
                   <Stack gap={4}>
                     {error && (
-                      <Box bg="red.50" border="1px solid" borderColor="red.200" p={3} borderRadius="md">
-                        <Text color="red.700" fontSize="sm">{error}</Text>
+                      <Box bg={{ _light: "red.100", _dark: "red.950" }} border="1px solid" borderColor={{ _light: "red.300", _dark: "red.800" }} p={3} borderRadius="md">
+                        <Text color={{ _light: "red.700", _dark: "red.400" }} fontSize="sm">{error}</Text>
                       </Box>
                     )}
 
@@ -290,7 +290,7 @@ const ChangeFieldPage = () => {
             <Panel w="full" maxW="3xl" mx="auto">
               <Stack gap={6} align="center" textAlign="center">
                 <Stack gap={2}>
-                  <Heading size="lg" color="green.600">Field Changed Successfully! 🎉</Heading>
+                  <Heading size="lg" color={{ _light: "sage.700", _dark: "sage.300" }}>Field Changed Successfully! 🎉</Heading>
                   <Text color="fg.muted">
                     You're now studying <strong>{userFieldData?.currentField}</strong>. 
                     Ready to explore new concepts in your field?

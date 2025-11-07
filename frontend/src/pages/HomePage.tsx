@@ -36,8 +36,8 @@ const HomePage = () => {
           width="800px"
           height="800px"
           borderRadius="full"
-          bg="sage.500"
-          opacity="0.08"
+          bg={{ _light: "sage.600", _dark: "sage.500" }}
+          opacity={{ _light: "0.12", _dark: "0.08" }}
           filter="blur(100px)"
           pointerEvents="none"
           zIndex={0}

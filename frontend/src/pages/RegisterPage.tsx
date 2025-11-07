@@ -106,10 +106,10 @@ const RegisterPage = () => {
               <form onSubmit={handleSubmit(onSubmit)}>
                 <Stack gap="5" align="flex-start" maxW="lg" w="full">
                 {error && (
-                  <Text color="red.400" fontSize="sm">{error}</Text>
+                  <Text color={{ _light: "red.600", _dark: "red.400" }} fontSize="sm">{error}</Text>
                 )}
                 {success && (
-                  <Text color="green.400" fontSize="sm">{success}</Text>
+                  <Text color={{ _light: "sage.700", _dark: "sage.300" }} fontSize="sm">{success}</Text>
                 )}
 
                 <Field.Root invalid={!!errors.username}>
