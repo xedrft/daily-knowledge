@@ -67,7 +67,7 @@ export default function OnboardingPage() {
                       </HStack>
                     </Tooltip.Trigger>
                     <Tooltip.Positioner>
-                      <Tooltip.Content bg="gray.800" color="white" maxW="300px" px={3} py={2} borderRadius="md">
+                      <Tooltip.Content bg="emphasized" color="fg" maxW="300px" px={3} py={2} borderRadius="md">
                         <Stack gap={1}>
                           <Text fontWeight="semibold" fontSize="sm">Choosing Your Level</Text>
                           <Text fontSize="xs"><strong>1–5:</strong> High school or introductory</Text>

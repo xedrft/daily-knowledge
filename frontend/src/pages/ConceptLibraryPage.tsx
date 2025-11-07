@@ -397,7 +397,7 @@ const ConceptLibraryPage = () => {
                                   </Badge>
                                 </Tooltip.Trigger>
                                 <Tooltip.Positioner>
-                                  <Tooltip.Content bg="gray.800" color="white">
+                                  <Tooltip.Content bg="emphasized" color="fg">
                                     {concept.fields.slice(2).join(', ')}
                                   </Tooltip.Content>
                                 </Tooltip.Positioner>
@@ -451,10 +451,10 @@ const ConceptLibraryPage = () => {
           {/* Empty State */}
           {!isLoading && currentConcepts.length === 0 && (
             <Box textAlign="center" py={12}>
-              <Heading size="md" color="gray.600" mb={2}>
+              <Heading size="md" color="fg.muted" mb={2}>
                 No concepts found
               </Heading>
-              <Text color="gray.500">
+              <Text color="fg.muted">
                 Try adjusting your filters or search term
               </Text>
             </Box>

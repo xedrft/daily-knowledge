@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom"
 
 const Navbar = () => {
   const navigate = useNavigate()
-  const navBorder = useColorModeValue("gray.200", "gray.700")
   const navShadow = useColorModeValue("0 2px 6px rgba(15, 23, 42, 0.04)", "0 2px 10px rgba(2,6,23,0.6)")
 
   const isLoggedIn = !!localStorage.getItem("jwt")
@@ -14,7 +13,7 @@ const Navbar = () => {
       as="nav"
       w="100%"
       borderBottomWidth="1px"
-      borderBottomColor={navBorder}
+      borderBottomColor="subtle"
       boxShadow={navShadow}
     >
       <Box maxW="8xl" mx="auto" px={8} py={4}>
@@ -36,7 +35,7 @@ const Navbar = () => {
                 onClick={() => navigate("/")}
                 size="sm"
                 borderRadius="md"
-                _hover={{ bg: "gray.800" }}
+                _hover={{ bg: { _light: "muted", _dark: "gray.800" } }}
               >
                 Home
               </Button>
@@ -46,7 +45,7 @@ const Navbar = () => {
               onClick={() => navigate("/questions")}
               size="sm"
               borderRadius="md"
-              _hover={{ bg: "gray.800" }}
+              _hover={{ bg: { _light: "muted", _dark: "gray.800" } }}
             >
               Concept
             </Button>
@@ -55,7 +54,7 @@ const Navbar = () => {
               onClick={() => navigate("/library")}
               size="sm"
               borderRadius="md"
-              _hover={{ bg: "gray.800" }}
+              _hover={{ bg: { _light: "muted", _dark: "gray.800" } }}
             >
               Library
             </Button>
@@ -64,7 +63,7 @@ const Navbar = () => {
               onClick={() => navigate(isLoggedIn ? "/settings" : "/signin")}
               size="sm"
               borderRadius="md"
-              _hover={{ bg: isLoggedIn ? "gray.800" : "sage.50" }}
+              _hover={{ bg: isLoggedIn ? { _light: "muted", _dark: "gray.800" } : "sage.50" }}
               colorPalette={isLoggedIn ? "gray" : "sage"}
             >
               {isLoggedIn ? "Settings" : "Sign In"}

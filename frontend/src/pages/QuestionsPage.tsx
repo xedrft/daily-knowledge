@@ -119,7 +119,7 @@ const QuestionsPage = () => {
       <PageContainer>
         <Stack gap={2}>
           <Heading size="md">Your Concept</Heading>
-          <Text color="gray.600">
+          <Text color="fg.muted">
             Wise words go here
           </Text>
           {!concept && (

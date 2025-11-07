@@ -71,32 +71,32 @@ const customConfig = defineConfig({
         },
         bg: {
           value: {
-            _light: "white",
+            _light: "#f5f5f0",
             _dark: "#141413"
           }
         },
         subtle: {
           value: {
-            _light: "{colors.gray.50}",
+            _light: "#eaece3",
             _dark: "#1a1a19"
           }
         },
         muted: {
           value: {
-            _light: "{colors.gray.100}",
+            _light: "#e3e9d6",
             _dark: "#1f1f1e"
           }
         },
         emphasized: {
           value: {
-            _light: "{colors.gray.200}",
+            _light: "#d6d9ca",
             _dark: "#252524"
           }
         },
         panel: {
           value: {
-            _light: "white",
-            _dark: "#0f0f0e"
+            _light: "#fafaf8",
+            _dark: "#111110"
           }
         },
       },

@@ -39,7 +39,7 @@ const ProblemSet = ({ problemset }: ProblemSetProps) => {
             <Stack gap={4}>
               {/* Problem */}
               <Box pb={3}>
-                <Heading size="lg" mb={3} color="emerald.300">
+                <Heading size="lg" mb={3} color={{ _light: "sage.600", _dark: "sage.300" }}>
                   Problem {idx + 1}
                 </Heading>
 
@@ -53,14 +53,24 @@ const ProblemSet = ({ problemset }: ProblemSetProps) => {
                   size="sm"
                   width="130px"
                   onClick={() => toggleAnswer(idx)}
-                  borderColor="green.400"
-                  color="green.300"
-                  _hover={{ bg: "green.900", borderColor: "green.300" }}
+                  borderColor="sage.400"
+                  color={{ _light: "sage.600", _dark: "sage.300" }}
+                  _hover={{ 
+                    bg: { _light: "sage.50", _dark: "sage.800" }, 
+                    borderColor: "sage.500"
+                  }}
                 >
                   {showAnswers[idx] ? "Hide Answer ▲" : "Show Answer ▼"}
                 </Button>
                 {showAnswers[idx] && (
-                  <Box mt={3} p={3} bg="#2A2A2A" borderRadius="md" borderLeft="3px solid" borderColor="green.400">
+                  <Box 
+                    mt={3} 
+                    p={3} 
+                    bg="muted"
+                    borderRadius="md" 
+                    borderLeft="3px solid" 
+                    borderColor="sage.400"
+                  >
                     <Box className="math-container">
                       {latexFormatter(item.answer)}
                     </Box>
@@ -75,14 +85,24 @@ const ProblemSet = ({ problemset }: ProblemSetProps) => {
                   size="sm"
                   width="130px"
                   onClick={() => toggleSolution(idx)}
-                  borderColor="blue.400"
-                  color="blue.300"
-                  _hover={{ bg: "blue.900", borderColor: "blue.300" }}
+                  borderColor="sage.500"
+                  color={{ _light: "sage.700", _dark: "sage.400" }}
+                  _hover={{ 
+                    bg: { _light: "sage.100", _dark: "sage.700" }, 
+                    borderColor: "sage.600"
+                  }}
                 >
                   {showSolutions[idx] ? "Hide Solution ▲" : "Show Solution ▼"}
                 </Button>
                 {showSolutions[idx] && (
-                  <Box mt={3} p={3} bg="#2A2A2A" borderRadius="md" borderLeft="3px solid" borderColor="blue.400">
+                  <Box 
+                    mt={3} 
+                    p={3} 
+                    bg="muted"
+                    borderRadius="md" 
+                    borderLeft="3px solid" 
+                    borderColor="sage.500"
+                  >
                     <Box className="math-container">
                       {latexFormatter(item.solution)}
                     </Box>
