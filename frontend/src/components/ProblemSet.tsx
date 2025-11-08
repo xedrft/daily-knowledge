@@ -53,11 +53,11 @@ const ProblemSet = ({ problemset }: ProblemSetProps) => {
                   size="sm"
                   width="130px"
                   onClick={() => toggleAnswer(idx)}
-                  borderColor="sage.400"
-                  color={{ _light: "sage.600", _dark: "sage.300" }}
+                  borderColor={{ _light: "#6ee7b7", _dark: "#10b981" }}
+                  borderWidth="1.5px"
+                  color={{ _light: "#059669", _dark: "#34d399" }}
                   _hover={{ 
-                    bg: { _light: "sage.50", _dark: "sage.800" }, 
-                    borderColor: "sage.500"
+                    bg: { _light: "muted", _dark: "emphasized" }
                   }}
                 >
                   {showAnswers[idx] ? "Hide Answer ▲" : "Show Answer ▼"}
@@ -85,11 +85,11 @@ const ProblemSet = ({ problemset }: ProblemSetProps) => {
                   size="sm"
                   width="130px"
                   onClick={() => toggleSolution(idx)}
-                  borderColor="sage.500"
-                  color={{ _light: "sage.700", _dark: "sage.400" }}
+                  borderColor={{ _light: "#93c5fd", _dark: "#3b82f6" }}
+                  borderWidth="1.5px"
+                  color={{ _light: "#2563eb", _dark: "#60a5fa" }}
                   _hover={{ 
-                    bg: { _light: "sage.100", _dark: "sage.700" }, 
-                    borderColor: "sage.600"
+                    bg: { _light: "muted", _dark: "emphasized" }
                   }}
                 >
                   {showSolutions[idx] ? "Hide Solution ▲" : "Show Solution ▼"}
