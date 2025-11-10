@@ -10,6 +10,7 @@ import type { UserData } from "@/types/domain"
 import { useAuthGate } from "@/hooks/useAuthGate"
 import PreviouslyLearnedSelector from "@/components/PreviouslyLearnedSelector"
 import ActivityGrid, { type ActivityDay } from "@/components/ActivityGrid"
+import { useTheme } from "next-themes"
 
 // Removed local COURSE_CATALOG in favor of shared catalog + UI from onboarding
 
@@ -23,6 +24,7 @@ const SettingsPage = () => {
   const [activity, setActivity] = useState<ActivityDay[]>([])
   const [streak, setStreak] = useState<number>(0)
   const { check } = useAuthGate()
+  const { theme, setTheme } = useTheme()
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -204,6 +206,43 @@ const SettingsPage = () => {
                       </Button>
                     </Box>
                   </Box>
+                </Stack>
+              </Panel>
+
+              {/* Appearance Section */}
+              <Panel>
+                <Stack gap={3}>
+                  <Heading size="md">Appearance</Heading>
+                  <Text fontSize="sm" color="fg.muted">Choose your preferred color mode</Text>
+                  <Stack direction="row" gap={2}>
+                    <Button
+                      size="sm"
+                      variant={theme === "light" ? "solid" : "outline"}
+                      colorPalette="sage"
+                      onClick={() => setTheme("light")}
+                      flex={1}
+                    >
+                      Light
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={theme === "dark" ? "solid" : "outline"}
+                      colorPalette="sage"
+                      onClick={() => setTheme("dark")}
+                      flex={1}
+                    >
+                      Dark
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={theme === "system" ? "solid" : "outline"}
+                      colorPalette="sage"
+                      onClick={() => setTheme("system")}
+                      flex={1}
+                    >
+                      System
+                    </Button>
+                  </Stack>
                 </Stack>
               </Panel>
 
