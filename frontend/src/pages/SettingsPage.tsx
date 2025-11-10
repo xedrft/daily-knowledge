@@ -1,4 +1,4 @@
-import { Button, Stack, Heading, Text, Box, Badge, Input } from "@chakra-ui/react"
+import { Button, Stack, Heading, Text, Box } from "@chakra-ui/react"
 import { toaster } from "@/components/ui/toaster"
 import { useState, useEffect } from "react"
 import Navbar from "../components/Navbar"
@@ -11,6 +11,7 @@ import { useAuthGate } from "@/hooks/useAuthGate"
 import PreviouslyLearnedSelector from "@/components/PreviouslyLearnedSelector"
 import ActivityGrid, { type ActivityDay } from "@/components/ActivityGrid"
 import { useTheme } from "next-themes"
+import LevelSlider from "@/components/LevelSlider"
 
 // Removed local COURSE_CATALOG in favor of shared catalog + UI from onboarding
 
@@ -19,6 +20,7 @@ const SettingsPage = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string>("")
   const [level, setLevel] = useState<number>(7)
+  const [baselineLevel, setBaselineLevel] = useState<number>(7)
   const [prevLearned, setPrevLearned] = useState<string[]>([])
   const [baselinePrevLearned, setBaselinePrevLearned] = useState<string[]>([])
   const [activity, setActivity] = useState<ActivityDay[]>([])
@@ -33,7 +35,10 @@ const SettingsPage = () => {
       try {
   const data = await api.get<UserData>(endpoints.checkField())
   setUserData(data)
-  if (typeof data.current_level === 'number') setLevel(data.current_level)
+  if (typeof data.current_level === 'number') {
+    setLevel(data.current_level)
+    setBaselineLevel(data.current_level)
+  }
   if (Array.isArray(data.previouslyLearned)) {
     setPrevLearned(data.previouslyLearned)
     setBaselinePrevLearned(data.previouslyLearned)
@@ -140,12 +145,18 @@ const SettingsPage = () => {
                     <Box>
                       <Text fontSize="sm" fontWeight="bold" color="fg.muted">Level</Text>
                       <Stack gap={2}>
-                        <Input type="range" min={1} max={15} value={level} onChange={(e) => setLevel(Number(e.target.value))} w="full" style={{ accentColor: 'var(--chakra-colors-sage-500)' }} />
-                        <Text>Selected: <Badge colorPalette="sage">{level}</Badge></Text>
-                        <Button size="sm" variant="outline" colorPalette="sage" alignSelf="center" minW="140px" fontWeight="semibold" borderWidth="2px" onClick={async () => {
-                          try { await api.post(endpoints.updateLevel(), { level }); toaster.create({ title: 'Level saved', type: 'success' }); }
-                          catch (e) { setError('Failed to update level'); toaster.create({ title: 'Failed to update level', type: 'error' }); }
-                        }}>Save Level</Button>
+                        <LevelSlider value={level} onChange={setLevel} showTooltip={true} />
+                        <Stack direction={{ base: 'column', sm: 'row' }} justify="center" align="center" gap={3}>
+                          <Button size="sm" variant="outline" colorPalette="sage" minW="140px" fontWeight="semibold" borderWidth="2px" onClick={async () => {
+                            try { 
+                              await api.post(endpoints.updateLevel(), { level }); 
+                              setBaselineLevel(level);
+                              toaster.create({ title: 'Level saved', type: 'success' }); 
+                            }
+                            catch (e) { setError('Failed to update level'); toaster.create({ title: 'Failed to update level', type: 'error' }); }
+                          }}>Save Level</Button>
+                          <Button size="sm" variant="ghost" colorPalette="gray" minW="140px" fontWeight="semibold" onClick={() => setLevel(baselineLevel)}>Reset</Button>
+                        </Stack>
                       </Stack>
                     </Box>
                     {userData.pastFields.length > 0 && (

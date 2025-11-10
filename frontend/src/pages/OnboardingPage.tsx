@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Field, Heading, Input as CInput, Stack, Text, Grid, Badge, HStack, Tooltip, Spinner } from "@chakra-ui/react";
+import { Box, Button, Field, Heading, Input as CInput, Stack, Text, Grid, Spinner } from "@chakra-ui/react";
 import PageContainer from "@/components/layout/PageContainer";
 import Panel from "@/components/layout/Panel";
 import { api } from "@/lib/api/client";
 import { endpoints } from "@/lib/api/endpoints";
 import { useNavigate } from "react-router-dom";
 import FieldOptionCard from "@/components/FieldOptionCard";
-import { LuInfo } from "react-icons/lu";
 import PreviouslyLearnedSelector from "@/components/PreviouslyLearnedSelector";
+import LevelSlider from "@/components/LevelSlider";
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
@@ -56,41 +56,7 @@ export default function OnboardingPage() {
             <Panel w="full" maxW="3xl">
               <Stack gap={4}>
                 <Text fontSize="sm" color="fg.muted">Step 1 of 3</Text>
-                <Field.Root>
-                  <Tooltip.Root openDelay={50} closeDelay={100}>
-                    <Tooltip.Trigger>
-                      <HStack gap={2} align="center" tabIndex={0}>
-                        <Field.Label>Level (1–15)</Field.Label>
-                        <Box as="span" color="fg.muted" display="inline-flex" alignItems="center" aria-hidden>
-                          <LuInfo size={16} />
-                        </Box>
-                      </HStack>
-                    </Tooltip.Trigger>
-                    <Tooltip.Positioner>
-                      <Tooltip.Content bg="emphasized" color="fg" maxW="300px" px={3} py={2} borderRadius="md">
-                        <Stack gap={1}>
-                          <Text fontWeight="semibold" fontSize="sm">Choosing Your Level</Text>
-                          <Text fontSize="xs"><strong>1–5:</strong> High school or introductory</Text>
-                          <Text fontSize="xs"><strong>6–10:</strong> Undergraduate or intermediate</Text>
-                          <Text fontSize="xs"><strong>11–15:</strong> Graduate, advanced, or professional</Text>
-                        </Stack>
-                      </Tooltip.Content>
-                    </Tooltip.Positioner>
-                  </Tooltip.Root>
-                  <Stack w="full" >
-                    <Box mx="-6" px={8}>
-                      <CInput
-                        type="range"
-                        min={1}
-                        max={15}
-                        value={level}
-                        onChange={(e) => setLevel(Number(e.target.value))}
-                        style={{ accentColor: 'var(--chakra-colors-sage-500)' }}
-                      />
-                    </Box>
-                    <Text>Selected: <Badge colorPalette="sage">{level}</Badge></Text>
-                  </Stack>
-                </Field.Root>
+                <LevelSlider value={level} onChange={setLevel} showTooltip={true} />
                 <Field.Root>
                   <Field.Label>General Area</Field.Label>
                   <CInput placeholder="e.g., Mathematics, Physics, Biology" value={generalArea} onChange={(e) => setGeneralArea(e.target.value)} bg="bg" />
