@@ -1,8 +1,9 @@
-import { Button, Stack, Heading, Text, Box } from "@chakra-ui/react"
+import { Button, Stack, Heading, Text, Box, HStack, IconButton } from "@chakra-ui/react"
 import { toaster } from "@/components/ui/toaster"
 import { StreakToastContent, TodayCountToastContent } from "@/components/ui/ActivityToast"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { LuInfo, LuX } from "react-icons/lu"
 import latexFormatter from "@/functions/latexFormatter"
 import "@/styles/math.css"
 import ProblemSet from "@/components/ProblemSet"
@@ -18,6 +19,10 @@ const QuestionsPage = () => {
   const [concept, setConcept] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string>("")
+  const [showInfoBanner, setShowInfoBanner] = useState(() => {
+    const dismissed = localStorage.getItem("info-banner-dismissed")
+    return dismissed !== "true"
+  })
   const navigate = useNavigate()
 
   const { check } = useAuthGate()
@@ -117,6 +122,64 @@ const QuestionsPage = () => {
       
       {/* Page container */}
       <PageContainer>
+        {showInfoBanner && (
+          <Box 
+            bg={{ _light: "sage.50", _dark: "sage.950" }} 
+            border="1px solid" 
+            borderColor={{ _light: "sage.200", _dark: "sage.800" }} 
+            p={4} 
+            borderRadius="md"
+            mb={4}
+            position="relative"
+          >
+            <IconButton
+              aria-label="Dismiss"
+              size="sm"
+              variant="ghost"
+              position="absolute"
+              top={2}
+              right={2}
+              onClick={() => {
+                setShowInfoBanner(false)
+                localStorage.setItem("info-banner-dismissed", "true")
+              }}
+            >
+              <LuX />
+            </IconButton>
+            <Stack gap={2}>
+              <HStack gap={2} align="center">
+                <Box as="span" color="sage.500" display="inline-flex">
+                  <LuInfo size={20} />
+                </Box>
+                <Text fontSize="sm" fontWeight="semibold" color="sage.700" _dark={{ color: "sage.300" }}>
+                  How Verocity works
+                </Text>
+              </HStack>
+              <Box 
+                fontSize="sm" 
+                color="fg.muted" 
+                lineHeight="1.7"
+                pl={2}
+              >
+                <Text>
+                  <Text as="span" fontWeight="bold">Area</Text>
+                  <Text as="span" color="fg.subtle"> — the broad domain (e.g., Mathematics, Physics)</Text>
+                </Text>
+                <Text pl={4}>
+                  <Text as="span" color="sage.500">└─</Text> <Text as="span" fontWeight="bold">Field</Text>
+                  <Text as="span" color="fg.subtle"> — a specific subject within that area</Text>
+                </Text>
+                <Text pl={8}>
+                  <Text as="span" color="sage.500">└─</Text> <Text as="span" fontWeight="bold">Concepts</Text>
+                  <Text as="span" color="fg.subtle"> — individual topics to learn at your own pace</Text>
+                </Text>
+              </Box>
+              <Text fontSize="sm" color="fg.muted" lineHeight="1.6" pl={2}>
+                You can change your field anytime from Settings.
+              </Text>
+            </Stack>
+          </Box>
+        )}
         <Stack gap={2}>
           <Heading size="md">Your Concept</Heading>
           <Text color="fg.muted">

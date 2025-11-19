@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Field, Heading, Input as CInput, Stack, Text, Grid, Spinner } from "@chakra-ui/react";
+import { Box, Button, Field, Heading, Input as CInput, Stack, Text, Grid, Spinner, HStack } from "@chakra-ui/react";
+import { Tooltip } from "@/components/ui/tooltip";
+import { LuInfo } from "react-icons/lu";
 import PageContainer from "@/components/layout/PageContainer";
 import Panel from "@/components/layout/Panel";
 import { api } from "@/lib/api/client";
@@ -47,9 +49,51 @@ export default function OnboardingPage() {
     <>
       <PageContainer>
         <Stack gap={6} align="center">
-          <Stack gap={1} align="center">
+          <Stack gap={2} align="center">
             <Heading size="2xl">Welcome</Heading>
-            <Text color="fg.muted">Let’s set up your learning profile</Text>
+            <Text color="fg.muted">Let's set up your learning profile</Text>
+            <Box 
+              bg={{ _light: "sage.50", _dark: "sage.950" }} 
+              border="1px solid" 
+              borderColor={{ _light: "sage.200", _dark: "sage.800" }} 
+              p={4} 
+              borderRadius="md"
+              maxW="2xl"
+              mt={2}
+            >
+              <Stack gap={2}>
+                <HStack gap={2} align="center">
+                  <Box as="span" color="sage.500" display="inline-flex">
+                    <LuInfo size={20} />
+                  </Box>
+                  <Text fontSize="sm" fontWeight="semibold" color="sage.700" _dark={{ color: "sage.300" }}>
+                    How Verocity Works
+                  </Text>
+                </HStack>
+                <Box 
+                  fontSize="sm" 
+                  color="fg.muted" 
+                  lineHeight="1.8"
+                  pl={2}
+                >
+                  <Text>
+                    <Text as="span" fontWeight="bold">Area</Text>
+                    <Text as="span" color="fg.subtle"> — the broad domain (e.g., Mathematics, Physics)</Text>
+                  </Text>
+                  <Text pl={4}>
+                    <Text as="span" color="sage.500">└─</Text> <Text as="span" fontWeight="bold">Field</Text>
+                    <Text as="span" color="fg.subtle"> — a specific subject within that area</Text>
+                  </Text>
+                  <Text pl={8}>
+                    <Text as="span" color="sage.500">└─</Text> <Text as="span" fontWeight="bold">Concepts</Text>
+                    <Text as="span" color="fg.subtle"> — individual topics to learn at your own pace</Text>
+                  </Text>
+                </Box>
+                <Text fontSize="xs" color="fg.muted" fontStyle="italic" pl={2}>
+                  Example: Mathematics → Linear Algebra → Eigenvalues, Matrix Transformations...
+                </Text>
+              </Stack>
+            </Box>
           </Stack>
 
           {step === 1 && (
@@ -58,9 +102,20 @@ export default function OnboardingPage() {
                 <Text fontSize="sm" color="fg.muted">Step 1 of 3</Text>
                 <LevelSlider value={level} onChange={setLevel} showTooltip={true} />
                 <Field.Root>
-                  <Field.Label>General Area</Field.Label>
+                  <Tooltip 
+                    content={<Text fontSize="sm">The broad subject domain you want to explore (e.g., Mathematics, Physics, Computer Science, Biology)</Text>}
+                    openDelay={50}
+                    closeDelay={100}
+                  >
+                    <HStack gap={2} align="center" tabIndex={0}>
+                      <Field.Label>General Area</Field.Label>
+                      <Box as="span" color="fg.muted" display="inline-flex" alignItems="center">
+                        <LuInfo size={16} />
+                      </Box>
+                    </HStack>
+                  </Tooltip>
                   <CInput placeholder="e.g., Mathematics, Physics, Biology" value={generalArea} onChange={(e) => setGeneralArea(e.target.value)} bg="bg" />
-                  <Field.HelperText>We’ll suggest specific fields next.</Field.HelperText>
+                  <Field.HelperText>We'll suggest specific fields within this area next.</Field.HelperText>
                 </Field.Root>
                 {error && (
                   <Box bg={{ _light: "red.100", _dark: "red.950" }} border="1px solid" borderColor={{ _light: "red.300", _dark: "red.800" }} p={3} borderRadius="md">
@@ -123,7 +178,18 @@ export default function OnboardingPage() {
                   <Text fontSize="sm" color="fg.muted">General area: <strong>{generalArea}</strong></Text>
                 </Box>
                 <Field.Root>
-                  <Field.Label>Select your field</Field.Label>
+                  <Tooltip 
+                    content={<Text fontSize="sm">A specific subject within {generalArea} that you'll study. You'll learn individual concepts from this field.</Text>}
+                    openDelay={50}
+                    closeDelay={100}
+                  >
+                    <HStack gap={2} align="center" tabIndex={0}>
+                      <Field.Label>Select Your Field</Field.Label>
+                      <Box as="span" color="fg.muted" display="inline-flex" alignItems="center">
+                        <LuInfo size={16} />
+                      </Box>
+                    </HStack>
+                  </Tooltip>
                   {suggestionsLoading ? (
                     <Box w="full" minH="40vh" display="flex" alignItems="center" justifyContent="center">
                       <Stack gap={3} align="center">

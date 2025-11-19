@@ -1,9 +1,11 @@
-import { Button, Field, Input, Stack, Heading, Text, Box, Badge, Grid } from "@chakra-ui/react"
+import { Button, Field, Input, Stack, Heading, Text, Box, Badge, Grid, HStack } from "@chakra-ui/react"
 import { useForm } from "react-hook-form"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { LuInfo } from "react-icons/lu"
 import InlineLink from "@/components/ui/InlineLink"
 import { toaster } from "@/components/ui/toaster"
+import { Tooltip } from "@/components/ui/tooltip"
 import Navbar from "@/components/Navbar"
 import PageContainer from "@/components/layout/PageContainer"
 import Panel from "@/components/layout/Panel"
@@ -208,8 +210,56 @@ const ChangeFieldPage = () => {
                     </Box>
                   )}
                   <Text fontSize="sm" color="fg.muted">Step 1 of 2</Text>
+                  <Box 
+                    bg={{ _light: "sage.50", _dark: "sage.950" }} 
+                    border="1px solid" 
+                    borderColor={{ _light: "sage.200", _dark: "sage.800" }} 
+                    p={3} 
+                    borderRadius="md"
+                  >
+                    <Stack gap={1}>
+                      <HStack gap={2} align="center">
+                        <Box as="span" color="sage.500" display="inline-flex">
+                          <LuInfo size={18} />
+                        </Box>
+                        <Text fontSize="sm" fontWeight="semibold" color="sage.700" _dark={{ color: "sage.300" }}>
+                          How it works
+                        </Text>
+                      </HStack>
+                      <Box 
+                        fontSize="xs" 
+                        color="fg.muted" 
+                        lineHeight="1.6"
+                        pl={1}
+                      >
+                        <Text>
+                          <Text as="span" fontWeight="semibold">Area</Text>
+                          <Text as="span" color="fg.subtle"> — broad subject domain</Text>
+                        </Text>
+                        <Text pl={3}>
+                          <Text as="span" color="sage.500">└─</Text> <Text as="span" fontWeight="semibold">Field</Text>
+                          <Text as="span" color="fg.subtle"> — specific topic to study</Text>
+                        </Text>
+                        <Text pl={6}>
+                          <Text as="span" color="sage.500">└─</Text> <Text as="span" fontWeight="semibold">Concepts</Text>
+                          <Text as="span" color="fg.subtle"> — individual lessons</Text>
+                        </Text>
+                      </Box>
+                    </Stack>
+                  </Box>
                   <Field.Root invalid={!!generalAreaErrors.generalArea}>
-                    <Field.Label>General Area</Field.Label>
+                    <Tooltip 
+                      content={<Text fontSize="sm">The broad subject domain you want to explore (e.g., Mathematics, Physics, Computer Science, Biology)</Text>}
+                      openDelay={50}
+                      closeDelay={100}
+                    >
+                      <HStack gap={2} align="center" tabIndex={0}>
+                        <Field.Label>General Area</Field.Label>
+                        <Box as="span" color="fg.muted" display="inline-flex" alignItems="center">
+                          <LuInfo size={16} />
+                        </Box>
+                      </HStack>
+                    </Tooltip>
                     <Input
                       {...registerGeneralArea("generalArea", {
                         required: "General area is required",
@@ -245,7 +295,18 @@ const ChangeFieldPage = () => {
                       </Box>
                     )}
                     <Field.Root invalid={!!fieldSelectionErrors.selectedField}>
-                      <Field.Label>Select your field</Field.Label>
+                      <Tooltip 
+                        content={<Text fontSize="sm">A specific subject within {fieldSuggestions?.generalArea} that you'll study. You'll learn individual concepts from this field.</Text>}
+                        openDelay={50}
+                        closeDelay={100}
+                      >
+                        <HStack gap={2} align="center" tabIndex={0}>
+                          <Field.Label>Select Your Field</Field.Label>
+                          <Box as="span" color="fg.muted" display="inline-flex" alignItems="center">
+                            <LuInfo size={16} />
+                          </Box>
+                        </HStack>
+                      </Tooltip>
                       <Grid w="full" templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)' }} gap={3}>
                         {fieldSuggestions?.suggestions.map((fieldName) => {
                           const active = selectedField === fieldName
