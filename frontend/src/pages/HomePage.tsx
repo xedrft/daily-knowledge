@@ -1,4 +1,4 @@
-import { Button, Stack, Heading, Text, Box, HStack, VStack } from "@chakra-ui/react"
+import { Button, Heading, Text, Box, HStack, VStack, Flex } from "@chakra-ui/react"
 import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import Navbar from "../components/Navbar"
@@ -18,33 +18,28 @@ const HomePage = () => {
 
   return (
     <>
-      <Navbar />
-      <Stack 
-        gap={0} 
-        align="center" 
-        justify="center" 
-        minH="100vh" 
-        position="relative"
-        overflow="hidden"
-      >
-        {/* Background gradient effect */}
-        <Box
-          position="absolute"
-          top="20%"
-          left="50%"
-          transform="translateX(-50%)"
-          width="800px"
-          height="800px"
-          borderRadius="full"
-          bg={{ _light: "sage.600", _dark: "sage.500" }}
-          opacity={{ _light: "0.12", _dark: "0.08" }}
-          filter="blur(100px)"
-          pointerEvents="none"
-          zIndex={0}
-        />
+      <Box display="flex" flexDirection="column" minH="100dvh" overflow="hidden" w="full">
+        <Navbar />
+        <Flex flex="1" align="center" justify="center" position="relative" w="full" px={4}>
+          {/* Background gradient effect (sized to viewport to avoid scroll) */}
+          <Box
+            position="absolute"
+            inset={0}
+            m="auto"
+            maxW="900px"
+            maxH="900px"
+            w="90vmin"
+            h="90vmin"
+            borderRadius="full"
+            bg={{ _light: "sage.600", _dark: "sage.500" }}
+            opacity={{ _light: "0.10", _dark: "0.06" }}
+            filter="blur(120px)"
+            pointerEvents="none"
+            zIndex={0}
+          />
 
-        {/* Hero content */}
-        <VStack gap={8} align="center" maxW="5xl" px={8} py={20} position="relative" zIndex={1}>
+          {/* Hero content */}
+          <VStack gap={10} align="center" maxW="5xl" w="full" position="relative" zIndex={1} py={{ base: 8, md: 12 }}>
           {/* Hero heading */}
           <VStack gap={4} textAlign="center">
             <Heading
@@ -126,8 +121,9 @@ const HomePage = () => {
               </>
             )}
           </HStack>
-        </VStack>
-      </Stack>
+          </VStack>
+        </Flex>
+      </Box>
     </>
   )
 }
