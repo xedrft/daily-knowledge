@@ -18,4 +18,8 @@ export const endpoints = {
   getStreak: (date?: string) => date ? `${API_BASE}/streak?date=${encodeURIComponent(date)}` : `${API_BASE}/streak`,
   // Concept management
   regenerateConcept: () => `${API_BASE}/concept/regenerate`,
+  // Internal difficulty
+  recordInternalDifficulty: () => `${API_BASE}/internal-difficulty/record`,
+  getAggregatedDifficulty: () => `${API_BASE}/internal-difficulty/aggregate`,
+  getInternalDifficultyFor: (conceptId: string) => `${API_BASE}/internal-difficulty/for/${encodeURIComponent(conceptId)}`,
 };

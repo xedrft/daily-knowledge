@@ -53,7 +53,7 @@ const SettingsPage = () => {
   setActivity(a.activities || [])
   const s = await api.get<{ streak: number }>(endpoints.getStreak())
   setStreak(s.streak || 0)
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error:", err)
         setError("Network error. Please try again.")
       } finally {
@@ -153,7 +153,9 @@ const SettingsPage = () => {
                               setBaselineLevel(level);
                               toaster.create({ title: 'Level saved', type: 'success' }); 
                             }
-                            catch (e) { setError('Failed to update level'); toaster.create({ title: 'Failed to update level', type: 'error' }); }
+                            catch (e: any) {
+                              setError('Failed to update level'); toaster.create({ title: 'Failed to update level', type: 'error' });
+                            }
                           }}>Save Level</Button>
                           <Button size="sm" variant="ghost" colorPalette="gray" minW="140px" fontWeight="semibold" onClick={() => setLevel(baselineLevel)}>Reset</Button>
                         </Stack>
@@ -207,7 +209,7 @@ const SettingsPage = () => {
                             await api.post(endpoints.updatePreviouslyLearned(), { courses: prevLearned });
                             setBaselinePrevLearned(prevLearned);
                             toaster.create({ title: 'Courses saved', type: 'success' });
-                          } catch (e) {
+                          } catch (e: any) {
                             setError('Failed to update courses');
                             toaster.create({ title: 'Failed to update courses', type: 'error' });
                           }

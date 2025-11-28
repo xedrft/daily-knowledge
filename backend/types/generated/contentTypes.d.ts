@@ -528,6 +528,8 @@ export interface ApiUserProgressUserProgress
     currentFieldConcepts: Schema.Attribute.JSON &
       Schema.Attribute.DefaultTo<[]>;
     dailyActivity: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<{}>;
+    internalDifficulties: Schema.Attribute.JSON &
+      Schema.Attribute.DefaultTo<[]>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

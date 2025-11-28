@@ -60,7 +60,7 @@ const ConceptLibraryPage = () => {
           }
         });
         setAvailableFields(Array.from(fieldsSet).sort());
-      } catch (err) {
+      } catch (err: any) {
         console.error("Error:", err);
         setError("Failed to fetch concepts");
       } finally {
@@ -366,7 +366,7 @@ const ConceptLibraryPage = () => {
                         const payload = await api.post<ConceptFull>(endpoints.conceptGet(), { documentId: concept.documentId })
                         setActiveConcept(payload)
                         onOpen()
-                      } catch (e) {
+                      } catch (e: any) {
                         console.error('Failed to open concept modal', e)
                       }
                     }}

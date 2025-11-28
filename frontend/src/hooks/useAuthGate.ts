@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { api } from "@/lib/api/client";
 import { endpoints } from "@/lib/api/endpoints";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
+import { toaster } from "@/components/ui/toaster";
 
 export function useAuthGate() {
   const navigate = useNavigate();
+  const hasShownToast = useRef(false);
 
   const check = useCallback(async (): Promise<{ ok: boolean; currentField?: string | null }> => {
     const jwt = localStorage.getItem("jwt");
@@ -21,7 +23,17 @@ export function useAuthGate() {
       return { ok: true, currentField: data.currentField ?? null };
     } catch (e: any) {
       if (String(e?.message || "").includes("HTTP 401") || String(e?.message || "").includes("HTTP 403")) {
-        navigate("/signin");
+        localStorage.removeItem("jwt");
+        if (!hasShownToast.current) {
+          hasShownToast.current = true;
+          toaster.create({
+            title: "Session expired",
+            description: "Please sign in again.",
+            type: "info",
+            duration: 3000,
+          });
+        }
+        navigate("/");
       }
       return { ok: false };
     }

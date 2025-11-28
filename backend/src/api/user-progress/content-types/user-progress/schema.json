@@ -54,6 +54,10 @@
     "dailyActivity": {
       "type": "json",
       "default": {}
+    },
+    "internalDifficulties": {
+      "type": "json",
+      "default": []
     }
   }
 }

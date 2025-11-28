@@ -7,6 +7,7 @@ import * as prompts from "../../../../ai-prompts"
 import OpenAI from "openai"
 import init_difficulty from '../../../../functions/init-difficulty';
 import contentCall from '../../../../functions/content_call';
+import { aggregateInternal, blendWithUserSet, type DifficultyEntry } from '../../../../functions/internal-difficulty';
 
 export default factories.createCoreController('api::user-progress.user-progress', ({ strapi }) => ({
     async getConcept(ctx){
@@ -43,7 +44,34 @@ export default factories.createCoreController('api::user-progress.user-progress'
                 }
                 return '';
             }).filter(Boolean);
-            const currLevel = pastData["current_level"];
+            
+            // Compute adaptive difficulty from user's rating history
+            const internalDifficulties = (Array.isArray(pastData["internalDifficulties"]) 
+                ? pastData["internalDifficulties"] 
+                : []) as DifficultyEntry[];
+            const now = new Date();
+            const aggregated = aggregateInternal(internalDifficulties, now);
+            const userSetLevel = pastData["current_level"];
+            
+            // Blend aggregated difficulty with user's set level (confidence-weighted)
+            // If user has rated many concepts, trust their performance more
+            // If few ratings, fall back to their manually set level
+            // Normalize userSetLevel from 1-15 to 0-1 for blending
+            const normalizedUserLevel = userSetLevel / 15;
+            const blendedDifficulty = blendWithUserSet(aggregated, normalizedUserLevel, {
+                maxTrust: 0.8,  // At most, trust 80% of aggregated difficulty
+                minTrust: 0.2,  // At least, trust 20% of aggregated difficulty
+                scale: 20       // Full trust after ~20 ratings
+            });
+            
+            // Convert from 0-1 scale to 1-15 AI difficulty scale using sigmoid-like curve
+            // Small differences → small adjustments, large differences → asymptotic to ±5 levels
+            const performanceDelta = blendedDifficulty - normalizedUserLevel;
+            // Apply tanh for smooth S-curve: tanh(x) maps (-∞,∞) to (-1,1)
+            // Scale input by 3 to make ±0.1 diff → ±0.3 output, ±0.3 diff → ±0.8 output
+            const scaledAdjustment = Math.tanh(performanceDelta * 3) * 5; // Max ±5 levels asymptotically
+            const currLevel = Math.max(1, Math.min(15, Math.round(userSetLevel + scaledAdjustment)));
+            
             const previouslyLearned = Array.isArray((pastData as any).previouslyLearned) ? (pastData as any).previouslyLearned : [];
 
             const client = new OpenAI({

@@ -34,7 +34,7 @@ export default function OnboardingPage() {
       setSuggestionsLoading(true);
       const res = await api.post<{ suggestions: string[] }>(endpoints.getFieldSuggestions(), { generalArea: area, level: lvl, previouslyLearned: prevCourses });
       setSuggestions(res.suggestions || []);
-    } catch (e) {
+    } catch (e: any) {
       setError("Failed to get suggestions");
     } finally {
       setSuggestionsLoading(false);
@@ -218,7 +218,7 @@ export default function OnboardingPage() {
                         previouslyLearned: selectedCourses,
                       });
                       navigate('/questions');
-                    } catch (e) {
+                    } catch (e: any) {
                       setError('Failed to save profile');
                     } finally { setSubmitLoading(false); }
                   }} disabled={submitLoading} {...(submitLoading ? { loading: true } : {})}>Finish</Button>

@@ -78,17 +78,13 @@ const ChangeFieldPage = () => {
     try {
       const jwt = localStorage.getItem("jwt")
       if (!jwt) {
-        navigate("/signin")
+        navigate("/")
         return
       }
       const data = await api.get<UserFieldData>(endpoints.checkField())
       setUserFieldData(data)
     } catch (err: any) {
-      const msg = String(err?.message || "")
       console.error("Error fetching user field data:", err)
-      if (msg.includes("HTTP 401") || msg.includes("HTTP 403")) {
-        navigate("/signin")
-      }
     }
   }
 

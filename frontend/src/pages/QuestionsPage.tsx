@@ -14,6 +14,17 @@ import { api } from "@/lib/api/client"
 import { endpoints } from "@/lib/api/endpoints"
 import type { ConceptFull, ConceptSummary } from "@/types/domain"
 import { useAuthGate } from "@/hooks/useAuthGate"
+import { Tooltip } from "@/components/ui/tooltip"
+
+const RATING_COOLDOWN_MS = 3000
+// Minimal 5-point scale, unified dot rendered via CSS for consistent sizing
+const DIFFICULTY_OPTIONS: Array<{ value: number; label: string; desc: string }> = [
+  { value: 0, label: 'Very easy', desc: 'Barely any challenge' },
+  { value: 0.25, label: 'Easy', desc: 'Manageable with minor effort' },
+  { value: 0.5, label: 'Just right', desc: 'A good challenge for me' },
+  { value: 0.75, label: 'Hard', desc: 'Took real effort to follow' },
+  { value: 1, label: 'Very hard', desc: 'I struggled a lot' },
+]
 
 const QuestionsPage = () => {
   const [concept, setConcept] = useState<any>(null)
@@ -23,9 +34,40 @@ const QuestionsPage = () => {
     const dismissed = localStorage.getItem("info-banner-dismissed")
     return dismissed !== "true"
   })
+  const [isRatingDisabled, setIsRatingDisabled] = useState(false)
+  const [selectedRating, setSelectedRating] = useState<number | null>(null)
   const navigate = useNavigate()
 
   const { check } = useAuthGate()
+
+  // Snap any value in [0..1] to the nearest defined option
+  const snapToOption = (v: number): number => {
+    let best = DIFFICULTY_OPTIONS[0].value
+    let bestDist = Infinity
+    for (const o of DIFFICULTY_OPTIONS) {
+      const d = Math.abs(o.value - v)
+      if (d < bestDist) {
+        best = o.value
+        bestDist = d
+      }
+    }
+    return best
+  }
+
+  const preloadExistingRating = async (c: { id?: any; title?: string }) => {
+    try {
+      const conceptId = c?.id || c?.title
+      if (!conceptId) return
+      const res = await api.get<{ ok: boolean; exists: boolean; rating: number | null }>(endpoints.getInternalDifficultyFor(String(conceptId)))
+      if (res && typeof res.rating === 'number') {
+        setSelectedRating(snapToOption(res.rating))
+      } else {
+        setSelectedRating(null)
+      }
+    } catch {
+      // Non-fatal; leave selection as-is
+    }
+  }
 
   useEffect(() => {
     check()
@@ -40,6 +82,7 @@ const QuestionsPage = () => {
       if (!ok) return
       const conceptJson = await api.get<ConceptFull>(endpoints.getConcept())
       setConcept(conceptJson)
+      await preloadExistingRating(conceptJson)
       // Record activity for today and possibly show streak toast
       try {
         const today = new Date()
@@ -71,7 +114,7 @@ const QuestionsPage = () => {
         // Non-fatal
         console.warn('Failed to record activity', e)
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error:", err)
       setError("Network error. Please try again.")
     } finally {
@@ -103,7 +146,8 @@ const QuestionsPage = () => {
       // fetch full content from new endpoint
       const payload = await api.post<ConceptFull>(endpoints.conceptGet(), { documentId: mostRecent.documentId });
       setConcept(payload);
-    } catch (e) {
+      await preloadExistingRating(payload)
+    } catch (e: any) {
       console.error('Failed to load last learned concept', e);
     }
   };
@@ -214,8 +258,9 @@ const QuestionsPage = () => {
                       setIsLoading(true)
                       const refreshed = await api.post<ConceptFull>(endpoints.regenerateConcept(), { title: concept.title })
                       setConcept(refreshed)
+                      await preloadExistingRating(refreshed)
                       toaster.create({ title: 'Content refreshed', description: 'This concept was regenerated and saved.' })
-                    } catch (e) {
+                    } catch (e: any) {
                       toaster.create({ type: 'error', title: 'Failed to refresh content' })
                     } finally {
                       setIsLoading(false)
@@ -234,6 +279,65 @@ const QuestionsPage = () => {
               {concept.problemset && (
                 <ProblemSet problemset={concept.problemset} />
               )}
+
+              {/* Difficulty rating */}
+              <Box borderTop="1px solid" borderColor="muted" pt={4}>
+                <Stack gap={2}>
+                  <Text fontSize="sm" color="fg.muted">How difficult did this feel?</Text>
+                  <HStack gap={3} wrap="wrap">
+                    {DIFFICULTY_OPTIONS.map((opt, idx) => (
+                      <Tooltip key={opt.value} content={<Text fontSize="xs">{opt.desc}</Text>} openDelay={50} closeDelay={100}>
+                        <Button
+                          size="sm"
+                          variant={selectedRating === opt.value ? "solid" : "outline"}
+                          colorPalette="sage"
+                          disabled={isRatingDisabled}
+                          onClick={async () => {
+                            if (isRatingDisabled) return
+                            setIsRatingDisabled(true)
+                            setSelectedRating(opt.value)
+                            try {
+                              const res: any = await api.post(endpoints.recordInternalDifficulty(), {
+                                conceptId: concept.id || concept.title,
+                                conceptDifficulty: concept.difficulty ?? 0.5,
+                                userRatedDifficulty: opt.value,
+                              })
+                              toaster.create({ title: 'Difficulty recorded', description: `${opt.label}${res.updated ? ' (updated)' : ''}` , duration: RATING_COOLDOWN_MS })
+                              // Re-enable when toast would disappear
+                              setTimeout(() => setIsRatingDisabled(false), RATING_COOLDOWN_MS)
+                            } catch (e: any) {
+                              toaster.create({ type: 'error', title: 'Failed to record rating', duration: RATING_COOLDOWN_MS })
+                              setIsRatingDisabled(false)
+                            }
+                          }}
+                        >
+                          <HStack gap={2} align="center">
+                            {(() => {
+                              const opacities = [0, 0.45, 0.7, 0.88, 1]
+                              const dotOpacity = opacities[idx]
+                              const isOutline = idx === 0
+                              return (
+                                <Box
+                                  as="span"
+                                  w="8px"
+                                  h="8px"
+                                  borderRadius="full"
+                                  mr={1}
+                                  bg={isOutline ? 'transparent' : 'sage.600'}
+                                  opacity={isOutline ? 1 : dotOpacity}
+                                  border={isOutline ? '1px solid' : '1px solid transparent'}
+                                  borderColor={isOutline ? 'muted' : 'transparent'}
+                                />
+                              )
+                            })()}
+                            <Text as="span">{opt.label}</Text>
+                          </HStack>
+                        </Button>
+                      </Tooltip>
+                    ))}
+                  </HStack>
+                </Stack>
+              </Box>
             </Stack>
           </Panel>
         )}
